@@ -60,6 +60,8 @@ class AppController extends Controller
      */
     public function beforeRender(Event $event)
     {
+
+        $this->viewBuilder()->theme('InspiniaTheme');
         // Note: These defaults are just to get started quickly with development
         // and should not be used in production. You should instead set "_serialize"
         // in each action as required.
