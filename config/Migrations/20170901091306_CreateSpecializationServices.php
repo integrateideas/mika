@@ -23,6 +23,11 @@ class CreateSpecializationServices extends AbstractMigration
             'limit' => 255,
             'null' => false,
         ]);
+        $table->addColumn('specialization_id', 'integer', [
+            'default' => null,
+            'limit' => 11,
+            'null' => false,
+        ]);
         $table->addColumn('status', 'boolean', [
             'default' => null,
             'null' => false,
