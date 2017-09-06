@@ -6,16 +6,16 @@
  * Routes are very important mechanism that allows you to freely connect
  * different URLs to chosen controllers and their actions (functions).
  *
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 use Cake\Core\Plugin;
@@ -42,6 +42,24 @@ use Cake\Routing\Route\DashedRoute;
  *
  */
 Router::defaultRouteClass(DashedRoute::class);
+
+Router::prefix('api', function ($routes) {
+  $routes->connect('/:controller',array('controller'=>':controller', 'action'=>'add',"_method" => "POST"));
+  $routes->connect('/:controller',array('controller'=>':controller', 'action'=>'index',"_method" => "GET"));
+ 
+  $routes->connect('/:controller/:id',array('controller'=>':controller', 'action'=>'edit',"_method" => "PUT"),
+  array('pass' => array('id'), 'id'=>'[\d]+'));
+
+  $routes->connect('/:controller/:id',array('controller'=>':controller', 'action'=>'view',"_method" => "GET"),
+  array('pass' => array('id'), 'id'=>'[\d]+'));
+
+  $routes->connect('/:controller/:id',array('controller'=>':controller', 'action'=>'delete',"_method" => "DELETE"),
+  array('pass' => array('id'), 'id'=>'[\d]+'));
+
+  $routes->fallbacks('InflectedRoute');
+
+});
+
 
 Router::scope('/', function (RouteBuilder $routes) {
     /**
@@ -74,6 +92,7 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->fallbacks(DashedRoute::class);
 });
+
 
 /**
  * Load all plugin routes. See the Plugin documentation on
