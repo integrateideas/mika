@@ -75,8 +75,14 @@ class UsersController extends ApiController
         }
 
         $user = $this->Users->newEntity();
-        
-        $user = $this->Users->patchEntity($user, $this->request->getData());
+        $data = $this->request->getData();
+
+        if($data['role_id'] == 3){
+            $data['experts'] = [[]];
+            $user = $this->Users->patchEntity($user, $data, ['associated' => 'Experts']);
+        }else{
+            $user = $this->Users->patchEntity($user, $data);
+        }
         if (!$this->Users->save($user)) {
 
             throw new Exception("Error Processing Request");
