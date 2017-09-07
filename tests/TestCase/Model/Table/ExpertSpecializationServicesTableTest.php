@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\UsersTable;
+use App\Model\Table\ExpertSpecializationServicesTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\UsersTable Test Case
+ * App\Model\Table\ExpertSpecializationServicesTable Test Case
  */
-class UsersTableTest extends TestCase
+class ExpertSpecializationServicesTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\UsersTable
+     * @var \App\Model\Table\ExpertSpecializationServicesTable
      */
-    public $Users;
+    public $ExpertSpecializationServices;
 
     /**
      * Fixtures
@@ -24,13 +24,15 @@ class UsersTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
+        'app.expert_specialization_services',
+        'app.experts',
         'app.users',
         'app.roles',
-        'app.experts',
         'app.availabilities',
         'app.expert_locations',
-        'app.expert_specialization_services',
-        'app.expert_specializations'
+        'app.expert_specializations',
+        'app.specializations',
+        'app.specialization_services'
     ];
 
     /**
@@ -41,8 +43,8 @@ class UsersTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Users') ? [] : ['className' => UsersTable::class];
-        $this->Users = TableRegistry::get('Users', $config);
+        $config = TableRegistry::exists('ExpertSpecializationServices') ? [] : ['className' => ExpertSpecializationServicesTable::class];
+        $this->ExpertSpecializationServices = TableRegistry::get('ExpertSpecializationServices', $config);
     }
 
     /**
@@ -52,7 +54,7 @@ class UsersTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->Users);
+        unset($this->ExpertSpecializationServices);
 
         parent::tearDown();
     }

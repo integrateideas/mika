@@ -53,9 +53,18 @@ class UsersController extends AppController
      */
     public function add()
     {
-        $user = $this->Users->newEntity();
         if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
+            
+            $user = $this->Users->newEntity();
+            $data = $this->request->getData();
+
+            if($data['role_id'] == 3){
+                $data['experts'] = [[]];
+                $user = $this->Users->patchEntity($user, $data, ['associated' => 'Experts']);
+            }else{
+                $user = $this->Users->patchEntity($user, $data);
+            }
+
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('The user has been saved.'));
 
