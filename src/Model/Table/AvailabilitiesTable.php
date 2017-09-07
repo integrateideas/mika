@@ -59,14 +59,14 @@ class AvailabilitiesTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
-            ->dateTime('from')
-            ->requirePresence('from', 'create')
-            ->notEmpty('from');
+            ->dateTime('available_from')
+            ->requirePresence('available_from', 'create')
+            ->notEmpty('available_from');
 
         $validator
-            ->dateTime('to')
-            ->requirePresence('to', 'create')
-            ->notEmpty('to');
+            ->dateTime('available_to')
+            ->requirePresence('available_to', 'create')
+            ->notEmpty('available_to');
 
         $validator
             ->boolean('overlapping_allowed')

@@ -18,11 +18,11 @@ class CreateAvailabilities extends AbstractMigration
             'limit' => 11,
             'null' => false,
         ]);
-        $table->addColumn('from', 'datetime', [
+        $table->addColumn('available_from', 'datetime', [
             'default' => null,
             'null' => false,
         ]);
-        $table->addColumn('to', 'datetime', [
+        $table->addColumn('available_to', 'datetime', [
             'default' => null,
             'null' => false,
         ]);
