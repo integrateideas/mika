@@ -4,23 +4,22 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * User Entity
+ * ExpertSpecializationService Entity
  *
  * @property int $id
- * @property string $first_name
- * @property string $last_name
- * @property string $email
- * @property string $password
- * @property string $phone
- * @property int $role_id
- * @property \Cake\I18n\FrozenTime $is_deleted
+ * @property int $expert_id
+ * @property int $expert_specialization_id
+ * @property int $specialization_service_id
+ * @property string $price
+ * @property string $description
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
- * @property \App\Model\Entity\Role $role
- * @property \App\Model\Entity\Expert[] $experts
+ * @property \App\Model\Entity\Expert $expert
+ * @property \App\Model\Entity\ExpertSpecialization $expert_specialization
+ * @property \App\Model\Entity\SpecializationService $specialization_service
  */
-class User extends Entity
+class ExpertSpecializationService extends Entity
 {
 
     /**
@@ -35,14 +34,5 @@ class User extends Entity
     protected $_accessible = [
         '*' => true,
         'id' => false
-    ];
-
-    /**
-     * Fields that are excluded from JSON versions of the entity.
-     *
-     * @var array
-     */
-    protected $_hidden = [
-        'password'
     ];
 }

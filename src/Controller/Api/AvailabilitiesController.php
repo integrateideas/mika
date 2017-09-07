@@ -142,7 +142,7 @@ class AvailabilitiesController extends AppController
         $availability = $this->Availabilities->get($id);
         
         if (!$this->Availabilities->delete($availability)) {
-            throw new Exception("Availability could not be edited.");
+            throw new Exception("Availability could not be deleted.");
         } 
         
         $success = true;

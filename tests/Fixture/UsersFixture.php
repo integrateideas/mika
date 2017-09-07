@@ -51,9 +51,9 @@ class UsersFixture extends TestFixture
             'password' => 'Lorem ipsum dolor sit amet',
             'phone' => 'Lorem ipsum d',
             'role_id' => 1,
-            'is_deleted' => '2017-09-06 07:58:37',
-            'created' => '2017-09-06 07:58:37',
-            'modified' => '2017-09-06 07:58:37'
+            'is_deleted' => '2017-09-07 08:22:06',
+            'created' => '2017-09-07 08:22:06',
+            'modified' => '2017-09-07 08:22:06'
         ],
     ];
 }
