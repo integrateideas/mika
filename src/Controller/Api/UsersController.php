@@ -2,6 +2,13 @@
 namespace App\Controller\Api;
 
 use App\Controller\Api\ApiController;
+use Cake\Network\Exception\BadRequestException;
+use Cake\Network\Exception\MethodNotAllowedException;
+use Cake\Network\Exception\Exception;
+use Cake\Network\Exception\NotFoundException;
+use Cake\Auth\DefaultPasswordHasher;
+use Firebase\JWT\JWT;
+use Cake\Utility\Security;
 
 /**
  * Users Controller
@@ -12,6 +19,12 @@ use App\Controller\Api\ApiController;
 class UsersController extends ApiController
 {
 
+    public function initialize()
+    {
+        parent::initialize();
+        $this->Auth->allow(['add','login']);
+    }
+
     /**
      * Index method
      *
@@ -19,7 +32,11 @@ class UsersController extends ApiController
      */
     public function index()
     {
-        $users = $this->paginate($this->Users);
+        if (!$this->request->is(['get'])) {
+          throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+        
+        $users = $this->Users->find()->contain(['Roles'])->all();
 
         $this->set(compact('users'));
         $this->set('_serialize', ['users']);
@@ -34,6 +51,10 @@ class UsersController extends ApiController
      */
     public function view($id = null)
     {
+        if (!$this->request->is(['get'])) {
+          throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+
         $user = $this->Users->get($id, [
             'contain' => []
         ]);
@@ -48,19 +69,23 @@ class UsersController extends ApiController
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
     public function add()
-    {
-        $user = $this->Users->newEntity();
-        if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+    {   
+        if(!$this->request->is(['post'])){
+            throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-        $this->set(compact('user'));
-        $this->set('_serialize', ['user']);
+
+        $user = $this->Users->newEntity();
+        
+        $user = $this->Users->patchEntity($user, $this->request->getData());
+        if (!$this->Users->save($user)) {
+
+            throw new Exception("Error Processing Request");
+        }
+        
+        $success = true;
+
+        $this->set(compact('user','success'));
+        $this->set('_serialize', ['user','success']);
     }
 
     /**
@@ -108,23 +133,38 @@ class UsersController extends ApiController
         return $this->redirect(['action' => 'index']);
     }
 
-    public function token(){
-        
+    public function login(){
+
+        if(!$this->request->is(['post'])){
+            throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+
         $email = $this->request->data('email');
         $pwd = $this->request->data('password');
+
+        if(!$email){
+            throw new BadRequestException(__('MANDATORY_FIELD_MISSING','email'));
+        }
         
+        if(!$pwd){
+            throw new BadRequestException(__('MANDATORY_FIELD_MISSING','password'));
+        }
+
         $this->loadModel('Users');
         $user = $this->Users->find()->where(['email' => $email])->first();
         $token=null;
         $success=false;
 
         if($user != null &&  (new DefaultPasswordHasher)->check($pwd, $user['password'])){
-        $token = JWT::encode([
-                 'id' => $user['id'],
-                 'sub' => $user['id']
-                ],Security::salt());
-        $success = true;
+        
+            $token = JWT::encode([
+                     'id' => $user['id'],
+                     'sub' => $user['id']
+                    ],Security::salt());
+            $success = true;
 
+        }else{
+            throw new NotFoundException(__('ENTITY_DOES_NOT_EXISTS','User'));
         }
 
         $this->set([

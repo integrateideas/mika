@@ -62,6 +62,7 @@ class AppController extends Controller
     {
 
         $this->viewBuilder()->theme('InspiniaTheme');
+        $title = 'Mika';
         // Note: These defaults are just to get started quickly with development
         // and should not be used in production. You should instead set "_serialize"
         // in each action as required.
@@ -70,5 +71,6 @@ class AppController extends Controller
         ) {
             $this->set('_serialize', true);
         }
+            $this->set('title', $title);
     }
 }

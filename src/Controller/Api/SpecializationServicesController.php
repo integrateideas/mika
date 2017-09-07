@@ -13,8 +13,6 @@ class SpecializationServicesController extends ApiController
 {
     public function initialize(){    
         parent::initialize();
-        $this->Auth->allow(['index',  'view', 'add', 'edit']);
-
     }
 
     /**
