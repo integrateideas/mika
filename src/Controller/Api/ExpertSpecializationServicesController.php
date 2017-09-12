@@ -28,7 +28,8 @@ class ExpertSpecializationServicesController extends ApiController
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        $expertSpecializationServices = $this->ExpertSpecializationServices->find()
+        $expertSpecializationServices = $this->ExpertSpecializationServices
+                                                ->findByExpertId($this->request->session()->read('User')['experts'][0]['id'])
                                                 ->contain(['Experts', 'ExpertSpecializations', 'SpecializationServices'])
                                                                             ->all();
 
@@ -69,6 +70,7 @@ class ExpertSpecializationServicesController extends ApiController
         }
 
         $data = $this->request->getData();
+        $data['expert_id'] = $this->request->session()->read('User')['experts'][0]['id'];
 
         $expertSpecializationService = $this->ExpertSpecializationServices->newEntity();
     
@@ -97,9 +99,11 @@ class ExpertSpecializationServicesController extends ApiController
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        $expertSpecializationService = $this->ExpertSpecializationServices->get($id, [
-            'contain' => []
-        ]);
+        $expertId = $this->request->session()->read('User')['experts'][0]['id'];
+        
+        $expertSpecializationService = $this->ExpertSpecializationServices->findById($id)
+                                                            ->where(['expert_id' => $expertId])
+                                                            ->first();
     
         $expertSpecializationService = $this->ExpertSpecializationServices->patchEntity($expertSpecializationService, $this->request->getData());
 
