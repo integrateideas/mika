@@ -5,6 +5,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Core\Exception\Exception;
 
 /**
  * ExpertSpecializationServices Model
@@ -94,5 +95,19 @@ class ExpertSpecializationServicesTable extends Table
         $rules->add($rules->existsIn(['specialization_service_id'], 'SpecializationServices'));
 
         return $rules;
+    }
+
+    public function beforeSave($event, $entity, $options){
+
+        $specializationService = $this->ExpertSpecializations
+                                ->findBySpecializationId($entity['expert_specialization_id'])
+                                ->contain(['Specializations.SpecializationServices' => function($q) use ($entity) {
+                                    return $q->where(['id' => $entity['specialization_service_id']]);
+                                }])
+                                ->first();
+
+        if(!$specializationService->specialization->specialization_services){
+            throw new Exception(__('Specialization id and specialization service id do not match.'));
+        }
     }
 }

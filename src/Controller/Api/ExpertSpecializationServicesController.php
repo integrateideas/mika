@@ -1,7 +1,11 @@
 <?php
 namespace App\Controller\Api;
 
-use App\Controller\AppController;
+use App\Controller\Api\ApiController;
+use Cake\Network\Exception\BadRequestException;
+use Cake\Network\Exception\MethodNotAllowedException;
+use Cake\Core\Exception\Exception;
+use Cake\Network\Exception\NotFoundException;
 
 /**
  * ExpertSpecializationServices Controller
@@ -10,7 +14,7 @@ use App\Controller\AppController;
  *
  * @method \App\Model\Entity\ExpertSpecializationService[] paginate($object = null, array $settings = [])
  */
-class ExpertSpecializationServicesController extends AppController
+class ExpertSpecializationServicesController extends ApiController
 {
 
     /**
@@ -64,9 +68,11 @@ class ExpertSpecializationServicesController extends AppController
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
+        $data = $this->request->getData();
+
         $expertSpecializationService = $this->ExpertSpecializationServices->newEntity();
     
-        $expertSpecializationService = $this->ExpertSpecializationServices->patchEntity($expertSpecializationService, $this->request->getData());
+        $expertSpecializationService = $this->ExpertSpecializationServices->patchEntity($expertSpecializationService, $data);
 
         if (!$this->ExpertSpecializationServices->save($expertSpecializationService)) {
             throw new Exception("Expert specialization services could not be saved.");
