@@ -6,6 +6,7 @@ use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Core\Exception\Exception;
 use Cake\Network\Exception\NotFoundException;
+use Cake\Network\Exception\UnauthorizedException;
 use Cake\Auth\DefaultPasswordHasher;
 use Firebase\JWT\JWT;
 use Cake\Utility\Security;
@@ -132,6 +133,10 @@ class UsersController extends ApiController
      */
     public function delete($id = null)
     {
+        if($this->Auth->user('role_id') != 1){
+            throw new UnauthorizedException("You're Not alloweed to access this method.");
+        }
+
         $this->request->allowMethod(['post', 'delete']);
         $user = $this->Users->get($id);
         if ($this->Users->delete($user)) {
@@ -161,7 +166,7 @@ class UsersController extends ApiController
         }
 
         $this->loadModel('Users');
-        $user = $this->Users->find()->where(['email' => $email])->first();
+        $user = $this->Users->find()->where(['email' => $email])->contain(['Experts'])->first();
         $token=null;
         $success=false;
 
@@ -176,6 +181,8 @@ class UsersController extends ApiController
         }else{
             throw new NotFoundException(__('ENTITY_DOES_NOT_EXISTS','User'));
         }
+
+        $this->request->session()->write('User',$user->toArray()); 
 
         $this->set([
            'success' => $success,
