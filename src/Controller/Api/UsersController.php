@@ -4,7 +4,7 @@ namespace App\Controller\Api;
 use App\Controller\Api\ApiController;
 use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\MethodNotAllowedException;
-use Cake\Network\Exception\Exception;
+use Cake\Core\Exception\Exception;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Auth\DefaultPasswordHasher;
 use Firebase\JWT\JWT;
@@ -76,6 +76,10 @@ class UsersController extends ApiController
 
         $user = $this->Users->newEntity();
         $data = $this->request->getData();
+
+        if(!isset($data['role_id'])){
+            throw new Exception("No role provided for the user.");
+        }
 
         if($data['role_id'] == 3){
             $data['experts'] = [[]];

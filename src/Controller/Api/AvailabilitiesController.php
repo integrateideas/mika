@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller\Api;
 
-use App\Controller\AppController;
+use App\Controller\Api\ApiController;
 use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Network\Exception\NotFoundException;
@@ -14,7 +14,7 @@ use Cake\Network\Exception\Exception;
  *
  * @method \App\Model\Entity\Availability[] paginate($object = null, array $settings = [])
  */
-class AvailabilitiesController extends AppController
+class AvailabilitiesController extends ApiController
 {
 
     /**

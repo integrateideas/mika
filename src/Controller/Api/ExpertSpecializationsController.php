@@ -1,7 +1,11 @@
 <?php
 namespace App\Controller\Api;
 
-use App\Controller\AppController;
+use App\Controller\Api\ApiController;
+use Cake\Network\Exception\BadRequestException;
+use Cake\Network\Exception\MethodNotAllowedException;
+use Cake\Core\Exception\Exception;
+use Cake\Network\Exception\NotFoundException;
 
 /**
  * ExpertSpecializations Controller
@@ -10,7 +14,7 @@ use App\Controller\AppController;
  *
  * @method \App\Model\Entity\ExpertSpecialization[] paginate($object = null, array $settings = [])
  */
-class ExpertSpecializationsController extends AppController
+class ExpertSpecializationsController extends ApiController
 {
 
     /**
