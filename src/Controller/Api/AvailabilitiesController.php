@@ -6,6 +6,8 @@ use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\Exception;
+use Cake\I18n\Date;
+use Cake\Datasource\ConnectionManager;
 
 /**
  * Availabilities Controller
@@ -79,15 +81,24 @@ class AvailabilitiesController extends ApiController
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
     public function add()
-    {
+    {   
+
+
+        $conn = ConnectionManager::get('default');
+        $conn->driver()->autoQuoting(true);
         if (!$this->request->is(['post'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
+        $this->request->data['available_from'] =  new \DateTime($this->request->data['available_from']);
+        $this->request->data['available_to']  = new \DateTime($this->request->data['available_to']);
+        
+        // $this->request->data['available_from'] = date('Y-m-d H:i:s');
+        // $this->request->data['available_to'] = date('Y-m-d H:i:s');
+
         $availability = $this->Availabilities->newEntity();
         
         $availability = $this->Availabilities->patchEntity($availability, $this->request->getData());
-
         if (!$this->Availabilities->save($availability)) {
             throw new Exception("Availability could not be saved.");
         }
@@ -115,6 +126,14 @@ class AvailabilitiesController extends ApiController
             'contain' => []
         ]);
         
+        if(isset($this->request->data['available_from']) && !empty($this->request->data['available_from'])){
+          $this->request->data['available_from'] =  new \DateTime($this->request->data['available_from']); 
+        }
+
+        if(isset($this->request->data['available_to']) && !empty($this->request->data['available_to'])){
+          $this->request->data['available_to'] =  new \DateTime($this->request->data['available_to']); 
+        }
+
         $availability = $this->Availabilities->patchEntity($availability, $this->request->getData());
         if (!$this->Availabilities->save($availability)) {
             throw new Exception("Availability could not be edited.");
