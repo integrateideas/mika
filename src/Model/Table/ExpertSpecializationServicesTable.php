@@ -100,13 +100,17 @@ class ExpertSpecializationServicesTable extends Table
     public function beforeSave($event, $entity, $options){
 
         $specializationService = $this->ExpertSpecializations
-                                ->findBySpecializationId($entity['expert_specialization_id'])
+                                ->findById($entity['expert_specialization_id'])
                                 ->contain(['Specializations.SpecializationServices' => function($q) use ($entity) {
                                     return $q->where(['id' => $entity['specialization_service_id']]);
                                 }])
                                 ->first();
 
-        if(!isset($specializationService) || !$specializationService->specialization->specialization_services){
+        if(!isset($specializationService)){
+            throw new Exception(__("No Expert Specialization found with this id."));
+        }
+
+        if(!$specializationService->specialization->specialization_services){
             throw new Exception(__('Specialization id and specialization service id do not match.'));
         }
     }
