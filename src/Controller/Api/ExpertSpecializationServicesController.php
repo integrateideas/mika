@@ -107,7 +107,7 @@ class ExpertSpecializationServicesController extends ApiController
     
         $expertSpecializationService = $this->ExpertSpecializationServices->patchEntity($expertSpecializationService, $this->request->getData());
 
-        if ($this->ExpertSpecializationServices->save($expertSpecializationService)) {
+        if (!$this->ExpertSpecializationServices->save($expertSpecializationService)) {
             throw new Exception("Expert specialization service edits could not be saved.");
         }
 

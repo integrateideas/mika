@@ -108,18 +108,21 @@ class UsersController extends ApiController
      */
     public function edit($id = null)
     {
+
+        if(!$this->request->is(['post'])){
+            throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+
         $user = $this->Users->get($id, [
             'contain' => []
         ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+            
+        $user = $this->Users->patchEntity($user, $this->request->getData());
+        
+        if (!$this->Users->save($user)) {
+            throw new Exception("User edits could not be saved.");
         }
+        
         $this->set(compact('user'));
         $this->set('_serialize', ['user']);
     }
