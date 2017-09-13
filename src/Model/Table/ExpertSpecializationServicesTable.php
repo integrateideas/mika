@@ -106,7 +106,7 @@ class ExpertSpecializationServicesTable extends Table
                                 }])
                                 ->first();
 
-        if(!$specializationService->specialization->specialization_services){
+        if(!isset($specializationService) || !$specializationService->specialization->specialization_services){
             throw new Exception(__('Specialization id and specialization service id do not match.'));
         }
     }
