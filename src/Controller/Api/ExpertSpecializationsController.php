@@ -106,7 +106,7 @@ class ExpertSpecializationsController extends ApiController
                                                             ->first();
         
         $expertSpecialization = $this->ExpertSpecializations->patchEntity($expertSpecialization, $this->request->getData());
-        if ($this->ExpertSpecializations->save($expertSpecialization)) {
+        if (!$this->ExpertSpecializations->save($expertSpecialization)) {
             throw new Exception("Expert specialization edits could not be saved.");
         }
 
