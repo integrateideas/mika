@@ -30,39 +30,40 @@ use Cake\Event\Event;
 */
 class ApiController extends Controller
 {
-	public function initialize()
-	{
-		parent::initialize();
-		$this->loadComponent('RequestHandler');
-    // $this->loadComponent('Auth', [
-    //       'authorize' => 'Controller',
-    //         'loginAction' => [
-    //             'plugin' => 'Integrateideas/User',
-    //             'controller' => 'Users',
-    //             'action' => 'login'
-    //         ],
-    //         'unauthorizedRedirect' => false
-    //     ]);
+public function initialize()
+  {
+    parent::initialize();
+    $this->loadComponent('RequestHandler');
+    if($this->request->params['action'] == 'login'){
+      $this->loadComponent('Auth', [
+        'authenticate' => [
+          'Form' => [
+                  'userModel' => 'Users'
+              ],
+        ],
+      ]);
+    }else{
+      $this->loadComponent('Auth', [
+        'storage' => 'Memory',
+        'authenticate' => [
+          'ADmad/JwtAuth.Jwt' => [
+            'parameter' => 'token',
+            'userModel' => 'Users',
+            // 'scope' => ['Users.status' => 1],
+            'fields' => [
+              'username' => 'id'
+            ],
+            'queryDatasource' => true
+          ]
+        ],
+        'unauthorizedRedirect' => false,
+        'checkAuthIn' => 'Controller.initialize',
+        'loginAction' => false,
+        'logoutRedirect' => false,
+      ]);
+    }
+  }
 
-    $this->loadComponent('Auth', [
-       'storage' => 'Memory',
-       'authenticate' => [
-         'ADmad/JwtAuth.Jwt' => [
-           'parameter' => 'token',
-           'userModel' => 'Users',
-           // 'scope' => ['Users.status' => 1],
-           'fields' => [
-             'username' => 'id'
-           ],
-           'queryDatasource' => true
-         ]
-       ],
-       'unauthorizedRedirect' => false,
-       'checkAuthIn' => 'Controller.initialize',
-       'loginAction' => false,
-       'logoutRedirect' => false,
-     ]);
-	}
   
   public function beforeFilter(Event $event)
   {

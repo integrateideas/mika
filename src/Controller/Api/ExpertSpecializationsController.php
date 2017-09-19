@@ -71,7 +71,13 @@ class ExpertSpecializationsController extends ApiController
         }
 
         $data = $this->request->getData();
-        $data['expert_id'] = $this->request->session()->read('User')['experts'][0]['id'];
+        $session = $this->request->session();
+
+        $this->loadModel('Experts');
+        $expert = $this->Experts->findByUserId($this->Auth->user('id'))
+                                            ->first();
+
+        $data['expert_id'] = $expert['id'];
 
         $expertSpecialization = $this->ExpertSpecializations->newEntity();
         $expertSpecialization = $this->ExpertSpecializations->patchEntity($expertSpecialization, $data);

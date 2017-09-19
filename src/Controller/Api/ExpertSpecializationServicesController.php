@@ -70,7 +70,11 @@ class ExpertSpecializationServicesController extends ApiController
         }
 
         $data = $this->request->getData();
-        $data['expert_id'] = $this->request->session()->read('User')['experts'][0]['id'];
+        $this->loadModel('Experts');
+        $expert = $this->Experts->findByUserId($this->Auth->user('id'))
+                                            ->first();
+
+        $data['expert_id'] = $expert['id'];
 
         $expertSpecializationService = $this->ExpertSpecializationServices->newEntity();
     
