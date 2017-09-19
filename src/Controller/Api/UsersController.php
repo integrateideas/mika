@@ -78,19 +78,11 @@ class UsersController extends ApiController
 
         $user = $this->Users->newEntity();
         $data = $this->request->getData();
-
-        if(!isset($data['role_id'])){
-            throw new Exception("No role provided for the user.");
-        }
-
-        if($data['role_id'] == 3){
-            $data['experts'] = [[]];
-            $user = $this->Users->patchEntity($user, $data, ['associated' => 'Experts']);
-        }else{
-            $user = $this->Users->patchEntity($user, $data);
-        }
-         
-        if (!$this->Users->save($user)) {
+        $data['username'] = $data['email'];
+        $data['role_id'] = 3;
+        $user = $this->Users->patchEntity($user, $data, ['associated' => 'Experts']);
+        
+         if (!$this->Users->save($user)) {
             throw new Exception("Error Processing Request");
         }
         
