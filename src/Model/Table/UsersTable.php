@@ -90,6 +90,11 @@ class UsersTable extends Table
             ->dateTime('is_deleted')
             ->allowEmpty('is_deleted');
 
+        $validator
+            ->scalar('username')
+            ->requirePresence('username', 'create')
+            ->notEmpty('username');
+
         return $validator;
     }
 
@@ -103,6 +108,7 @@ class UsersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['email']));
+        $rules->add($rules->isUnique(['username']));
         $rules->add($rules->existsIn(['role_id'], 'Roles'));
 
         return $rules;

@@ -27,6 +27,7 @@ class UsersFixture extends TestFixture
         'is_deleted' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
+        'username' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
         ],
@@ -51,9 +52,10 @@ class UsersFixture extends TestFixture
             'password' => 'Lorem ipsum dolor sit amet',
             'phone' => 'Lorem ipsum d',
             'role_id' => 1,
-            'is_deleted' => '2017-09-07 12:31:07',
-            'created' => '2017-09-07 12:31:07',
-            'modified' => '2017-09-07 12:31:07'
+            'is_deleted' => '2017-09-19 08:56:21',
+            'created' => '2017-09-19 08:56:21',
+            'modified' => '2017-09-19 08:56:21',
+            'username' => 'Lorem ipsum dolor sit amet'
         ],
     ];
 }

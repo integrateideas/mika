@@ -10,6 +10,7 @@ use Cake\Network\Exception\UnauthorizedException;
 use Cake\Auth\DefaultPasswordHasher;
 use Firebase\JWT\JWT;
 use Cake\Utility\Security;
+use Cake\I18n\Time;
 
 /**
  * Users Controller
@@ -36,7 +37,7 @@ class UsersController extends ApiController
         if (!$this->request->is(['get'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-        
+        pr($this->Auth->user());die;
         $users = $this->Users->find()->contain(['Roles'])->all();
 
         $this->set(compact('users'));
@@ -88,8 +89,8 @@ class UsersController extends ApiController
         }else{
             $user = $this->Users->patchEntity($user, $data);
         }
+         
         if (!$this->Users->save($user)) {
-
             throw new Exception("Error Processing Request");
         }
         
@@ -152,49 +153,39 @@ class UsersController extends ApiController
     }
 
     public function login(){
+     
+      if (!$this->request->is(['post'])) {
+        throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+      
+      // pr($this->request);
+      $data =array();
+      $user = $this->Auth->identify();
+      if (!$user) {
+        throw new NotFoundException(__('LOGIN_FAILED'));
+      }
+      $user = $this->Users->find()
+                            ->where(['id' => $user['id']])
+                            ->contain(['Experts.ExpertSpecializations.ExpertSpecializationServices'])
+                            ->first();
+      
+      $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
 
-        if(!$this->request->is(['post'])){
-            throw new MethodNotAllowedException(__('BAD_REQUEST'));
-        }
+        $time = time() + 10000000;
+        $expTime = Time::createFromTimestamp($time);
+        $expTime = $expTime->format('Y-m-d H:i:s');
+        $data['status']=true;
+        $data['data']['id']=$user;
+        $data['data']['token']=JWT::encode([
+          'sub' => $user['id'],
+          'exp' =>  $time,
+          'expert_id'=>$user['experts'][0]['id'],
+          ],Security::salt());
+        $data['data']['expires']=$expTime;
+        $this->set('data',$data['data']);
+        $this->set('status',$data['status']);
+        $this->set('_serialize', ['status','data']);
 
-        $email = $this->request->data('email');
-        $pwd = $this->request->data('password');
-
-        if(!$email){
-            throw new BadRequestException(__('MANDATORY_FIELD_MISSING','email'));
-        }
-        
-        if(!$pwd){
-            throw new BadRequestException(__('MANDATORY_FIELD_MISSING','password'));
-        }
-
-        $this->loadModel('Users');
-        $user = $this->Users->find()->where(['email' => $email])->contain(['Experts'])->first();
-        $token=null;
-        $success=false;
-
-        if($user != null &&  (new DefaultPasswordHasher)->check($pwd, $user['password'])){
-        
-            $token = JWT::encode([
-                     'id' => $user['id'],
-                     'sub' => $user['id']
-                    ],Security::salt());
-            $success = true;
-
-        }else{
-            throw new NotFoundException(__('ENTITY_DOES_NOT_EXISTS','User'));
-        }
-
-        $this->request->session()->write('User',$user->toArray()); 
-
-        $this->set([
-           'success' => $success,
-           'data' => [
-               'token' =>  $token
-           ],
-           '_serialize' => ['success', 'data']
-        ]);
-       
    }
 
 }
