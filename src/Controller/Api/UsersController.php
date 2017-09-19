@@ -80,9 +80,11 @@ class UsersController extends ApiController
         $data = $this->request->getData();
         $data['username'] = $data['email'];
         $data['role_id'] = 3;
+        $data['experts'] = [[]];
+
         $user = $this->Users->patchEntity($user, $data, ['associated' => 'Experts']);
         
-         if (!$this->Users->save($user)) {
+        if (!$this->Users->save($user)) {
             throw new Exception("Error Processing Request");
         }
         
@@ -161,7 +163,9 @@ class UsersController extends ApiController
                             ->contain(['Experts.ExpertSpecializations.ExpertSpecializationServices'])
                             ->first();
       
-      $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
+      if(isset($user['experts']) && $user['experts'] != []){  
+        $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
+      }
 
         $time = time() + 10000000;
         $expTime = Time::createFromTimestamp($time);
