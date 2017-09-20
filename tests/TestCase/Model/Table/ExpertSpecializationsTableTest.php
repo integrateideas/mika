@@ -31,8 +31,8 @@ class ExpertSpecializationsTableTest extends TestCase
         'app.availabilities',
         'app.expert_locations',
         'app.expert_specialization_services',
-        'app.specializations',
-        'app.specialization_services'
+        'app.specialization_services',
+        'app.specializations'
     ];
 
     /**

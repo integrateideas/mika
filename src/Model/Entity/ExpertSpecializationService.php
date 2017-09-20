@@ -14,6 +14,7 @@ use Cake\ORM\Entity;
  * @property string $description
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
+ * @property int $duration
  *
  * @property \App\Model\Entity\Expert $expert
  * @property \App\Model\Entity\ExpertSpecialization $expert_specialization

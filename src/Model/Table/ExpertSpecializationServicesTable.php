@@ -75,8 +75,12 @@ class ExpertSpecializationServicesTable extends Table
 
         $validator
             ->scalar('description')
-            ->requirePresence('description', 'create')
-            ->notEmpty('description');
+            ->allowEmpty('description');
+
+        $validator
+            ->integer('duration')
+            ->requirePresence('duration', 'create')
+            ->notEmpty('duration');
 
         return $validator;
     }
