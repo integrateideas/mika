@@ -8,9 +8,11 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property int $user_id
+ * @property int $user_salon_id
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Availability[] $availabilities
+ * @property \App\Model\Entity\ExpertCard[] $expert_cards
  * @property \App\Model\Entity\ExpertLocation[] $expert_locations
  * @property \App\Model\Entity\ExpertSpecializationService[] $expert_specialization_services
  * @property \App\Model\Entity\ExpertSpecialization[] $expert_specializations
@@ -28,7 +30,13 @@ class Expert extends Entity
      * @var array
      */
     protected $_accessible = [
-        '*' => true,
-        'id' => false
+        'user_id' => true,
+        'user_salon_id' => true,
+        'user' => true,
+        'availabilities' => true,
+        'expert_cards' => true,
+        'expert_locations' => true,
+        'expert_specialization_services' => true,
+        'expert_specializations' => true
     ];
 }
