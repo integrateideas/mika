@@ -78,14 +78,21 @@ class UsersController extends ApiController
 
         $user = $this->Users->newEntity();
         $data = $this->request->getData();
-        $data['username'] = $data['email'];
+        
+        if(isset($data['email']) && $data['email']){
+          $data['username'] = $data['email'];
+        }
         $data['role_id'] = 3;
         $data['experts'] = [[]];
 
         $user = $this->Users->patchEntity($user, $data, ['associated' => 'Experts']);
         
         if (!$this->Users->save($user)) {
-            throw new Exception("Error Processing Request");
+          
+          if($user->errors()){
+            $this->_sendErrorResponse($user->errors());
+          }
+          throw new Exception("Error Processing Request");
         }
         
         $success = true;
@@ -151,7 +158,7 @@ class UsersController extends ApiController
       if (!$this->request->is(['post'])) {
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
-      
+      // pr($this->request->data()); die('here');
       // pr($this->request);
       $data =array();
       $user = $this->Auth->identify();
@@ -181,7 +188,58 @@ class UsersController extends ApiController
         $this->set('data',$data['data']);
         $this->set('status',$data['status']);
         $this->set('_serialize', ['status','data']);
+    }
 
-   }
+    public function addCard(){
+
+      if (!$this->request->is(['post'])) {
+        throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+
+      $data = $this->request->getData();
+
+      if(!$data->stripeJsToken){
+        throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+
+      \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
+
+      $userExpert = $this->Users->findById(5)
+                                  ->contain('Experts.ExpertCards')
+                                  ->first();
+
+      if(!isset($userExpert->experts[0]->expert_cards[0])){
+      
+        //when the user is NOT registered on stripe.
+        
+        try {
+              
+              $customer = \Stripe\Customer::create([
+                "description" => "Customer for sofia.moore@example.com",
+                "source" => $data->stripeJsToken // obtained with Stripe.js
+              ]);
+              pr($customer); die;
+          } catch (Exception $e) {
+              pr($e); die;
+          }  
+      
+      }else{
+      
+        //when the user is already registered on stripe.
+
+        $stripeCusId = $userExpert->experts[0]->expert_cards[0]->stripe_customer_id;
+        
+        try {
+              
+            $customer = \Stripe\Customer::retrieve($stripeCusId);
+            $customer->sources->create(["source" => $data->stripeJsToken]);
+              pr($customer); die;
+          } catch (Exception $e) {
+              pr($e); die;
+          }
+      
+      }
+
+    }
 
 }

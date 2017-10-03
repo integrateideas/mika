@@ -10,7 +10,9 @@ use Cake\Validation\Validator;
  * Experts Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
+ * @property |\Cake\ORM\Association\BelongsTo $UserSalons
  * @property \App\Model\Table\AvailabilitiesTable|\Cake\ORM\Association\HasMany $Availabilities
+ * @property \App\Model\Table\ExpertCardsTable|\Cake\ORM\Association\HasMany $ExpertCards
  * @property \App\Model\Table\ExpertLocationsTable|\Cake\ORM\Association\HasMany $ExpertLocations
  * @property \App\Model\Table\ExpertSpecializationServicesTable|\Cake\ORM\Association\HasMany $ExpertSpecializationServices
  * @property \App\Model\Table\ExpertSpecializationsTable|\Cake\ORM\Association\HasMany $ExpertSpecializations
@@ -44,7 +46,14 @@ class ExpertsTable extends Table
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
         ]);
+        $this->belongsTo('UserSalons', [
+            'foreignKey' => 'user_salon_id',
+            'joinType' => 'INNER'
+        ]);
         $this->hasMany('Availabilities', [
+            'foreignKey' => 'expert_id'
+        ]);
+        $this->hasMany('ExpertCards', [
             'foreignKey' => 'expert_id'
         ]);
         $this->hasMany('ExpertLocations', [
@@ -83,6 +92,7 @@ class ExpertsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
+        $rules->add($rules->existsIn(['user_salon_id'], 'UserSalons'));
 
         return $rules;
     }

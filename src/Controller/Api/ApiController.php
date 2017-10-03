@@ -96,6 +96,35 @@ public function initialize()
     ->maxAge(300)
     ->build();
   }
+
+  protected function _sendErrorResponse($err,$returnError = false, $errField = null){
+    // pr($err); 
+    $error_msg = [];
+    foreach($err as $key => $errors){
+      if(is_array($errors) || is_object($errors)){
+       $this->_sendErrorResponse($errors, false, $key);
+      }else{
+        $error_msg['error']    =   $errors;
+        $error_msg['field']    =   $errField;
+      }
+    }
+    $data = array();
+    $data['status'] = false;
+    $data['error'] = $error_msg['error'];
+    $data['field'] = $error_msg['field'];
+    if($returnError){
+      return $error_msg;
+    }else{
+      $this->response->statusCode(400);
+      //attach array in response body
+      $this->response->body(json_encode($data));
+      //send response
+      $this->response->type('json');
+      $this->response->send();
+      //stop request propagation
+      $this->response->stop();
+    }
+  }
   
   public function isAuthorized($user)
   {
