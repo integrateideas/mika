@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\UsersTable;
+use App\Model\Table\SocialConnectionsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\UsersTable Test Case
+ * App\Model\Table\SocialConnectionsTable Test Case
  */
-class UsersTableTest extends TestCase
+class SocialConnectionsTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\UsersTable
+     * @var \App\Model\Table\SocialConnectionsTable
      */
-    public $Users;
+    public $SocialConnections;
 
     /**
      * Fixtures
@@ -24,6 +24,7 @@ class UsersTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
+        'app.social_connections',
         'app.users',
         'app.roles',
         'app.experts',
@@ -47,8 +48,8 @@ class UsersTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Users') ? [] : ['className' => UsersTable::class];
-        $this->Users = TableRegistry::get('Users', $config);
+        $config = TableRegistry::exists('SocialConnections') ? [] : ['className' => SocialConnectionsTable::class];
+        $this->SocialConnections = TableRegistry::get('SocialConnections', $config);
     }
 
     /**
@@ -58,7 +59,7 @@ class UsersTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->Users);
+        unset($this->SocialConnections);
 
         parent::tearDown();
     }
