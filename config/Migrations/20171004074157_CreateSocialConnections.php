@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class CreateUserSalons extends AbstractMigration
+class CreateSocialConnections extends AbstractMigration
 {
     /**
      * Change Method.
@@ -12,18 +12,13 @@ class CreateUserSalons extends AbstractMigration
      */
     public function change()
     {
-        $table = $this->table('user_salons');
+        $table = $this->table('social_connections');
         $table->addColumn('user_id', 'integer', [
             'default' => null,
             'limit' => 11,
             'null' => false,
         ]);
-        $table->addColumn('salon_name', 'string', [
-            'default' => null,
-            'limit' => 255,
-            'null' => null,
-        ]);
-        $table->addColumn('location', 'string', [
+        $table->addColumn('fb_identifier', 'string', [
             'default' => null,
             'limit' => 255,
             'null' => false,
@@ -32,7 +27,7 @@ class CreateUserSalons extends AbstractMigration
             'default' => null,
             'null' => false,
         ]);
-        $table->addColumn('is_deleted', 'datetime', [
+        $table->addColumn('is_deleted', 'boolean', [
             'default' => null,
             'null' => true,
         ]);
