@@ -18,6 +18,7 @@ use Cake\Controller\Controller;
 use Cake\Network\Request;
 use Cake\Cache\Cache;
 use Cake\Event\Event;
+// use Cake\Log\Log;
 
 
 /**
@@ -32,6 +33,7 @@ class ApiController extends Controller
 {
 public function initialize()
   {
+    // Log::write('debug', "Reached Here");
     parent::initialize();
     $this->loadComponent('RequestHandler');
     if($this->request->params['action'] == 'login'){

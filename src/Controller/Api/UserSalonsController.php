@@ -69,6 +69,7 @@ class UserSalonsController extends ApiController
         }
         $userSalon = $this->UserSalons->newEntity();
         $this->request->data['user_id'] = $this->Auth->user('id');
+        $this->request->data['status'] = 1;
 
         $userSalon = $this->UserSalons->patchEntity($userSalon, $this->request->data);
 
