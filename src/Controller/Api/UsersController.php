@@ -11,6 +11,7 @@ use Cake\Auth\DefaultPasswordHasher;
 use Firebase\JWT\JWT;
 use Cake\Utility\Security;
 use Cake\I18n\Time;
+use Cake\Core\Configure;
 
 /**
  * Users Controller
@@ -24,7 +25,7 @@ class UsersController extends ApiController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['add','login']);
+        $this->Auth->allow(['add','login','addCard']);
     }
 
     /**
@@ -198,7 +199,7 @@ class UsersController extends ApiController
 
       $data = $this->request->getData();
 
-      if(!$data->stripeJsToken){
+      if(!isset($data['stripeJsToken']) && !$data['stripeJsToken']){
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
 
@@ -216,11 +217,29 @@ class UsersController extends ApiController
               
               $customer = \Stripe\Customer::create([
                 "description" => "Customer for sofia.moore@example.com",
-                "source" => $data->stripeJsToken // obtained with Stripe.js
+                "source" => $data['stripeJsToken'] // obtained with Stripe.js
               ]);
-              pr($customer); die;
+
+              $expertCard = [
+                              'expert_id' => $userExpert->experts[0]->id,
+                              'stripe_customer_id' => $customer->id,
+                              'stripe_card_id' => $customer->default_source,
+                              'status' => 1
+                            ];
+
+              $this->loadModel('ExpertCards');
+              $newCard = $this->ExpertCards->newEntity($expertCard);
+              
+              if($this->ExpertCards->save($newCard)){
+                $status = true;
+              }else{
+                throw new Exception("User card could not be saved.");
+              }
+              
           } catch (Exception $e) {
-              pr($e); die;
+            // pr($e); die;
+              throw new Exception("User card could not be saved."); 
+              
           }  
       
       }else{
@@ -232,14 +251,35 @@ class UsersController extends ApiController
         try {
               
             $customer = \Stripe\Customer::retrieve($stripeCusId);
-            $customer->sources->create(["source" => $data->stripeJsToken]);
-              pr($customer); die;
+            $customer->sources->create(["source" => $data['stripeJsToken']]);
+
+            $response = json_decode($customer->sources->getlastResponse()->body);
+
+            $expertCard = [
+                            'expert_id' => $userExpert->experts[0]->id,
+                            'stripe_customer_id' => $response->customer,
+                            'stripe_card_id' => $response->id,
+                            'status' => 1
+                          ];
+
+            $this->loadModel('ExpertCards');
+            $newCard = $this->ExpertCards->newEntity($expertCard);
+            
+            if($this->ExpertCards->save($newCard)){
+              $status = true;
+            }else{
+              throw new Exception("User card could not be saved.");
+            }
+            
           } catch (Exception $e) {
-              pr($e); die;
+              throw new Exception("User card could not be saved.");
           }
       
       }
 
+      $this->set('status',$status);
+      $this->set('newCard',$newCard);
+      $this->set('_serialize', ['status','newCard']);
     }
 
 }

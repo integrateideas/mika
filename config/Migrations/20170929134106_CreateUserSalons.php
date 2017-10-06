@@ -34,7 +34,7 @@ class CreateUserSalons extends AbstractMigration
         ]);
         $table->addColumn('is_deleted', 'datetime', [
             'default' => null,
-            'null' => false,
+            'null' => true,
         ]);
         $table->addColumn('created', 'datetime', [
             'default' => null,
