@@ -92,10 +92,14 @@ class UserSalonsController extends ApiController
         }
 
         $zipcode = $this->request->query['zipcode'];
+        $time = $this->request->query['time'];
+        
         $zipcode = '%'.$zipcode.'%';
         $getSearchSalons = $this->UserSalons->find()
-                                            ->where(['zipcode LIKE' => $zipcode])->all();
-
+                                            ->where(['zipcode LIKE' => $zipcode])
+                                            ->contain(['Users.Experts'])
+                                            ->all();
+        pr($getSearchSalons);die;
         $this->set(compact('getSearchSalons'));
         $this->set('_serialize', ['getSearchSalons']);
     }

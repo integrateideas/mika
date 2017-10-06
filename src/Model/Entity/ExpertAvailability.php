@@ -4,12 +4,12 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Availability Entity
+ * ExpertAvailability Entity
  *
  * @property int $id
  * @property int $expert_id
- * @property \Cake\I18n\FrozenTime $from
- * @property \Cake\I18n\FrozenTime $to
+ * @property \Cake\I18n\FrozenTime $available_from
+ * @property \Cake\I18n\FrozenTime $available_to
  * @property bool $overlapping_allowed
  * @property bool $status
  * @property \Cake\I18n\FrozenTime $created
@@ -17,7 +17,7 @@ use Cake\ORM\Entity;
  *
  * @property \App\Model\Entity\Expert $expert
  */
-class Availability extends Entity
+class ExpertAvailability extends Entity
 {
 
     /**
@@ -30,7 +30,13 @@ class Availability extends Entity
      * @var array
      */
     protected $_accessible = [
-        '*' => true,
-        'id' => false
+        'expert_id' => true,
+        'available_from' => true,
+        'available_to' => true,
+        'overlapping_allowed' => true,
+        'status' => true,
+        'created' => true,
+        'modified' => true,
+        'expert' => true
     ];
 }

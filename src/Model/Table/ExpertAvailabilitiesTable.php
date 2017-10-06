@@ -7,21 +7,21 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Availabilities Model
+ * ExpertAvailabilities Model
  *
  * @property \App\Model\Table\ExpertsTable|\Cake\ORM\Association\BelongsTo $Experts
  *
- * @method \App\Model\Entity\Availability get($primaryKey, $options = [])
- * @method \App\Model\Entity\Availability newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Availability[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Availability|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Availability patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Availability[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Availability findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\ExpertAvailability get($primaryKey, $options = [])
+ * @method \App\Model\Entity\ExpertAvailability newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\ExpertAvailability[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\ExpertAvailability|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\ExpertAvailability patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\ExpertAvailability[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\ExpertAvailability findOrCreate($search, callable $callback = null, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class AvailabilitiesTable extends Table
+class ExpertAvailabilitiesTable extends Table
 {
 
     /**
@@ -34,7 +34,7 @@ class AvailabilitiesTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('availabilities');
+        $this->setTable('expert_availabilities');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
