@@ -4,10 +4,10 @@ namespace App\Test\Fixture;
 use Cake\TestSuite\Fixture\TestFixture;
 
 /**
- * UserSalonsFixture
+ * SocialConnectionsFixture
  *
  */
-class UserSalonsFixture extends TestFixture
+class SocialConnectionsFixture extends TestFixture
 {
 
     /**
@@ -19,13 +19,11 @@ class UserSalonsFixture extends TestFixture
     public $fields = [
         'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
         'user_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
-        'salon_name' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
-        'location' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'fb_identifier' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'status' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'is_deleted' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
+        'is_deleted' => ['type' => 'boolean', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'zipcode' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
         ],
@@ -45,13 +43,11 @@ class UserSalonsFixture extends TestFixture
         [
             'id' => 1,
             'user_id' => 1,
-            'salon_name' => 'Lorem ipsum dolor sit amet',
-            'location' => 'Lorem ipsum dolor sit amet',
+            'fb_identifier' => 'Lorem ipsum dolor sit amet',
             'status' => 1,
-            'is_deleted' => '2017-10-03 12:43:17',
-            'created' => '2017-10-03 12:43:17',
-            'modified' => '2017-10-03 12:43:17',
-            'zipcode' => 'Lorem ipsum dolor sit amet'
+            'is_deleted' => 1,
+            'created' => '2017-10-04 12:21:53',
+            'modified' => '2017-10-04 12:21:53'
         ],
     ];
 }

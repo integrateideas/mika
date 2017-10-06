@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class AddColumnToExperts extends AbstractMigration
+class AddColumnToUserSalons extends AbstractMigration
 {
     /**
      * Change Method.
@@ -12,11 +12,11 @@ class AddColumnToExperts extends AbstractMigration
      */
     public function change()
     {
-        $table = $this->table('experts');
-        $table->addColumn('user_salon_id', 'integer', [
+        $table = $this->table('user_salons');
+        $table->addColumn('zipcode', 'string', [
             'default' => null,
-            'limit' => 11,
-            'null' => true,
+            'limit' => 5,
+            'null' => false,
         ]);
         $table->update();
     }

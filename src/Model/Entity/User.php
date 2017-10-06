@@ -1,6 +1,5 @@
 <?php
 namespace App\Model\Entity;
-
 use Cake\ORM\Entity;
 use Cake\Auth\DefaultPasswordHasher;
 /**
@@ -22,7 +21,6 @@ use Cake\Auth\DefaultPasswordHasher;
  */
 class User extends Entity
 {
-
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -36,7 +34,6 @@ class User extends Entity
         '*' => true,
         'id' => false
     ];
-
     /**
      * Fields that are excluded from JSON versions of the entity.
      *
@@ -49,7 +46,6 @@ class User extends Entity
         $hasher = new DefaultPasswordHasher();
         return $hasher->hash($value);    
     }
-
     protected function _getFullName()
     {
         return $this->_properties['first_name'] . '  ' .
