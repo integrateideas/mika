@@ -278,7 +278,7 @@ class UsersController extends ApiController
 
       \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
 
-      $userExpert = $this->Users->findById(5)
+      $userExpert = $this->Users->findById($this->Auth->user('id'))
                                   ->contain('Experts.ExpertCards')
                                   ->first();
 
