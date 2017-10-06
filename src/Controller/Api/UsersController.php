@@ -187,7 +187,7 @@ class UsersController extends ApiController
     }
 
     public function socialLogin(){
-      pr($this->request->data);die;
+
       $this->loadModel('SocialConnections');
       $socialConnection = $this->SocialConnections->find()->where(['fb_identifier' => $this->request->data['uid']])->first();
       if(!$socialConnection){
