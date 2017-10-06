@@ -4,22 +4,19 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * UserSalon Entity
+ * SocialConnection Entity
  *
  * @property int $id
  * @property int $user_id
- * @property string $salon_name
- * @property string $location
+ * @property string $fb_identifier
  * @property bool $status
- * @property \Cake\I18n\FrozenTime $is_deleted
+ * @property bool $is_deleted
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
- * @property string $zipcode
  *
  * @property \App\Model\Entity\User $user
- * @property \App\Model\Entity\Expert[] $experts
  */
-class UserSalon extends Entity
+class SocialConnection extends Entity
 {
 
     /**
@@ -33,14 +30,11 @@ class UserSalon extends Entity
      */
     protected $_accessible = [
         'user_id' => true,
-        'salon_name' => true,
-        'location' => true,
+        'fb_identifier' => true,
         'status' => true,
         'is_deleted' => true,
         'created' => true,
         'modified' => true,
-        'zipcode' => true,
-        'user' => true,
-        'experts' => true
+        'user' => true
     ];
 }

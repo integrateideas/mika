@@ -7,22 +7,21 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * UserSalons Model
+ * SocialConnections Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
- * @property \App\Model\Table\ExpertsTable|\Cake\ORM\Association\HasMany $Experts
  *
- * @method \App\Model\Entity\UserSalon get($primaryKey, $options = [])
- * @method \App\Model\Entity\UserSalon newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\UserSalon[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\UserSalon|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\UserSalon patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\UserSalon[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\UserSalon findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\SocialConnection get($primaryKey, $options = [])
+ * @method \App\Model\Entity\SocialConnection newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\SocialConnection[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\SocialConnection|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\SocialConnection patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\SocialConnection[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\SocialConnection findOrCreate($search, callable $callback = null, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class UserSalonsTable extends Table
+class SocialConnectionsTable extends Table
 {
 
     /**
@@ -35,7 +34,7 @@ class UserSalonsTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('user_salons');
+        $this->setTable('social_connections');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
@@ -44,9 +43,6 @@ class UserSalonsTable extends Table
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
-        ]);
-        $this->hasMany('Experts', [
-            'foreignKey' => 'user_salon_id'
         ]);
     }
 
@@ -63,14 +59,9 @@ class UserSalonsTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
-            ->scalar('salon_name')
-            ->requirePresence('salon_name', 'create')
-            ->notEmpty('salon_name');
-
-        $validator
-            ->scalar('location')
-            ->requirePresence('location', 'create')
-            ->notEmpty('location');
+            ->scalar('fb_identifier')
+            ->requirePresence('fb_identifier', 'create')
+            ->notEmpty('fb_identifier');
 
         $validator
             ->boolean('status')
@@ -78,13 +69,8 @@ class UserSalonsTable extends Table
             ->notEmpty('status');
 
         $validator
-            ->dateTime('is_deleted')
+            ->boolean('is_deleted')
             ->allowEmpty('is_deleted');
-
-        $validator
-            ->scalar('zipcode')
-            ->requirePresence('zipcode', 'create')
-            ->notEmpty('zipcode');
 
         return $validator;
     }
