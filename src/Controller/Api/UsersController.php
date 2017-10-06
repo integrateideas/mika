@@ -163,7 +163,7 @@ class UsersController extends ApiController
                       'last_name' => $displayName[1],
                       'email' => ($reqData['email'])?$reqData['email']:'',
                       'phone' => ($reqData['phoneNumber'])?$reqData['phoneNumber']:'',
-                      'password' => '12345678',
+                      'password' => '123456789',
                       'role_id' => 3,
                       'username' => $reqData['email']
                   ];
@@ -187,10 +187,9 @@ class UsersController extends ApiController
     }
 
     public function socialLogin(){
-
+      pr($this->request->data);die;
       $this->loadModel('SocialConnections');
       $socialConnection = $this->SocialConnections->find()->where(['fb_identifier' => $this->request->data['uid']])->first();
-      
       if(!$socialConnection){
         $userId = $this->socialSignup($this->request->data);
       }else{

@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class CreateAvailabilities extends AbstractMigration
+class CreateExpertAvailabilities extends AbstractMigration
 {
     /**
      * Change Method.
@@ -12,7 +12,7 @@ class CreateAvailabilities extends AbstractMigration
      */
     public function change()
     {
-        $table = $this->table('availabilities');
+        $table = $this->table('expert_availabilities');
         $table->addColumn('expert_id', 'integer', [
             'default' => null,
             'limit' => 11,

@@ -18,7 +18,7 @@ use Stripe\Stripe;
  *
  * @method \App\Model\Entity\Availability[] paginate($object = null, array $settings = [])
  */
-class AvailabilitiesController extends ApiController
+class ExpertAvailabilitiesController extends ApiController
 {
 
     /**
@@ -32,12 +32,12 @@ class AvailabilitiesController extends ApiController
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        $availabilities = $this->Availabilities->find()
-                                                ->contain(['Experts'])
-                                                ->all();
+        $expertAvailabilities = $this->ExpertAvailabilities->find()
+                                                           ->contain(['Experts'])
+                                                           ->all();
 
-        $this->set(compact('availabilities'));
-        $this->set('_serialize', ['availabilities']);
+        $this->set(compact('expertAvailabilities'));
+        $this->set('_serialize', ['expertAvailabilities']);
     }
 
     //TODO: add time constraints
@@ -47,13 +47,13 @@ class AvailabilitiesController extends ApiController
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        $availabilities = $this->Availabilities->find()
-                                                ->contain(['Experts'])
-                                                ->where(['status' => 1])
-                                                ->all();
+        $expertAvailabilities = $this->ExpertAvailabilities->find()
+                                                     ->contain(['Experts'])
+                                                     ->where(['status' => 1])
+                                                     ->all();
 
-        $this->set(compact('availabilities'));
-        $this->set('_serialize', ['availabilities']);
+        $this->set(compact('expertAvailabilities'));
+        $this->set('_serialize', ['expertAvailabilities']);
     }
 
     /**
@@ -69,12 +69,12 @@ class AvailabilitiesController extends ApiController
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        $availability = $this->Availabilities->get($id, [
+        $expertAvailabilities = $this->ExpertAvailabilities->get($id, [
             'contain' => ['Experts']
         ]);
 
-        $this->set('availability', $availability);
-        $this->set('_serialize', ['availability']);
+        $this->set(compact('expertAvailabilities'));
+        $this->set('_serialize', ['expertAvailabilities']);
     }
 
     /**
@@ -84,31 +84,30 @@ class AvailabilitiesController extends ApiController
      */
     public function add()
     {   
-
-
+        $userId = $this->Auth->user('id');
+        
+        $this->loadModel('Experts');
+        $this->request->data['expert_id'] = $this->Experts->findByUserId($userId)->first()->get('id');
+        
         $conn = ConnectionManager::get('default');
         $conn->driver()->autoQuoting(true);
         if (!$this->request->is(['post'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-
         $this->request->data['available_from'] =  new \DateTime($this->request->data['available_from']);
         $this->request->data['available_to']  = new \DateTime($this->request->data['available_to']);
-        
-        // $this->request->data['available_from'] = date('Y-m-d H:i:s');
-        // $this->request->data['available_to'] = date('Y-m-d H:i:s');
+        $this->request->data['status'] = 1; 
+        $expertAvailabilities = $this->ExpertAvailabilities->newEntity();
+        $expertAvailabilities = $this->ExpertAvailabilities->patchEntity($expertAvailabilities, $this->request->getData());
 
-        $availability = $this->Availabilities->newEntity();
-        
-        $availability = $this->Availabilities->patchEntity($availability, $this->request->getData());
-        if (!$this->Availabilities->save($availability)) {
+        if (!$this->ExpertAvailabilities->save($expertAvailabilities)) {
             throw new Exception("Availability could not be saved.");
         }
         
         $success = true;
 
-        $this->set(compact('availability', 'success'));
-        $this->set('_serialize', ['availability','success']);
+        $this->set(compact('expertAvailabilities', 'success'));
+        $this->set('_serialize', ['expertAvailabilities','success']);
     }
 
     /**
@@ -124,10 +123,9 @@ class AvailabilitiesController extends ApiController
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        $availability = $this->Availabilities->get($id, [
+        $expertAvailabilities = $this->ExpertAvailabilities->get($id, [
             'contain' => []
         ]);
-        
         if(isset($this->request->data['available_from']) && !empty($this->request->data['available_from'])){
           $this->request->data['available_from'] =  new \DateTime($this->request->data['available_from']); 
         }
@@ -136,15 +134,15 @@ class AvailabilitiesController extends ApiController
           $this->request->data['available_to'] =  new \DateTime($this->request->data['available_to']); 
         }
 
-        $availability = $this->Availabilities->patchEntity($availability, $this->request->getData());
-        if (!$this->Availabilities->save($availability)) {
+        $expertAvailabilities = $this->ExpertAvailabilities->patchEntity($expertAvailabilities, $this->request->getData());
+        if (!$this->ExpertAvailabilities->save($expertAvailabilities)) {
             throw new Exception("Availability could not be edited.");
         }
-        
+      
         $success = true;
         
-        $this->set(compact('availability', 'success'));
-        $this->set('_serialize', ['availability','success']);
+        $this->set(compact('expertAvailabilities', 'success'));
+        $this->set('_serialize', ['expertAvailabilities','success']);
     }
 
     /**
@@ -160,9 +158,9 @@ class AvailabilitiesController extends ApiController
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        $availability = $this->Availabilities->get($id);
+        $expertAvailabilities = $this->ExpertAvailabilities->get($id);
         
-        if (!$this->Availabilities->delete($availability)) {
+        if (!$this->Availabilities->delete($expertAvailabilities)) {
             throw new Exception("Availability could not be deleted.");
         } 
         
