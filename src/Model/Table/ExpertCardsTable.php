@@ -46,14 +46,14 @@ class ExpertCardsTable extends Table
             'foreignKey' => 'expert_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('StripeCustomers', [
-            'foreignKey' => 'stripe_customer_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('StripeCards', [
-            'foreignKey' => 'stripe_card_id',
-            'joinType' => 'INNER'
-        ]);
+        // $this->belongsTo('StripeCustomers', [
+        //     'foreignKey' => 'stripe_customer_id',
+        //     'joinType' => 'INNER'
+        // ]);
+        // $this->belongsTo('StripeCards', [
+        //     'foreignKey' => 'stripe_card_id',
+        //     'joinType' => 'INNER'
+        // ]);
     }
 
     /**
@@ -90,8 +90,8 @@ class ExpertCardsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['expert_id'], 'Experts'));
-        $rules->add($rules->existsIn(['stripe_customer_id'], 'StripeCustomers'));
-        $rules->add($rules->existsIn(['stripe_card_id'], 'StripeCards'));
+        // $rules->add($rules->existsIn(['stripe_customer_id'], 'StripeCustomers'));
+        // $rules->add($rules->existsIn(['stripe_card_id'], 'StripeCards'));
 
         return $rules;
     }

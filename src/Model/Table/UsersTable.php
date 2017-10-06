@@ -91,8 +91,8 @@ class UsersTable extends Table
 
         $validator
             ->scalar('phone')
-            ->requirePresence('phone', 'create')
-            ->notEmpty('phone');
+            // ->requirePresence('phone', 'create')
+            ->allowEmpty('phone');
 
         $validator
             ->dateTime('is_deleted')
