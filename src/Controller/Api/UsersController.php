@@ -12,7 +12,7 @@ use Firebase\JWT\JWT;
 use Cake\Utility\Security;
 use Cake\I18n\Time;
 use Cake\Core\Configure;
-
+use Cake\Log\Log;
 /**
  * Users Controller
  *
@@ -187,14 +187,21 @@ class UsersController extends ApiController
     }
 
     public function socialLogin(){
-      pr($this->request->data);die;
+
+
+      // Log::write('debug', 'reached here');
+
       $this->loadModel('SocialConnections');
       $socialConnection = $this->SocialConnections->find()->where(['fb_identifier' => $this->request->data['uid']])->first();
+
+
       if(!$socialConnection){
         $userId = $this->socialSignup($this->request->data);
+
       }else{
         $userId = $socialConnection->user_id;
       }
+
 
       $user = $this->Users->find()
                           ->where(['id' => $userId])
@@ -209,14 +216,16 @@ class UsersController extends ApiController
         $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
       }
 
+
+
       $time = time() + 10000000;
       $expTime = Time::createFromTimestamp($time);
       $expTime = $expTime->format('Y-m-d H:i:s');
 
       $data['status']=true;
-      $data['data']['id']=$user;
+      $data['data']['user']=$user;
       $data['data']['token']=JWT::encode([
-        'sub' => $user['id'],
+        'sub' => $userId,
         'exp' =>  $time,
         'expert_id'=>$user['experts'][0]['id'],
         ],Security::salt());
@@ -252,7 +261,7 @@ class UsersController extends ApiController
         $expTime = Time::createFromTimestamp($time);
         $expTime = $expTime->format('Y-m-d H:i:s');
         $data['status']=true;
-        $data['data']['id']=$user;
+        $data['data']['user']=$user;
         $data['data']['token']=JWT::encode([
           'sub' => $user['id'],
           'exp' =>  $time,
@@ -278,7 +287,7 @@ class UsersController extends ApiController
 
       \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
 
-      $userExpert = $this->Users->findById(5)
+      $userExpert = $this->Users->findById($this->Auth->user('id'))
                                   ->contain('Experts.ExpertCards')
                                   ->first();
 
