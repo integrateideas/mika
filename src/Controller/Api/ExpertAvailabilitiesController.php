@@ -31,7 +31,26 @@ class ExpertAvailabilitiesController extends ApiController
         if (!$this->request->is(['get'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
+        $userId = $this->Auth->user('id');
+        
+        $this->loadModel('Experts');
+        $expert_id = $this->Experts->findByUserId($userId)->first()->get('id');
 
+        $expertAvailabilities = $this->ExpertAvailabilities->find()
+                                                           ->where(['expert_id' => $expert_id])
+                                                           ->contain(['Experts'])
+                                                           ->all();
+
+        $this->set(compact('expertAvailabilities'));
+        $this->set('_serialize', ['expertAvailabilities']);
+    }
+
+    public function indexAll()
+    {
+        if (!$this->request->is(['get'])) {
+          throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+        
         $expertAvailabilities = $this->ExpertAvailabilities->find()
                                                            ->contain(['Experts'])
                                                            ->all();
@@ -104,6 +123,7 @@ class ExpertAvailabilitiesController extends ApiController
         $expertAvailabilities = $this->ExpertAvailabilities->patchEntity($expertAvailabilities, $this->request->getData());
 
         if (!$this->ExpertAvailabilities->save($expertAvailabilities)) {
+          // pr($expertAvailabilities); die;
             throw new Exception("Availability could not be saved.");
         }
         
