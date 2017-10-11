@@ -13,6 +13,7 @@ use Cake\Core\Exception\Exception;
  * @property \App\Model\Table\ExpertsTable|\Cake\ORM\Association\BelongsTo $Experts
  * @property \App\Model\Table\ExpertSpecializationsTable|\Cake\ORM\Association\BelongsTo $ExpertSpecializations
  * @property \App\Model\Table\SpecializationServicesTable|\Cake\ORM\Association\BelongsTo $SpecializationServices
+ * @property |\Cake\ORM\Association\HasMany $Appointments
  *
  * @method \App\Model\Entity\ExpertSpecializationService get($primaryKey, $options = [])
  * @method \App\Model\Entity\ExpertSpecializationService newEntity($data = null, array $options = [])
@@ -53,6 +54,9 @@ class ExpertSpecializationServicesTable extends Table
         ]);
         $this->belongsTo('SpecializationServices', [
             'foreignKey' => 'specialization_service_id'
+        ]);
+        $this->hasMany('Appointments', [
+            'foreignKey' => 'expert_specialization_service_id'
         ]);
     }
 

@@ -49,8 +49,8 @@ class ExpertSpecializationServicesFixture extends TestFixture
             'specialization_service_id' => 1,
             'price' => 'Lorem ipsum dolor sit amet',
             'description' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'created' => '2017-09-20 08:17:55',
-            'modified' => '2017-09-20 08:17:55',
+            'created' => '2017-10-11 08:55:21',
+            'modified' => '2017-10-11 08:55:21',
             'duration' => 1
         ],
     ];

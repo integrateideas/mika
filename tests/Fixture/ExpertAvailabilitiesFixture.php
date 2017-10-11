@@ -44,12 +44,12 @@ class ExpertAvailabilitiesFixture extends TestFixture
         [
             'id' => 1,
             'expert_id' => 1,
-            'available_from' => '2017-10-06 07:09:19',
-            'available_to' => '2017-10-06 07:09:19',
+            'available_from' => '2017-10-11 08:54:38',
+            'available_to' => '2017-10-11 08:54:38',
             'overlapping_allowed' => 1,
             'status' => 1,
-            'created' => '2017-10-06 07:09:19',
-            'modified' => '2017-10-06 07:09:19'
+            'created' => '2017-10-11 08:54:38',
+            'modified' => '2017-10-11 08:54:38'
         ],
     ];
 }
