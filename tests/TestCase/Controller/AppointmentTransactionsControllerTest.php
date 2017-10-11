@@ -30,7 +30,6 @@ class AppointmentTransactionsControllerTest extends IntegrationTestCase
         'app.specializations',
         'app.specialization_services',
         'app.social_connections',
-        'app.services',
         'app.charges'
     ];
 
