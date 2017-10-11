@@ -23,9 +23,12 @@ class CreateAppointments extends AbstractMigration
             'limit' => 11,
             'null' => false,
         ]);
-        $table->addColumn('time_slot', 'integer', [
+        $table->addColumn('time_from', 'datetime', [
             'default' => null,
-            'limit' => 11,
+            'null' => false,
+        ]);
+        $table->addColumn('time_to', 'datetime', [
+            'default' => null,
             'null' => false,
         ]);
         $table->addColumn('expert_specialization_service_id', 'integer', [
