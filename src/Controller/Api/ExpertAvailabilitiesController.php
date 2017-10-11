@@ -5,7 +5,7 @@ use App\Controller\Api\ApiController;
 use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Network\Exception\NotFoundException;
-use Cake\Network\Exception\Exception;
+use Cake\Core\Exception\Exception;
 use Cake\I18n\Date;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
@@ -94,6 +94,9 @@ class ExpertAvailabilitiesController extends ApiController
         if (!$this->request->is(['post'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
+        if ($this->request->data['available_from'] >= $this->request->data['available_to']) {
+          throw new Exception("Available-To should be greater than Available-From.");
+        }
         $this->request->data['available_from'] =  new \DateTime($this->request->data['available_from']);
         $this->request->data['available_to']  = new \DateTime($this->request->data['available_to']);
         $this->request->data['status'] = 1; 
@@ -126,17 +129,20 @@ class ExpertAvailabilitiesController extends ApiController
         $expertAvailabilities = $this->ExpertAvailabilities->get($id, [
             'contain' => []
         ]);
-        if(isset($this->request->data['available_from']) && !empty($this->request->data['available_from'])){
-          $this->request->data['available_from'] =  new \DateTime($this->request->data['available_from']); 
-        }
 
-        if(isset($this->request->data['available_to']) && !empty($this->request->data['available_to'])){
-          $this->request->data['available_to'] =  new \DateTime($this->request->data['available_to']); 
+        if(isset($this->request->data['available_from']) && !empty($this->request->data['available_from']) && isset($this->request->data['available_to']) && !empty($this->request->data['available_to'])){
+          
+            if ($this->request->data['available_from'] >= $this->request->data['available_to']) {
+              throw new Exception("Available-To should be greater than Available-From.");
+            }
+
+            $this->request->data['available_from'] =  new \DateTime($this->request->data['available_from']);
+            $this->request->data['available_to'] =  new \DateTime($this->request->data['available_to']); 
         }
 
         $expertAvailabilities = $this->ExpertAvailabilities->patchEntity($expertAvailabilities, $this->request->getData());
         if (!$this->ExpertAvailabilities->save($expertAvailabilities)) {
-            throw new Exception("Availability could not be edited.");
+            throw new Exception("Expert Availability could not be edited.");
         }
       
         $success = true;
@@ -160,7 +166,7 @@ class ExpertAvailabilitiesController extends ApiController
 
         $expertAvailabilities = $this->ExpertAvailabilities->get($id);
         
-        if (!$this->Availabilities->delete($expertAvailabilities)) {
+        if (!$this->ExpertAvailabilities->delete($expertAvailabilities)) {
             throw new Exception("Availability could not be deleted.");
         } 
         

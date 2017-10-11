@@ -7,6 +7,7 @@ use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Core\Exception\Exception;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
+use Cake\I18n\FrozenTime;
 
 
 /**
@@ -70,9 +71,8 @@ class UserSalonsController extends ApiController
         $userSalon = $this->UserSalons->newEntity();
         $this->request->data['user_id'] = $this->Auth->user('id');
         $this->request->data['status'] = 1;
-
+        
         $userSalon = $this->UserSalons->patchEntity($userSalon, $this->request->data);
-
         if (!$this->UserSalons->save($userSalon)) {
           
           if($userSalon->errors()){
@@ -80,27 +80,55 @@ class UserSalonsController extends ApiController
           }
           throw new Exception("Error Processing Request");
         }
-
+        
+        $this->request->data['experts'] = [
+                                            "user_salon_id" => $userSalon['id']
+                                          ];
+        $this->loadModel('Experts');
+        $experts = $this->Experts->findByUserId($this->Auth->user('id'))->first();
+        $experts = $this->Experts->patchEntity($experts, $this->request->data['experts']);
+        if (!$this->Experts->save($experts)) {
+          
+          if($experts->errors()){
+            $this->_sendErrorResponse($experts->errors());
+          }
+          throw new Exception("Error while updating user_salon_id in Experts");
+        }
+        
         $success = true;
         
-        $this->set(compact('userSalon', 'success'));
-        $this->set('_serialize', ['userSalon','success']);
+        $this->set(compact('userSalon', 'success','experts'));
+        $this->set('_serialize', ['userSalon','success','experts']);
     }
 
     public function searchSalon(){
         if(!$this->request->is(['get'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-
+        
+        $time = null;
+        $whereCond = [];
+        
+        if(isset($this->request->query['time']) && !in_array($this->request->query['time'], ["", null, false])){
+            $time = $this->request->query['time'];
+            $time  = new FrozenTime($time);
+            $whereCond = ['ExpertAvailabilities.available_from <=' => $time, 'ExpertAvailabilities.available_to >=' => $time];
+        }
         $zipcode = $this->request->query['zipcode'];
-        $time = $this->request->query['time'];
         
         $zipcode = '%'.$zipcode.'%';
         $getSearchSalons = $this->UserSalons->find()
                                             ->where(['zipcode LIKE' => $zipcode])
-                                            ->contain(['Users.Experts'])
-                                            ->all();
-        pr($getSearchSalons);die;
+                                            ->contain(['Users.Experts.ExpertAvailabilities' => function($q) use ($whereCond){
+                                                return $q->where($whereCond);
+                                            }])
+                                            ->matching('Users.Experts.ExpertAvailabilities', function($q) use ($whereCond){
+                                                return $q->where($whereCond);
+                                            })
+                                            ->all()
+                                            ->toArray();
+        
+        
         $this->set(compact('getSearchSalons'));
         $this->set('_serialize', ['getSearchSalons']);
     }
