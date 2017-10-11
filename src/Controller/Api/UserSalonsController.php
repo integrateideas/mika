@@ -7,6 +7,7 @@ use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Core\Exception\Exception;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
+use Cake\Log\Log;
 
 
 /**
@@ -19,6 +20,11 @@ use Cake\Network\Exception\UnauthorizedException;
 class UserSalonsController extends ApiController
 {
 
+    public function initialize()
+    {
+        parent::initialize();
+    }
+    
     /**
      * Index method
      *
@@ -63,10 +69,13 @@ class UserSalonsController extends ApiController
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
     public function add()
-    {
+    {   
+      Log::write('debug', $this->Auth->user());
+
         if(!$this->request->is(['post'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
+
         $userSalon = $this->UserSalons->newEntity();
         $this->request->data['user_id'] = $this->Auth->user('id');
         $this->request->data['status'] = 1;
@@ -100,7 +109,7 @@ class UserSalonsController extends ApiController
                                             ->where(['zipcode LIKE' => $zipcode])
                                             ->contain(['Users.Experts'])
                                             ->all();
-        pr($getSearchSalons);die;
+        
         $this->set(compact('getSearchSalons'));
         $this->set('_serialize', ['getSearchSalons']);
     }
