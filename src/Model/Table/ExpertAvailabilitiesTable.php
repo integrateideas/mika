@@ -10,6 +10,7 @@ use Cake\Validation\Validator;
  * ExpertAvailabilities Model
  *
  * @property \App\Model\Table\ExpertsTable|\Cake\ORM\Association\BelongsTo $Experts
+ * @property \App\Model\Table\AppointmentsTable|\Cake\ORM\Association\HasMany $Appointments
  *
  * @method \App\Model\Entity\ExpertAvailability get($primaryKey, $options = [])
  * @method \App\Model\Entity\ExpertAvailability newEntity($data = null, array $options = [])
@@ -43,6 +44,9 @@ class ExpertAvailabilitiesTable extends Table
         $this->belongsTo('Experts', [
             'foreignKey' => 'expert_id',
             'joinType' => 'INNER'
+        ]);
+        $this->hasMany('Appointments', [
+            'foreignKey' => 'expert_availability_id'
         ]);
     }
 

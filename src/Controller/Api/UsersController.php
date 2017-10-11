@@ -116,7 +116,15 @@ class UsersController extends ApiController
         if(!$this->request->is(['post'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-
+        
+        if($this->Auth->user('role_id') == 1 ){
+          if(!$id){
+            throw new BadRequestException(__('MANDATORY_FIELD_MISSING','id')); 
+          }
+        }else{
+          $id = $this->Auth->user('id');
+        }
+        
         $user = $this->Users->get($id, [
             'contain' => []
         ]);

@@ -11,6 +11,7 @@ use Cake\Validation\Validator;
  *
  * @property \App\Model\Table\ExpertsTable|\Cake\ORM\Association\BelongsTo $Experts
  * @property \App\Model\Table\SpecializationsTable|\Cake\ORM\Association\BelongsTo $Specializations
+ * @property |\Cake\ORM\Association\HasMany $Appointments
  * @property \App\Model\Table\ExpertSpecializationServicesTable|\Cake\ORM\Association\HasMany $ExpertSpecializationServices
  *
  * @method \App\Model\Entity\ExpertSpecialization get($primaryKey, $options = [])
@@ -49,6 +50,9 @@ class ExpertSpecializationsTable extends Table
         $this->belongsTo('Specializations', [
             'foreignKey' => 'specialization_id',
             'joinType' => 'INNER'
+        ]);
+        $this->hasMany('Appointments', [
+            'foreignKey' => 'expert_specialization_id'
         ]);
         $this->hasMany('ExpertSpecializationServices', [
             'foreignKey' => 'expert_specialization_id'
