@@ -16,6 +16,7 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $modified
  *
  * @property \App\Model\Entity\Expert $expert
+ * @property \App\Model\Entity\Appointment[] $appointments
  */
 class ExpertAvailability extends Entity
 {
@@ -37,6 +38,7 @@ class ExpertAvailability extends Entity
         'status' => true,
         'created' => true,
         'modified' => true,
-        'expert' => true
+        'expert' => true,
+        'appointments' => true
     ];
 }

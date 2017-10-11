@@ -23,12 +23,9 @@ class CreateAppointments extends AbstractMigration
             'limit' => 11,
             'null' => false,
         ]);
-        $table->addColumn('time_from', 'datetime', [
+        $table->addColumn('expert_availability_id', 'integer', [
             'default' => null,
-            'null' => false,
-        ]);
-        $table->addColumn('time_to', 'datetime', [
-            'default' => null,
+            'limit' => 11,
             'null' => false,
         ]);
         $table->addColumn('expert_specialization_service_id', 'integer', [
@@ -36,18 +33,18 @@ class CreateAppointments extends AbstractMigration
             'limit' => 11,
             'null' => false,
         ]);
-        $table->addColumn('service_id', 'integer', [
+        $table->addColumn('expert_specialization_id', 'integer', [
             'default' => null,
             'limit' => 11,
             'null' => false,
         ]);
         $table->addColumn('is_confirmed', 'boolean', [
             'default' => null,
-            'null' => false,
+            'null' => true,
         ]);
         $table->addColumn('is_completed', 'boolean', [
             'default' => null,
-            'null' => false,
+            'null' => true,
         ]);
         $table->create();
     }

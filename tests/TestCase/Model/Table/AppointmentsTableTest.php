@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\ExpertAvailabilitiesTable;
+use App\Model\Table\AppointmentsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\ExpertAvailabilitiesTable Test Case
+ * App\Model\Table\AppointmentsTable Test Case
  */
-class ExpertAvailabilitiesTableTest extends TestCase
+class AppointmentsTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\ExpertAvailabilitiesTable
+     * @var \App\Model\Table\AppointmentsTable
      */
-    public $ExpertAvailabilities;
+    public $Appointments;
 
     /**
      * Fixtures
@@ -24,19 +24,19 @@ class ExpertAvailabilitiesTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.expert_availabilities',
-        'app.experts',
+        'app.appointments',
         'app.users',
         'app.roles',
-        'app.social_connections',
+        'app.experts',
         'app.user_salons',
+        'app.expert_availabilities',
         'app.expert_cards',
         'app.expert_locations',
         'app.expert_specialization_services',
         'app.expert_specializations',
         'app.specializations',
         'app.specialization_services',
-        'app.appointments',
+        'app.social_connections',
         'app.services',
         'app.appointment_transactions',
         'app.charges'
@@ -50,8 +50,8 @@ class ExpertAvailabilitiesTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('ExpertAvailabilities') ? [] : ['className' => ExpertAvailabilitiesTable::class];
-        $this->ExpertAvailabilities = TableRegistry::get('ExpertAvailabilities', $config);
+        $config = TableRegistry::exists('Appointments') ? [] : ['className' => AppointmentsTable::class];
+        $this->Appointments = TableRegistry::get('Appointments', $config);
     }
 
     /**
@@ -61,7 +61,7 @@ class ExpertAvailabilitiesTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->ExpertAvailabilities);
+        unset($this->Appointments);
 
         parent::tearDown();
     }
