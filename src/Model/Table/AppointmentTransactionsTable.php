@@ -41,10 +41,6 @@ class AppointmentTransactionsTable extends Table
             'foreignKey' => 'appointment_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Charges', [
-            'foreignKey' => 'charge_id',
-            'joinType' => 'INNER'
-        ]);
     }
 
     /**
@@ -87,7 +83,6 @@ class AppointmentTransactionsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['appointment_id'], 'Appointments'));
-        $rules->add($rules->existsIn(['charge_id'], 'Charges'));
 
         return $rules;
     }
