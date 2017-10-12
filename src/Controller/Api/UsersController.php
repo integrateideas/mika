@@ -320,17 +320,23 @@ class UsersController extends ApiController
     }
 
     public function addCard(){
+      
       if (!$this->request->is(['post'])) {
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
+      
       $data = $this->request->getData();
+      
       if(!isset($data['stripeJsToken']) && !$data['stripeJsToken']){
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
+      
       \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
-      $userExpert = $this->Users->findById(5)
+
+      $userExpert = $this->Users->findById($this->Auth->user('id'))
                                   ->contain('Experts.ExpertCards')
                                   ->first();
+      
       if(!isset($userExpert->experts[0]->expert_cards[0])){
       
         //when the user is NOT registered on stripe.
