@@ -3,13 +3,14 @@
   * @var \App\View\AppView $this
   * @var \App\Model\Entity\App\Model\Entity\User $user
   */
+$name = [$user->first_name,$user->last_name];
 ?>
 <!-- <div class="users view large-9 medium-8 columns content"> -->
 <div class = 'row'>
     <div class = 'col-lg-12'>
     <div class="ibox float-e-margins">
         <div class="ibox-title">
-            <h2><?= h($user->id) ?></h2>
+            <h2><?= h(implode(" ", $name)) ?></h2>
         </div> <!-- ibox-title end-->
         <div class="ibox-content">
     <table class="table">
@@ -26,24 +27,12 @@
             <td><?= h($user->email) ?></td>
         </tr>
         <tr>
-            <th scope="row"><?= __('Password') ?></th>
-            <td><?= h($user->password) ?></td>
-        </tr>
-        <tr>
             <th scope="row"><?= __('Phone') ?></th>
             <td><?= h($user->phone) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Role') ?></th>
-            <td><?= $user->has('role') ? $this->Html->link($user->role->name, ['controller' => 'Roles', 'action' => 'view', $user->role->id]) : '' ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Id') ?></th>
-            <td><?= $this->Number->format($user->id) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Is Deleted') ?></th>
-            <td><?= h($user->is_deleted) ?></td>
+            <td><?=  h($user->role->name) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Created') ?></th>
@@ -81,6 +70,15 @@
                     <?= $this->Html->link(__('View'), ['controller' => 'Experts', 'action' => 'view', $experts->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['controller' => 'Experts', 'action' => 'edit', $experts->id]) ?>
                     <?= $this->Form->postLink(__('Delete'), ['controller' => 'Experts', 'action' => 'delete', $experts->id], ['confirm' => __('Are you sure you want to delete # {0}?', $experts->id)]) ?>
+                </td>
+                <td class="actions">
+                    <?= '<a href='.$this->Url->build(['action' => 'view', $experts->id]).' class="btn btn-xs btn-success">' ?>
+                        <i class="fa fa-eye fa-fw"></i>
+                    </a>
+                    <?= '<a href='.$this->Url->build(['action' => 'edit', $experts->id]).' class="btn btn-xs btn-warning"">' ?>
+                        <i class="fa fa-pencil fa-fw"></i>
+                    </a>
+                    <?= $this->Form->postLink(__(''), ['action' => 'delete', $experts->id], ['confirm' => __('Are you sure you want to delete # {0}?', $experts->id), 'class' => ['btn', 'btn-sm', 'btn-danger', 'fa', 'fa-trash-o', 'fa-fh']]) ?>
                 </td>
             </tr>
             <?php endforeach; ?>

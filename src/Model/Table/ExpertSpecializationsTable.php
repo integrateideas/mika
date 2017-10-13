@@ -89,6 +89,7 @@ class ExpertSpecializationsTable extends Table
     {
         $rules->add($rules->existsIn(['expert_id'], 'Experts'));
         $rules->add($rules->existsIn(['specialization_id'], 'Specializations'));
+        $rules->add($rules->isUnique(['expert_id','specialization_id'], 'Specialization for this expert is already saved.'));
 
         return $rules;
     }

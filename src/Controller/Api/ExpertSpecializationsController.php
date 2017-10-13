@@ -69,13 +69,12 @@ class ExpertSpecializationsController extends ApiController
         if (!$this->request->is(['post'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-
         $data = $this->request->getData();
         $session = $this->request->session();
 
         $this->loadModel('Experts');
         $expert = $this->Experts->findByUserId($this->Auth->user('id'))
-                                            ->first();
+                                ->first();
 
         $data['expert_id'] = $expert['id'];
 
@@ -91,6 +90,7 @@ class ExpertSpecializationsController extends ApiController
         $this->set(compact('expertSpecialization', 'success'));
         $this->set('_serialize', ['expertSpecialization', 'success']);
     }
+
 
     /**
      * Edit method
@@ -132,8 +132,15 @@ class ExpertSpecializationsController extends ApiController
         if (!$this->request->is(['patch', 'post', 'put','delete'])) {
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
+
+        $this->loadModel('Experts');
+        $expertId = $this->Experts->findByUserId($this->Auth->user('id'))
+                                  ->first()
+                                  ->get('id');
         
-        $expertSpecialization = $this->ExpertSpecializations->get($id);
+        $expertSpecialization = $this->ExpertSpecializations->find()
+                                                            ->where(['expert_id' => $expertId])
+                                                            ->first();
         
         if (!$this->ExpertSpecializations->delete($expertSpecialization)) {
             throw new Exception("Expert specialization could not be deleted.");
