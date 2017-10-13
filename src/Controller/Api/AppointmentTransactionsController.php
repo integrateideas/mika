@@ -36,7 +36,7 @@ class AppointmentTransactionsController extends ApiController
         if (!$this->request->is(['get'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-        
+
         $appointmentTransaction = $this->AppointmentTransactions->get($id, [
             'contain' => ['Appointments']
         ]);
@@ -63,6 +63,7 @@ class AppointmentTransactionsController extends ApiController
                     'status' =>  1,
                     'remark' =>  $this->request->data['remark']
                 ];
+                
         $appointmentTransaction = $this->AppointmentTransactions->newEntity();
         $appointmentTransaction = $this->AppointmentTransactions->patchEntity($appointmentTransaction, $data);
 

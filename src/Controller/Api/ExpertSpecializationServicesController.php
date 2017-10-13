@@ -134,7 +134,15 @@ class ExpertSpecializationServicesController extends ApiController
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        $expertSpecializationService = $this->ExpertSpecializationServices->get($id);
+        $this->loadModel('Experts');
+        $expertId = $this->Experts->findByUserId($this->Auth->user('id'))
+                                  ->first()
+                                  ->get('id');
+
+        $expertSpecializationService = $this->ExpertSpecializationServices->find()
+                                                                          ->where(['expert_id' => $expertId])
+                                                                          ->first();
+        
         if (!$this->ExpertSpecializationServices->delete($expertSpecializationService)) {
             throw new Exception("Expert specialization service could not be deleted.");
         }
