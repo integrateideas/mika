@@ -7,18 +7,17 @@
 	<div class="col-lg-12">
 		<div class="ibox float-e-margins">
 			<div class="ibox-content">
-				<div class="users form large-9 medium-8 columns content">
-    <?= $this->Form->create($user) ?>
+				<div class="specializationServices form large-9 medium-8 columns content">
+    <?= $this->Form->create($specializationService) ?>
     <fieldset>
         <div class = 'ibox-title'>
-            <legend><?= __('Edit User') ?></legend>
+            <legend><?= __('Edit Specialization Service') ?></legend>
         </div>
         <?php
-            echo $this->Form->control('first_name');
-            echo $this->Form->control('last_name');
-            echo $this->Form->control('email');
-            echo $this->Form->control('phone');
-            echo $this->Form->control('role_id', ['options' => $roles]);
+            echo $this->Form->control('name');
+            echo $this->Form->control('label');
+            echo $this->Form->control('specialization_id', ['options' => $specializations]);
+            echo $this->Form->control('status');
         ?>
     </fieldset>
     <?= $this->Form->button(__('Submit')) ?>

@@ -1,13 +1,13 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\AppointmentTransactionsController;
+use App\Controller\SpecializationsController;
 use Cake\TestSuite\IntegrationTestCase;
 
 /**
- * App\Controller\AppointmentTransactionsController Test Case
+ * App\Controller\SpecializationsController Test Case
  */
-class AppointmentTransactionsControllerTest extends IntegrationTestCase
+class SpecializationsControllerTest extends IntegrationTestCase
 {
 
     /**
@@ -16,21 +16,20 @@ class AppointmentTransactionsControllerTest extends IntegrationTestCase
      * @var array
      */
     public $fixtures = [
-        'app.appointment_transactions',
-        'app.appointments',
+        'app.specializations',
+        'app.expert_specializations',
+        'app.experts',
         'app.users',
         'app.roles',
-        'app.experts',
-        'app.user_salons',
-        'app.expert_availabilities',
-        'app.expert_cards',
-        'app.expert_locations',
-        'app.expert_specialization_services',
-        'app.expert_specializations',
-        'app.specializations',
-        'app.specialization_services',
         'app.social_connections',
-        'app.charges'
+        'app.user_salons',
+        'app.appointments',
+        'app.expert_availabilities',
+        'app.expert_specialization_services',
+        'app.specialization_services',
+        'app.appointment_transactions',
+        'app.expert_cards',
+        'app.expert_locations'
     ];
 
     /**

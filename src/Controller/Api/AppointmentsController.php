@@ -69,6 +69,7 @@ class AppointmentsController extends ApiController
                     'expert_specialization_service_id' =>  $this->request->data['expert_specialization_service_id'],
                     'expert_specialization_id' =>  $this->request->data['expert_specialization_id']
                 ];
+                
         $appointment = $this->Appointments->newEntity();
         $appointment = $this->Appointments->patchEntity($appointment, $data);
 
