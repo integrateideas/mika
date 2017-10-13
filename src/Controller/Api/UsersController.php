@@ -13,6 +13,7 @@ use Cake\Utility\Security;
 use Cake\I18n\Time;
 use Cake\Core\Configure;
 use Cake\Log\Log;
+use Cake\Collection\Collection;
 
 /**
  * Users Controller
@@ -253,7 +254,7 @@ class UsersController extends ApiController
                           ->where(['id' => $userId])
                           ->contain(['Experts.ExpertSpecializations' => function($q){
                               return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
-                            },'Experts.ExpertCards','User'])
+                            },'Experts.ExpertCards'])
                           ->first();     
       
       if (!$user) {
@@ -261,6 +262,14 @@ class UsersController extends ApiController
       }
       
       if(isset($user['experts']) && $user['experts'] != []){  
+        $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
+        if($user['experts'][0]['expert_specializations'] != []){
+
+          $collection = new Collection($user['experts'][0]['expert_specializations']);
+          $collection = $collection->combine('expert_specialization_services.0.specialization_service_id','id','specialization_id')->toArray();
+                   
+          $user['selected_specializations'] = $collection; 
+        }
         $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
       }
 
@@ -306,6 +315,14 @@ class UsersController extends ApiController
       
       if(isset($user['experts']) && $user['experts'] != []){  
         $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
+        
+        if($user['experts'][0]['expert_specializations'] != []){
+
+          $collection = new Collection($user['experts'][0]['expert_specializations']);
+          $collection = $collection->combine('expert_specialization_services.0.specialization_service_id','id','specialization_id')->toArray();
+                   
+          $user['selected_specializations'] = $collection; 
+        }
         $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
       }
 
