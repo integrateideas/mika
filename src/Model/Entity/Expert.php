@@ -12,7 +12,7 @@ use Cake\ORM\Entity;
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\UserSalon $user_salon
- * @property \App\Model\Entity\Availability[] $availabilities
+ * @property \App\Model\Entity\ExpertAvailability[] $expert_availabilities
  * @property \App\Model\Entity\ExpertCard[] $expert_cards
  * @property \App\Model\Entity\ExpertLocation[] $expert_locations
  * @property \App\Model\Entity\ExpertSpecializationService[] $expert_specialization_services
@@ -35,7 +35,7 @@ class Expert extends Entity
         'user_salon_id' => true,
         'user' => true,
         'user_salon' => true,
-        'availabilities' => true,
+        'expert_availabilities' => true,
         'expert_cards' => true,
         'expert_locations' => true,
         'expert_specialization_services' => true,

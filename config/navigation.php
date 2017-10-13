@@ -23,23 +23,57 @@ return [ 'Menu' =>
                                           ] 
                                   ] 
                             ],
-                            // 'Fb Practice Info' => [
-                            //   'link' => '#',
-                            //   'children' => [
-                            //         'Practice Info List' => [
-                            //             'link' => [
-                            //                   'controller' => 'FbPracticeInformation',
-                            //                   'action' => 'index'
-                            //                 ],
-                            //               ],
-                            //           'Add Practice Info' => [
-                            //             'link' => [
-                            //                        'controller' => 'FbPracticeInformation',
-                            //                        'action' => 'add'
-                            //                       ],
-                            //               ] 
-                            //       ] 
-                            // ],
+                            'Experts' => [
+                              'link' => '#',
+                              'children' => [
+                                    'View Experts' => [
+                                        'link' => [
+                                              'controller' => 'Experts',
+                                              'action' => 'index'
+                                            ],
+                                          ],
+                                      'Add Expert' => [
+                                        'link' => [
+                                                   'controller' => 'Experts',
+                                                   'action' => 'add'
+                                                  ],
+                                          ] 
+                                  ] 
+                            ],
+                            'Specializations' => [
+                              'link' => '#',
+                              'children' => [
+                                    'View Specializations' => [
+                                        'link' => [
+                                              'controller' => 'Specializations',
+                                              'action' => 'index'
+                                            ],
+                                          ],
+                                      'Add Specialization' => [
+                                        'link' => [
+                                                   'controller' => 'Specializations',
+                                                   'action' => 'add'
+                                                  ],
+                                          ] 
+                                  ] 
+                            ],
+                            'Specialization Services' => [
+                              'link' => '#',
+                              'children' => [
+                                    'View Specialization Services' => [
+                                        'link' => [
+                                              'controller' => 'SpecializationServices',
+                                              'action' => 'index'
+                                            ],
+                                          ],
+                                      'Add Specialization Service' => [
+                                        'link' => [
+                                                   'controller' => 'SpecializationServices',
+                                                   'action' => 'add'
+                                                  ],
+                                          ] 
+                                  ] 
+                            ],
                         ],
                 ]
         ];

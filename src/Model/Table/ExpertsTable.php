@@ -11,7 +11,8 @@ use Cake\Validation\Validator;
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
  * @property \App\Model\Table\UserSalonsTable|\Cake\ORM\Association\BelongsTo $UserSalons
- * @property |\Cake\ORM\Association\HasMany $ExpertAvailabilities
+ * @property |\Cake\ORM\Association\HasMany $Appointments
+ * @property \App\Model\Table\ExpertAvailabilitiesTable|\Cake\ORM\Association\HasMany $ExpertAvailabilities
  * @property \App\Model\Table\ExpertCardsTable|\Cake\ORM\Association\HasMany $ExpertCards
  * @property \App\Model\Table\ExpertLocationsTable|\Cake\ORM\Association\HasMany $ExpertLocations
  * @property \App\Model\Table\ExpertSpecializationServicesTable|\Cake\ORM\Association\HasMany $ExpertSpecializationServices
@@ -48,6 +49,9 @@ class ExpertsTable extends Table
         ]);
         $this->belongsTo('UserSalons', [
             'foreignKey' => 'user_salon_id'
+        ]);
+        $this->hasMany('Appointments', [
+            'foreignKey' => 'expert_id'
         ]);
         $this->hasMany('ExpertAvailabilities', [
             'foreignKey' => 'expert_id'
