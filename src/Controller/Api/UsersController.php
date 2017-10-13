@@ -150,7 +150,8 @@ class UsersController extends ApiController
       if ($existingUser) {
           throw new Exception("User already linked with Facebook.");
       }
-      $data = [
+
+     $data = [
                 'user_id' => $this->Auth->user('id'),
                 'fb_identifier' => $this->request->data['uid'],
                 'status' => 1
@@ -250,7 +251,9 @@ class UsersController extends ApiController
 
       $user = $this->Users->find()
                           ->where(['id' => $userId])
-                          ->contain(['Experts.ExpertSpecializations.ExpertSpecializationServices'])
+                          ->contain(['Experts.ExpertSpecializations' => function($q){
+                              return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
+                            },'Experts.ExpertCards','User'])
                           ->first();     
       
       if (!$user) {
@@ -296,10 +299,13 @@ class UsersController extends ApiController
       }
       $user = $this->Users->find()
                             ->where(['id' => $user['id']])
-                            ->contain(['Experts.ExpertSpecializations.ExpertSpecializationServices'])
+                            ->contain(['Experts.ExpertSpecializations'  => function($q){
+                                return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
+                              },'SocialConnections','Experts.ExpertCards'])
                             ->first();
       
       if(isset($user['experts']) && $user['experts'] != []){  
+        $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
         $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
       }
 
@@ -320,23 +326,23 @@ class UsersController extends ApiController
     }
 
     public function addCard(){
-
+      
       if (!$this->request->is(['post'])) {
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
-
+      
       $data = $this->request->getData();
-
-      if(!$data->stripeJsToken){
+      
+      if(!isset($data['stripeJsToken']) && !$data['stripeJsToken']){
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
-
+      
       \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
 
       $userExpert = $this->Users->findById($this->Auth->user('id'))
                                   ->contain('Experts.ExpertCards')
                                   ->first();
-
+      
       if(!isset($userExpert->experts[0]->expert_cards[0])){
       
         //when the user is NOT registered on stripe.
@@ -345,30 +351,62 @@ class UsersController extends ApiController
               
               $customer = \Stripe\Customer::create([
                 "description" => "Customer for sofia.moore@example.com",
-                "source" => $data->stripeJsToken // obtained with Stripe.js
+                "source" => $data['stripeJsToken'] // obtained with Stripe.js
               ]);
-              pr($customer); die;
+              $expertCard = [
+                              'expert_id' => $userExpert->experts[0]->id,
+                              'stripe_customer_id' => $customer->id,
+                              'stripe_card_id' => $customer->default_source,
+                              'status' => 1
+                            ];
+              $this->loadModel('ExpertCards');
+              $newCard = $this->ExpertCards->newEntity($expertCard);
+              
+              if($this->ExpertCards->save($newCard)){
+                $status = true;
+              }else{
+                throw new Exception("User card could not be saved.");
+              }
+              
           } catch (Exception $e) {
-              pr($e); die;
+            // pr($e); die;
+              throw new Exception("User card could not be saved."); 
+              
           }  
       
       }else{
       
         //when the user is already registered on stripe.
-
         $stripeCusId = $userExpert->experts[0]->expert_cards[0]->stripe_customer_id;
         
         try {
               
             $customer = \Stripe\Customer::retrieve($stripeCusId);
-            $customer->sources->create(["source" => $data->stripeJsToken]);
-              pr($customer); die;
+            $customer->sources->create(["source" => $data['stripeJsToken']]);
+            $response = json_decode($customer->sources->getlastResponse()->body);
+            $expertCard = [
+                            'expert_id' => $userExpert->experts[0]->id,
+                            'stripe_customer_id' => $response->customer,
+                            'stripe_card_id' => $response->id,
+                            'status' => 1
+                          ];
+            $this->loadModel('ExpertCards');
+            $newCard = $this->ExpertCards->newEntity($expertCard);
+            
+            if($this->ExpertCards->save($newCard)){
+              $status = true;
+            }else{
+              throw new Exception("User card could not be saved.");
+            }
+            
           } catch (Exception $e) {
-              pr($e); die;
+              throw new Exception("User card could not be saved.");
           }
       
       }
-
+      $this->set('status',$status);
+      $this->set('newCard',$newCard);
+      $this->set('_serialize', ['status','newCard']);
     }
 
 }
