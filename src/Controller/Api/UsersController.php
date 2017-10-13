@@ -150,7 +150,8 @@ class UsersController extends ApiController
       if ($existingUser) {
           throw new Exception("User already linked with Facebook.");
       }
-      $data = [
+
+     $data = [
                 'user_id' => $this->Auth->user('id'),
                 'fb_identifier' => $this->request->data['uid'],
                 'status' => 1
@@ -250,7 +251,9 @@ class UsersController extends ApiController
 
       $user = $this->Users->find()
                           ->where(['id' => $userId])
-                          ->contain(['Experts.ExpertSpecializations.ExpertSpecializationServices'])
+                          ->contain(['Experts.ExpertSpecializations' => function($q){
+                              return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
+                            },'Experts.ExpertCards','User'])
                           ->first();     
       
       if (!$user) {
@@ -296,10 +299,13 @@ class UsersController extends ApiController
       }
       $user = $this->Users->find()
                             ->where(['id' => $user['id']])
-                            ->contain(['Experts.ExpertSpecializations.ExpertSpecializationServices'])
+                            ->contain(['Experts.ExpertSpecializations'  => function($q){
+                                return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
+                              },'SocialConnections','Experts.ExpertCards'])
                             ->first();
       
       if(isset($user['experts']) && $user['experts'] != []){  
+        $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
         $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
       }
 
