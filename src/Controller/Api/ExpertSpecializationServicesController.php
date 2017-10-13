@@ -68,12 +68,15 @@ class ExpertSpecializationServicesController extends ApiController
         if (!$this->request->is(['post'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-
         $data = $this->request->getData();
+
         $this->loadModel('Experts');
         $expert = $this->Experts->findByUserId($this->Auth->user('id'))
                                             ->first();
-
+        $this->loadModel('ExpertSpecializations');
+        $expertSpecializationId = $this->ExpertSpecializations->find()->where(['expert_id' => $expert['id'],'specialization_id' => $data['specialization_id']])->first()->get('id');
+        
+        $data['expert_specialization_id'] = $expertSpecializationId;
         $data['expert_id'] = $expert['id'];
 
         $expertSpecializationService = $this->ExpertSpecializationServices->newEntity();

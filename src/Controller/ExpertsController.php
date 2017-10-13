@@ -21,13 +21,9 @@ class ExpertsController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => [ 'UserSalons','Users']
+            'contain' => ['Users', 'UserSalons']
         ];
         $experts = $this->paginate($this->Experts);
-        // $experts = $this->Experts->find()->contain(['Users' => function($q){
-
-        //     }])->all();
-        // pr($experts);die;
 
         $this->set(compact('experts'));
         $this->set('_serialize', ['experts']);
