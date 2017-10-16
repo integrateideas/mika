@@ -5,6 +5,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Collection\Collection;
 
 /**
  * Users Model
@@ -120,5 +121,34 @@ class UsersTable extends Table
         $rules->add($rules->existsIn(['role_id'], 'Roles'));
 
         return $rules;
+    }
+
+    public function loginInfo($id){
+
+        $user = $this->find()
+                    ->where(['id' => $id])
+                    ->contain(['Experts.ExpertSpecializations'  => function($q){
+                        return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
+                      },'SocialConnections','Experts.ExpertCards'])
+                    ->first();
+
+        if(isset($user['experts']) && $user['experts'] != []){  
+        $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
+        
+        if($user['experts'][0]['expert_specializations'] != []){
+
+          $collection = new Collection($user['experts'][0]['expert_specializations']);
+          $collection = $collection->combine('expert_specialization_services.0.specialization_service_id','id','specialization_id')->toArray();
+                   
+          $user['selected_specializations'] = $collection; 
+        }
+        $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
+      }
+
+      $return['user'] = $user;
+      $return['data'] = $data;
+
+      return $return;
+
     }
 }
