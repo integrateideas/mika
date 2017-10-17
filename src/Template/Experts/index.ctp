@@ -32,9 +32,6 @@
                                         <?= '<a href='.$this->Url->build(['action' => 'view', $expert->id]).' class="btn btn-xs btn-success">' ?>
                                             <i class="fa fa-eye fa-fw"></i>
                                         </a>
-                                        <?= '<a href='.$this->Url->build(['action' => 'edit', $expert->id]).' class="btn btn-xs btn-warning"">' ?>
-                                            <i class="fa fa-pencil fa-fw"></i>
-                                        </a>
                                         <?= $this->Form->postLink(__(''), ['action' => 'delete', $expert->id], ['confirm' => __('Are you sure you want to delete # {0}?', $expert->id), 'class' => ['btn', 'btn-sm', 'btn-danger', 'fa', 'fa-trash-o', 'fa-fh']]) ?>
                                         </td>
                         </tr>
