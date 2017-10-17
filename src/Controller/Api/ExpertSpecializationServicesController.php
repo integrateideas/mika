@@ -27,11 +27,29 @@ class ExpertSpecializationServicesController extends ApiController
         if (!$this->request->is(['get'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
+        
+        $this->loadModel('Experts');
+        $expertId = $this->Experts->findByUserId($this->Auth->user('id'))->first()->id;
 
         $expertSpecializationServices = $this->ExpertSpecializationServices
-                                                ->findByExpertId($this->request->session()->read('User')['experts'][0]['id'])
+                                                ->findByExpertId($expertId)
                                                 ->contain(['Experts', 'ExpertSpecializations', 'SpecializationServices'])
-                                                                            ->all();
+                                                ->all();
+
+        $this->set(compact('expertSpecializationServices'));
+        $this->set('_serialize', ['expertSpecializationServices']);
+    }
+
+    public function indexAll()
+    {
+        if (!$this->request->is(['get'])) {
+          throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+
+        $expertSpecializationServices = $this->ExpertSpecializationServices
+                                                ->find()
+                                                ->contain(['Experts', 'ExpertSpecializations', 'SpecializationServices'])
+                                                ->all();
 
         $this->set(compact('expertSpecializationServices'));
         $this->set('_serialize', ['expertSpecializationServices']);
