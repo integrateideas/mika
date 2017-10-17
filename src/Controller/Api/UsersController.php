@@ -249,29 +249,37 @@ class UsersController extends ApiController
         $userId = $socialConnection->user_id;
       }
 
-
-      $user = $this->Users->find()
-                          ->where(['id' => $userId])
-                          ->contain(['Experts.ExpertSpecializations' => function($q){
-                              return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
-                            },'Experts.ExpertCards'])
-                          ->first();     
       
-      if (!$user) {
+      $return = $this->Users->loginInfo($userId,$data);
+       // = $this->Users->loginInfo($user['id'], );
+
+      if (!$return) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
-      
-      if(isset($user['experts']) && $user['experts'] != []){  
-        $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
-        if($user['experts'][0]['expert_specializations'] != []){
 
-          $collection = new Collection($user['experts'][0]['expert_specializations']);
-          $collection = $collection->combine('expert_specialization_services.0.specialization_service_id','id','specialization_id')->toArray();
+      $data = $return['data'];
+      $user = $return['user'];
+//////////////////////////
+      // $user = $this->Users->find()
+      //                     ->where(['id' => $userId])
+      //                     ->contain(['Experts.ExpertSpecializations' => function($q){
+      //                         return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
+      //                       },'Experts.ExpertCards'])
+      //                     ->first();     
+      
+      
+      // if(isset($user['experts']) && $user['experts'] != []){  
+      //   $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
+
+      //   if($user['experts'][0]['expert_specializations'] != []){
+
+      //     $collection = new Collection($user['experts'][0]['expert_specializations']);
+      //     $collection = $collection->combine('expert_specialization_services.0.specialization_service_id','id','specialization_id')->toArray();
                    
-          $user['selected_specializations'] = $collection; 
-        }
-        $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
-      }
+      //     $user['selected_specializations'] = $collection; 
+      //   }
+      //   $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
+      // }
 
 
 
@@ -306,25 +314,31 @@ class UsersController extends ApiController
       if (!$user) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
-      $user = $this->Users->find()
-                            ->where(['id' => $user['id']])
-                            ->contain(['Experts.ExpertSpecializations'  => function($q){
-                                return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
-                              },'SocialConnections','Experts.ExpertCards'])
-                            ->first();
-      
-      if(isset($user['experts']) && $user['experts'] != []){  
-        $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
-        
-        if($user['experts'][0]['expert_specializations'] != []){
 
-          $collection = new Collection($user['experts'][0]['expert_specializations']);
-          $collection = $collection->combine('expert_specialization_services.0.specialization_service_id','id','specialization_id')->toArray();
+      $return = $this->Users->loginInfo($user['id'], $data);
+
+      $data = $return['data'];
+      $user = $return['user'];
+      /////////////////////////////////
+      // $user = $this->Users->find()
+      //                       ->where(['id' => $user['id']])
+      //                       ->contain(['Experts.ExpertSpecializations'  => function($q){
+      //                           return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
+      //                         },'SocialConnections','Experts.ExpertCards'])
+      //                       ->first();
+      
+      // if(isset($user['experts']) && $user['experts'] != []){  
+      //   $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
+        
+      //   if($user['experts'][0]['expert_specializations'] != []){
+
+      //     $collection = new Collection($user['experts'][0]['expert_specializations']);
+      //     $collection = $collection->combine('expert_specialization_services.0.specialization_service_id','id','specialization_id')->toArray();
                    
-          $user['selected_specializations'] = $collection; 
-        }
-        $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
-      }
+      //     $user['selected_specializations'] = $collection; 
+      //   }
+      //   $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
+      // }
 
         $time = time() + 10000000;
         $expTime = Time::createFromTimestamp($time);
@@ -340,6 +354,22 @@ class UsersController extends ApiController
         $this->set('data',$data['data']);
         $this->set('status',$data['status']);
         $this->set('_serialize', ['status','data']);
+    }
+
+    public function refreshUserInfo(){
+
+      if (!$this->request->is(['get'])) {
+        throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+
+      $data =array();
+      $return = $this->Users->loginInfo($this->Auth->user('id'), $data);
+
+      $data = $return['data']['data'];
+      $data['user'] = $return['user'];
+
+      $this->set('data', $data);
+      $this->set('_serialize', ['data']);
     }
 
     public function addCard(){
