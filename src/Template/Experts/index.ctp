@@ -15,17 +15,19 @@
                     <thead>
                         <tr>
                                         <th scope="col">id</th>
-                                        <th scope="col">user_id</th>
-                                        <th scope="col">user_salon_id</th>
+                                        <th scope="col">Expert Name</th>
+                                        <th scope="col">Salon Name</th>
                                         <th scope="col" class="actions"><?= __('Actions') ?></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($experts as $expert): ?>
+                        <?php foreach ($experts as $expert): 
+                        $name = [$expert->user->first_name,$expert->user->last_name];
+                        ?>
                         <tr>
                                         <td><?= $this->Number->format($expert->id) ?></td>
-                                        <td><?= $expert->has('user') ? $this->Html->link($expert->user->id, ['controller' => 'Users', 'action' => 'view', $expert->user->id]) : '' ?></td>
-                                        <td><?= $expert->has('user_salon') ? $this->Html->link($expert->user_salon->id, ['controller' => 'UserSalons', 'action' => 'view', $expert->user_salon->id]) : "NULL" ?></td>
+                                        <td><?= h(implode(" ", $name)) ?></td>
+                                        <td><?= $expert->user_salon->salon_name ? $expert->user_salon->salon_name : "NULL" ?></td>
                             <td class="actions">
                                         <?= '<a href='.$this->Url->build(['action' => 'view', $expert->id]).' class="btn btn-xs btn-success">' ?>
                                             <i class="fa fa-eye fa-fw"></i>
