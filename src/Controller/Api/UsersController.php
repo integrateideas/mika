@@ -249,7 +249,7 @@ class UsersController extends ApiController
         $userId = $socialConnection->user_id;
       }
 
-      
+      $data =array();            
       $return = $this->Users->loginInfo($userId,$data);
        // = $this->Users->loginInfo($user['id'], );
 
