@@ -38,9 +38,7 @@
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-        </div>
-        
-        
+        </div>       
     <!-- </div> -->
 </div><!-- .ibox  end -->
 </div><!-- .col-lg-12 end -->

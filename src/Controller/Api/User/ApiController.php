@@ -12,7 +12,7 @@
 * @since     0.2.9
 * @license   http://www.opensource.org/licenses/mit-license.php MIT License
 */
-namespace App\Controller\Api;
+namespace App\Controller\Api\User;
 
 use Cake\Controller\Controller;
 use Cake\Network\Request;
@@ -31,6 +31,7 @@ use Cake\Event\Event;
 */
 class ApiController extends Controller
 {
+
 public function initialize()
   {
     // Log::write('debug', "Reached Here");
@@ -51,6 +52,7 @@ public function initialize()
           'ADmad/JwtAuth.Jwt' => [
             'parameter' => 'token',
             'userModel' => 'Users',
+            // 'scope' => ['Users.status' => 1],
             'fields' => [
               'username' => 'id'
             ],
@@ -130,6 +132,6 @@ public function initialize()
   public function isAuthorized($user)
   {
     return true;
-
   }
+  
 }
