@@ -251,37 +251,13 @@ class UsersController extends ApiController
 
       $data =array();            
       $return = $this->Users->loginInfo($userId,$data);
-       // = $this->Users->loginInfo($user['id'], );
-
+      
       if (!$return) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
 
       $data = $return['data'];
       $user = $return['user'];
-//////////////////////////
-      // $user = $this->Users->find()
-      //                     ->where(['id' => $userId])
-      //                     ->contain(['Experts.ExpertSpecializations' => function($q){
-      //                         return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
-      //                       },'Experts.ExpertCards'])
-      //                     ->first();     
-      
-      
-      // if(isset($user['experts']) && $user['experts'] != []){  
-      //   $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
-
-      //   if($user['experts'][0]['expert_specializations'] != []){
-
-      //     $collection = new Collection($user['experts'][0]['expert_specializations']);
-      //     $collection = $collection->combine('expert_specialization_services.0.specialization_service_id','id','specialization_id')->toArray();
-                   
-      //     $user['selected_specializations'] = $collection; 
-      //   }
-      //   $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
-      // }
-
-
 
       $time = time() + 10000000;
       $expTime = Time::createFromTimestamp($time);
@@ -307,7 +283,6 @@ class UsersController extends ApiController
       if (!$this->request->is(['post'])) {
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
-      
       $data =array();
       $user = $this->Auth->identify();
       
@@ -319,41 +294,21 @@ class UsersController extends ApiController
 
       $data = $return['data'];
       $user = $return['user'];
-      /////////////////////////////////
-      // $user = $this->Users->find()
-      //                       ->where(['id' => $user['id']])
-      //                       ->contain(['Experts.ExpertSpecializations'  => function($q){
-      //                           return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
-      //                         },'SocialConnections','Experts.ExpertCards'])
-      //                       ->first();
-      
-      // if(isset($user['experts']) && $user['experts'] != []){  
-      //   $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
-        
-      //   if($user['experts'][0]['expert_specializations'] != []){
 
-      //     $collection = new Collection($user['experts'][0]['expert_specializations']);
-      //     $collection = $collection->combine('expert_specialization_services.0.specialization_service_id','id','specialization_id')->toArray();
-                   
-      //     $user['selected_specializations'] = $collection; 
-      //   }
-      //   $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
-      // }
-
-        $time = time() + 10000000;
-        $expTime = Time::createFromTimestamp($time);
-        $expTime = $expTime->format('Y-m-d H:i:s');
-        $data['status']=true;
-        $data['data']['user']=$user;
-        $data['data']['token']=JWT::encode([
-          'sub' => $user['id'],
-          'exp' =>  $time,
-          'expert_id'=>$user['experts'][0]['id'],
-          ],Security::salt());
-        $data['data']['expires']=$expTime;
-        $this->set('data',$data['data']);
-        $this->set('status',$data['status']);
-        $this->set('_serialize', ['status','data']);
+      $time = time() + 10000000;
+      $expTime = Time::createFromTimestamp($time);
+      $expTime = $expTime->format('Y-m-d H:i:s');
+      $data['status']=true;
+      $data['data']['user']=$user;
+      $data['data']['token']=JWT::encode([
+        'sub' => $user['id'],
+        'exp' =>  $time,
+        'expert_id'=>$user['experts'][0]['id'],
+        ],Security::salt());
+      $data['data']['expires']=$expTime;
+      $this->set('data',$data['data']);
+      $this->set('status',$data['status']);
+      $this->set('_serialize', ['status','data']);
     }
 
     public function refreshUserInfo(){

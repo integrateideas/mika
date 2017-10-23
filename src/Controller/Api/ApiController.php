@@ -51,7 +51,6 @@ public function initialize()
           'ADmad/JwtAuth.Jwt' => [
             'parameter' => 'token',
             'userModel' => 'Users',
-            // 'scope' => ['Users.status' => 1],
             'fields' => [
               'username' => 'id'
             ],

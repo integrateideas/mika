@@ -92,7 +92,7 @@ class ExpertSpecializationServicesController extends ApiController
         $expert = $this->Experts->findByUserId($this->Auth->user('id'))
                                             ->first();
         $this->loadModel('ExpertSpecializations');
-        $expertSpecializationId = $this->ExpertSpecializations->find()->where(['expert_id' => $expert['id'],'specialization_id' => $data['specialization_id']])->first()->get('id');
+        $expertSpecializationId = $this->ExpertSpecializations->find()->where(['expert_id' => $expert['id'],'specialization_id' => $data['specialization_id']])->first()->id;
         
         $data['expert_specialization_id'] = $expertSpecializationId;
         $data['expert_id'] = $expert['id'];

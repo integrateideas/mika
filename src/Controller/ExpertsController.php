@@ -51,23 +51,23 @@ class ExpertsController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
-    {
-        $expert = $this->Experts->newEntity();
-        if ($this->request->is('post')) {
-            $expert = $this->Experts->patchEntity($expert, $this->request->getData());
-            if ($this->Experts->save($expert)) {
-                $this->Flash->success(__('The expert has been saved.'));
+    // public function add()
+    // {
+    //     $expert = $this->Experts->newEntity();
+    //     if ($this->request->is('post')) {
+    //         $expert = $this->Experts->patchEntity($expert, $this->request->getData());
+    //         if ($this->Experts->save($expert)) {
+    //             $this->Flash->success(__('The expert has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The expert could not be saved. Please, try again.'));
-        }
-        $users = $this->Experts->Users->find('list', ['limit' => 200]);
-        $userSalons = $this->Experts->UserSalons->find('list', ['limit' => 200]);
-        $this->set(compact('expert', 'users', 'userSalons'));
-        $this->set('_serialize', ['expert']);
-    }
+    //             return $this->redirect(['action' => 'index']);
+    //         }
+    //         $this->Flash->error(__('The expert could not be saved. Please, try again.'));
+    //     }
+    //     $users = $this->Experts->Users->find('list', ['limit' => 200]);
+    //     $userSalons = $this->Experts->UserSalons->find('list', ['limit' => 200]);
+    //     $this->set(compact('expert', 'users', 'userSalons'));
+    //     $this->set('_serialize', ['expert']);
+    // }
 
     /**
      * Edit method
@@ -76,25 +76,25 @@ class ExpertsController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
-    {
-        $expert = $this->Experts->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $expert = $this->Experts->patchEntity($expert, $this->request->getData());
-            if ($this->Experts->save($expert)) {
-                $this->Flash->success(__('The expert has been saved.'));
+    // public function edit($id = null)
+    // {
+    //     $expert = $this->Experts->get($id, [
+    //         'contain' => []
+    //     ]);
+    //     if ($this->request->is(['patch', 'post', 'put'])) {
+    //         $expert = $this->Experts->patchEntity($expert, $this->request->getData());
+    //         if ($this->Experts->save($expert)) {
+    //             $this->Flash->success(__('The expert has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The expert could not be saved. Please, try again.'));
-        }
-        $users = $this->Experts->Users->find('list', ['limit' => 200]);
-        $userSalons = $this->Experts->UserSalons->find('list', ['limit' => 200]);
-        $this->set(compact('expert', 'users', 'userSalons'));
-        $this->set('_serialize', ['expert']);
-    }
+    //             return $this->redirect(['action' => 'index']);
+    //         }
+    //         $this->Flash->error(__('The expert could not be saved. Please, try again.'));
+    //     }
+    //     $users = $this->Experts->Users->find('list', ['limit' => 200]);
+    //     $userSalons = $this->Experts->UserSalons->find('list', ['limit' => 200]);
+    //     $this->set(compact('expert', 'users', 'userSalons'));
+    //     $this->set('_serialize', ['expert']);
+    // }
 
     /**
      * Delete method
