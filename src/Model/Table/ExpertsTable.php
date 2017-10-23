@@ -68,6 +68,10 @@ class ExpertsTable extends Table
         $this->hasMany('ExpertSpecializations', [
             'foreignKey' => 'expert_id'
         ]);
+        $this->hasMany('UserFavouriteExperts', [
+            'foreignKey' => 'expert_id'
+        ]);
+
     }
 
     /**

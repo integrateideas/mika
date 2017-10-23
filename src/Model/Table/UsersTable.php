@@ -11,9 +11,11 @@ use Cake\Collection\Collection;
  * Users Model
  *
  * @property \App\Model\Table\RolesTable|\Cake\ORM\Association\BelongsTo $Roles
+ * @property |\Cake\ORM\Association\HasMany $Appointments
  * @property \App\Model\Table\ExpertsTable|\Cake\ORM\Association\HasMany $Experts
- * @property |\Cake\ORM\Association\HasMany $SocialConnections
- * @property |\Cake\ORM\Association\HasMany $UserSalons
+ * @property \App\Model\Table\SocialConnectionsTable|\Cake\ORM\Association\HasMany $SocialConnections
+ * @property |\Cake\ORM\Association\HasMany $UserFavouriteExperts
+ * @property \App\Model\Table\UserSalonsTable|\Cake\ORM\Association\HasMany $UserSalons
  *
  * @method \App\Model\Entity\User get($primaryKey, $options = [])
  * @method \App\Model\Entity\User newEntity($data = null, array $options = [])
@@ -48,10 +50,16 @@ class UsersTable extends Table
             'foreignKey' => 'role_id',
             'joinType' => 'INNER'
         ]);
+        $this->hasMany('Appointments', [
+            'foreignKey' => 'user_id'
+        ]);
         $this->hasMany('Experts', [
             'foreignKey' => 'user_id'
         ]);
         $this->hasMany('SocialConnections', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('UserFavouriteExperts', [
             'foreignKey' => 'user_id'
         ]);
         $this->hasMany('UserSalons', [
