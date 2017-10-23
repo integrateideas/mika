@@ -134,13 +134,17 @@ class UsersTable extends Table
 
         if(isset($user['experts']) && $user['experts'] != []){  
         $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
-        
+        // pr($user); die();
         if($user['experts'][0]['expert_specializations'] != []){
 
-          $collection = new Collection($user['experts'][0]['expert_specializations']);
-          $collection = $collection->combine('expert_specialization_services.0.specialization_service_id','id','specialization_id')->toArray();
-                   
-          $user['selected_specializations'] = $collection; 
+          $collection = $user['experts'][0]['expert_specializations'];
+          $coll = [];
+          foreach ($collection as $key => $specialization) {
+
+                $coll[$specialization->specialization_id] = (new Collection($specialization->expert_specialization_services))->combine('specialization_service_id','id')->toArray();
+          }
+         
+          $user['selected_specializations'] = $coll; 
         }
         $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
       }

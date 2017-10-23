@@ -118,17 +118,25 @@ class ExpertSpecializationServicesController extends ApiController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    // public function edit($specialization_id, $service_id)
+    public function edit($id)
     {
         if (!$this->request->is(['patch', 'post', 'put'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        $expertId = $this->request->session()->read('User')['experts'][0]['id'];
-        
+        if (!$id) {
+            throw new MethodNotAllowedException(__('BAD_REQUEST','Argument id missing.'));
+        }
+
+        $this->loadModel('Experts');
+        $expertId = $this->Experts->findByUserId($this->Auth->user('id'))
+                                  ->first()
+                                  ->get('id');
+
         $expertSpecializationService = $this->ExpertSpecializationServices->findById($id)
-                                                            ->where(['expert_id' => $expertId])
-                                                            ->first();
+                                                                        ->where(['expert_id' => $expertId])
+                                                                        ->first();
     
         $expertSpecializationService = $this->ExpertSpecializationServices->patchEntity($expertSpecializationService, $this->request->getData());
 
@@ -149,10 +157,15 @@ class ExpertSpecializationServicesController extends ApiController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    // public function delete($specialization_id, $service_id)
+    public function delete($id)
     {
         if (!$this->request->is(['patch', 'post', 'put','delete'])) {
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+
+        if (!$id) {
+            throw new MethodNotAllowedException(__('BAD_REQUEST','Argument id missing.'));
         }
 
         $this->loadModel('Experts');
@@ -160,10 +173,14 @@ class ExpertSpecializationServicesController extends ApiController
                                   ->first()
                                   ->get('id');
 
-        $expertSpecializationService = $this->ExpertSpecializationServices->find()
-                                                                          ->where(['expert_id' => $expertId])
-                                                                          ->first();
-        
+        $expertSpecializationService = $this->ExpertSpecializationServices->findById($id)
+                                                                ->where(['expert_id' => $expertId])
+                                                                ->first();
+  
+        if (!$expertSpecializationService) {
+            throw new NotFoundException("No service found.");
+        }
+
         if (!$this->ExpertSpecializationServices->delete($expertSpecializationService)) {
             throw new Exception("Expert specialization service could not be deleted.");
         }
