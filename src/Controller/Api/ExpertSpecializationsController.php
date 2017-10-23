@@ -117,15 +117,22 @@ class ExpertSpecializationsController extends ApiController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit($specializationId = null)
     {
         if (!$this->request->is(['patch', 'post', 'put'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        $expertId = $this->request->session()->read('User')['experts'][0]['id'];
+        if (!$specializationId) {
+            throw new MethodNotAllowedException(__('BAD_REQUEST','Argument Specialization Id missing.'));
+        }
 
-        $expertSpecialization = $this->ExpertSpecializations->findById($id)
+        $this->loadModel('Experts');
+        $expertId = $this->Experts->findByUserId($this->Auth->user('id'))
+                                  ->first()
+                                  ->get('id');
+
+        $expertSpecialization = $this->ExpertSpecializations->findBySpecializationId($specializationId)
                                                             ->where(['expert_id' => $expertId])
                                                             ->first();
         
@@ -145,10 +152,14 @@ class ExpertSpecializationsController extends ApiController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($specializationId = null)
     {
         if (!$this->request->is(['patch', 'post', 'put','delete'])) {
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+
+        if (!$specializationId) {
+            throw new MethodNotAllowedException(__('BAD_REQUEST','Argument Specialization Id missing.'));
         }
 
         $this->loadModel('Experts');
@@ -156,7 +167,7 @@ class ExpertSpecializationsController extends ApiController
                                   ->first()
                                   ->get('id');
         
-        $expertSpecialization = $this->ExpertSpecializations->find()
+        $expertSpecialization = $this->ExpertSpecializations->findBySpecializationId($specializationId)
                                                             ->where(['expert_id' => $expertId])
                                                             ->first();
         
