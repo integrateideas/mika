@@ -116,6 +116,7 @@ class UserSalonsController extends ApiController
         }
         
         $time = null;
+        $serviceId = null;
         $whereCond = [];
         
         if(isset($this->request->query['time']) && !in_array($this->request->query['time'], ["", null, false])){
@@ -123,13 +124,23 @@ class UserSalonsController extends ApiController
             $time  = new FrozenTime($time);
             $whereCond = ['ExpertAvailabilities.available_from <=' => $time, 'ExpertAvailabilities.available_to >=' => $time];
         }
+
+        if(isset($this->request->query['specialization_service_id']) && ($this->request->query['specialization_service_id'])){
+              $serviceId = $this->request->query['specialization_service_id'];
+            
+        }
+
         $zipcode = $this->request->query['zipcode'];
-        
         $zipcode = '%'.$zipcode.'%';
+        
         $getSearchSalons = $this->UserSalons->find()
                                             ->where(['zipcode LIKE' => $zipcode])
-                                            ->contain(['Users.Experts.ExpertAvailabilities' => function($q) use ($whereCond){
-                                                return $q->where($whereCond);
+                                            ->contain(['Users.Experts' =>function($q)use($whereCond,$serviceId){
+                                              return $q->contain(['ExpertAvailabilities'=> function($x) use($whereCond){
+                                                return $x->where($whereCond);
+                                              },'ExpertSpecializationServices' => function($y) use($serviceId){
+                                                return $y->where(['specialization_service_id' => $serviceId]);
+                                              }]);
                                             }])
                                             ->matching('Users.Experts.ExpertAvailabilities', function($q) use ($whereCond){
                                                 return $q->where($whereCond);

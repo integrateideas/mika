@@ -57,6 +57,25 @@ Router::prefix('api', function ($routes) {
   array('pass' => array('id'), 'id'=>'[\d]+'));
 
   $routes->fallbacks('InflectedRoute');
+  
+
+  $routes->prefix('user', function ($routes) {
+    $routes->connect('/login',array('controller'=>'Users', 'action'=>'login',"_method" => "POST"));
+
+    $routes->connect('/:controller',array('controller'=>':controller', 'action'=>'add',"_method" => "POST"));
+    $routes->connect('/:controller',array('controller'=>':controller', 'action'=>'index',"_method" => "GET"));
+   
+    $routes->connect('/:controller/:id',array('controller'=>':controller', 'action'=>'edit',"_method" => "PUT"),
+    array('pass' => array('id'), 'id'=>'[\d]+'));
+
+    $routes->connect('/:controller/:id',array('controller'=>':controller', 'action'=>'view',"_method" => "GET"),
+    array('pass' => array('id'), 'id'=>'[\d]+'));
+
+    $routes->connect('/:controller/:id',array('controller'=>':controller', 'action'=>'delete',"_method" => "DELETE"),
+    array('pass' => array('id'), 'id'=>'[\d]+'));
+
+    $routes->fallbacks('InflectedRoute');
+  });
 
 });
 
@@ -92,6 +111,7 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->fallbacks(DashedRoute::class);
 });
+
 
 
 /**

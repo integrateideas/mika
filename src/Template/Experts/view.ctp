@@ -9,21 +9,17 @@
     <div class = 'col-lg-12'>
     <div class="ibox float-e-margins">
         <div class="ibox-title">
-            <h2><?= h($expert->id) ?></h2>
+            <h2><?= h(implode(" ", [$expert->user->first_name,$expert->user->last_name])) ?></h2>
         </div> <!-- ibox-title end-->
         <div class="ibox-content">
     <table class="table">
         <tr>
-            <th scope="row"><?= __('User') ?></th>
-            <td><?= $expert->has('user') ? $this->Html->link($expert->user->id, ['controller' => 'Users', 'action' => 'view', $expert->user->id]) : '' ?></td>
+            <th scope="row"><?= __('Expert Name') ?></th>
+            <td><?= h(implode(" ", [$expert->user->first_name,$expert->user->last_name])) ?></td>
         </tr>
         <tr>
-            <th scope="row"><?= __('User Salon') ?></th>
-            <td><?= $expert->has('user_salon') ? $this->Html->link($expert->user_salon->id, ['controller' => 'UserSalons', 'action' => 'view', $expert->user_salon->id]) : '' ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Id') ?></th>
-            <td><?= $this->Number->format($expert->id) ?></td>
+            <th scope="row"><?= __('Salon Name') ?></th>
+            <td><?= $expert->user_salon->salon_name ? $expert->user_salon->salon_name : "NULL" ?></td>
         </tr>
     </table> <!-- table end-->
     </div> <!-- ibox-content end -->
