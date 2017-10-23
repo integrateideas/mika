@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\UsersTable;
+use App\Model\Table\UserFavouriteExpertsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\UsersTable Test Case
+ * App\Model\Table\UserFavouriteExpertsTable Test Case
  */
-class UsersTableTest extends TestCase
+class UserFavouriteExpertsTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\UsersTable
+     * @var \App\Model\Table\UserFavouriteExpertsTable
      */
-    public $Users;
+    public $UserFavouriteExperts;
 
     /**
      * Fixtures
@@ -24,6 +24,7 @@ class UsersTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
+        'app.user_favourite_experts',
         'app.users',
         'app.roles',
         'app.experts',
@@ -48,8 +49,8 @@ class UsersTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Users') ? [] : ['className' => UsersTable::class];
-        $this->Users = TableRegistry::get('Users', $config);
+        $config = TableRegistry::exists('UserFavouriteExperts') ? [] : ['className' => UserFavouriteExpertsTable::class];
+        $this->UserFavouriteExperts = TableRegistry::get('UserFavouriteExperts', $config);
     }
 
     /**
@@ -59,7 +60,7 @@ class UsersTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->Users);
+        unset($this->UserFavouriteExperts);
 
         parent::tearDown();
     }
@@ -90,16 +91,6 @@ class UsersTableTest extends TestCase
      * @return void
      */
     public function testBuildRules()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test loginInfo method
-     *
-     * @return void
-     */
-    public function testLoginInfo()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
