@@ -55,7 +55,10 @@ class ExpertSpecializationsTable extends Table
             'foreignKey' => 'expert_specialization_id'
         ]);
         $this->hasMany('ExpertSpecializationServices', [
-            'foreignKey' => 'expert_specialization_id'
+            'foreignKey' => 'expert_specialization_id',
+            'saveStrategy' => 'replace',
+            'dependent' => true,
+            'cascadeCallbacks' => true
         ]);
     }
 
