@@ -1,22 +1,14 @@
 <?php
-namespace App\Test\TestCase\Model\Table;
+namespace App\Test\TestCase\Controller;
 
-use App\Model\Table\UsersTable;
-use Cake\ORM\TableRegistry;
-use Cake\TestSuite\TestCase;
+use App\Controller\UserFavouriteExpertsController;
+use Cake\TestSuite\IntegrationTestCase;
 
 /**
- * App\Model\Table\UsersTable Test Case
+ * App\Controller\UserFavouriteExpertsController Test Case
  */
-class UsersTableTest extends TestCase
+class UserFavouriteExpertsControllerTest extends IntegrationTestCase
 {
-
-    /**
-     * Test subject
-     *
-     * @var \App\Model\Table\UsersTable
-     */
-    public $Users;
 
     /**
      * Fixtures
@@ -24,6 +16,7 @@ class UsersTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
+        'app.user_favourite_experts',
         'app.users',
         'app.roles',
         'app.experts',
@@ -41,65 +34,51 @@ class UsersTableTest extends TestCase
     ];
 
     /**
-     * setUp method
+     * Test index method
      *
      * @return void
      */
-    public function setUp()
-    {
-        parent::setUp();
-        $config = TableRegistry::exists('Users') ? [] : ['className' => UsersTable::class];
-        $this->Users = TableRegistry::get('Users', $config);
-    }
-
-    /**
-     * tearDown method
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        unset($this->Users);
-
-        parent::tearDown();
-    }
-
-    /**
-     * Test initialize method
-     *
-     * @return void
-     */
-    public function testInitialize()
+    public function testIndex()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
     /**
-     * Test validationDefault method
+     * Test view method
      *
      * @return void
      */
-    public function testValidationDefault()
+    public function testView()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
     /**
-     * Test buildRules method
+     * Test add method
      *
      * @return void
      */
-    public function testBuildRules()
+    public function testAdd()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
     /**
-     * Test loginInfo method
+     * Test edit method
      *
      * @return void
      */
-    public function testLoginInfo()
+    public function testEdit()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test delete method
+     *
+     * @return void
+     */
+    public function testDelete()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
