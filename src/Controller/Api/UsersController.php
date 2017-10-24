@@ -250,7 +250,7 @@ class UsersController extends ApiController
       }
 
       $data =array();            
-      $return = $this->Users->loginInfo($userId,$data);
+      $return = $this->Users->loginExpertInfo($userId,$data);
       
       if (!$return) {
         throw new NotFoundException(__('LOGIN_FAILED'));
@@ -290,7 +290,7 @@ class UsersController extends ApiController
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
 
-      $return = $this->Users->loginInfo($user['id'], $data);
+      $return = $this->Users->loginExpertInfo($user['id'], $data);
 
       $data = $return['data'];
       $user = $return['user'];
@@ -318,7 +318,7 @@ class UsersController extends ApiController
       }
 
       $data =array();
-      $return = $this->Users->loginInfo($this->Auth->user('id'), $data);
+      $return = $this->Users->loginExpertInfo($this->Auth->user('id'), $data);
 
       $data = $return['data']['data'];
       $data['user'] = $return['user'];
