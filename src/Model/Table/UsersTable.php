@@ -123,7 +123,7 @@ class UsersTable extends Table
         return $rules;
     }
 
-    public function loginInfo($id){
+    public function loginExpertInfo($id){
 
         $user = $this->find()
                     ->where(['id' => $id])
