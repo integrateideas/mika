@@ -87,4 +87,19 @@ class AppointmentsController extends ApiController
         $this->set('_serialize', ['appointment','success']);        
     }
 
+    public function UserOrderHistory(){
+      
+        if (!$this->request->is(['get'])) {
+          throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+
+        $userId = $this->Auth->user('id');
+        $getUserOrderHistory = $this->Appointments->findByUserId($userId)
+                                                  ->contain(['AppointmentTransactions'])
+                                                  ->all();
+        $success = true;
+
+        $this->set(compact('getUserOrderHistory','success'));
+        $this->set('_serialize', ['getUserOrderHistory','success']);
+    }
 }

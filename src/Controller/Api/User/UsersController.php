@@ -62,6 +62,41 @@ class UsersController extends ApiController
         return $user->id;
     }
 
+    /**
+     * Add method
+     *
+     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
+     */
+    public function add()
+    {     
+
+        if(!$this->request->is(['post'])){
+            throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+        $user = $this->Users->newEntity();
+        $data = $this->request->getData();
+        
+        if(isset($data['email']) && $data['email']){
+          $data['username'] = $data['email'];
+        }
+        $data['role_id'] = 2;
+
+        $user = $this->Users->patchEntity($user, $data);
+        
+        if (!$this->Users->save($user)) {
+          
+          if($user->errors()){
+            $this->_sendErrorResponse($user->errors());
+          }
+          throw new Exception("Error Processing Request");
+        }
+        
+        $success = true;
+
+        $this->set(compact('user','success'));
+        $this->set('_serialize', ['user','success']);
+    }
+
     public function socialLogin(){
 
       if (!$this->request->is(['post'])) {
@@ -80,49 +115,49 @@ class UsersController extends ApiController
       }
 
       $data =array();            
-      $return = $this->Users->loginInfo($userId,$data);
-
-      if (!$return) {
+      $user = $this->Users->find()
+                          ->where(['id' => $userId])
+                          ->contain(['SocialConnections'])
+                          ->first();     
+      
+      if (!$user) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
 
-      $data = $return['data'];
-      $user = $return['user'];
-
+      if ($user->role_id != 2) {
+        throw new NotFoundException(__('You are not a user of this application.'));
+      }
       $time = time() + 10000000;
       $expTime = Time::createFromTimestamp($time);
       $expTime = $expTime->format('Y-m-d H:i:s');
-
       $data['status']=true;
       $data['data']['user']=$user;
       $data['data']['token']=JWT::encode([
-        'sub' => $userId,
+        'sub' => $user['id'],
         'exp' =>  $time,
         'expert_id'=>$user['experts'][0]['id'],
         ],Security::salt());
       $data['data']['expires']=$expTime;
-
       $this->set('data',$data['data']);
       $this->set('status',$data['status']);
       $this->set('_serialize', ['status','data']);
 
     }
 
-    public function login(){
-
+     public function login(){
+     
       if (!$this->request->is(['post'])) {
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
+      
       $data =array();
       $user = $this->Auth->identify();
-            
       if (!$user) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
-
-      $return = $this->Users->loginInfo($user['id'], $data);
-      $data = $return['data'];
-      $user = $return['user'];
+      $user = $this->Users->find()
+                            ->where(['id' => $user['id']])
+                            ->first();
 
       $time = time() + 10000000;
       $expTime = Time::createFromTimestamp($time);
