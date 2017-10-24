@@ -77,6 +77,8 @@ class UserFavouriteExpertsTable extends Table
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
         $rules->add($rules->existsIn(['expert_id'], 'Experts'));
+        $rules->add($rules->isUnique(['expert_id','user_id'], 'User for this expert is already saved.'));
+
 
         return $rules;
     }
