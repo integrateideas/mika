@@ -105,12 +105,14 @@ class UsersController extends ApiController
         }
         
         $user = $this->Auth->user();
-        // pr($user);die;
         
-        $user = $this->Users->get($id, [
+        if($user['role_id'] != 2){
+           throw new UnauthorizedException(__('You are not authorized to access that location'));
+        }
+        $user = $this->Users->get($user['id'], [
             'contain' => []
         ]);
-              
+        
         $user = $this->Users->patchEntity($user, $this->request->getData());
         
         if (!$this->Users->save($user)) {
