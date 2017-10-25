@@ -40,7 +40,7 @@ class UsersController extends ApiController
                       'email' => ($reqData['email'])?$reqData['email']:'',
                       'phone' => ($reqData['phoneNumber'])?$reqData['phoneNumber']:'',
                       'password' => '123456789',
-                      'role_id' => 3,
+                      'role_id' => 2,
                       'username' => $reqData['email']
                   ];
           $data['social_connections'][] = [
