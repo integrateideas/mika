@@ -27,7 +27,7 @@ class UsersController extends ApiController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['login','socialLogin','socialSignup']);
+        $this->Auth->allow(['login','socialLogin','socialSignup','add']);
     }
 
     public function socialSignup($reqData){
@@ -104,8 +104,9 @@ class UsersController extends ApiController
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
         
-        $id = $this->Auth->user('id');
-        pr($id);die;
+        $user = $this->Auth->user();
+        // pr($user);die;
+        
         $user = $this->Users->get($id, [
             'contain' => []
         ]);
