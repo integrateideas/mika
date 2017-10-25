@@ -97,6 +97,29 @@ class UsersController extends ApiController
         $this->set('_serialize', ['user','success']);
     }
 
+    public function edit($id = null)
+    {
+
+        if(!$this->request->is(['post','put'])){
+            throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+        
+        $id = $this->Auth->user('id');
+        pr($id);die;
+        $user = $this->Users->get($id, [
+            'contain' => []
+        ]);
+              
+        $user = $this->Users->patchEntity($user, $this->request->getData());
+        
+        if (!$this->Users->save($user)) {
+            throw new Exception("User edits could not be saved.");
+        }
+        
+        $this->set(compact('user'));
+        $this->set('_serialize', ['user']);
+    }
+
     public function socialLogin(){
 
       if (!$this->request->is(['post'])) {
