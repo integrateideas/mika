@@ -183,6 +183,7 @@ class UsersController extends ApiController
       }
       $user = $this->Users->find()
                             ->where(['id' => $user['id']])
+                            ->contain(['SocialConnections'])
                             ->first();
 
       $time = time() + 10000000;
