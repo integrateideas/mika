@@ -82,6 +82,7 @@ class UserFavouriteExpertsController extends ApiController
                     'user_id' => $this->Auth->user('id'),
                     'expert_id' => $this->request->data['expert_id']
                 ];
+
         $userFavouriteExpert = $this->UserFavouriteExperts->newEntity();
         $userFavouriteExpert = $this->UserFavouriteExperts->patchEntity($userFavouriteExpert, $data);
 
@@ -139,14 +140,15 @@ class UserFavouriteExpertsController extends ApiController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($expertId = null)
     {
         if (!$this->request->is(['patch', 'post', 'put','delete'])) {
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
+        $userId = $this->Auth->user('id');
 
-        $userFavouriteExpert = $this->UserFavouriteExperts->get($id);
-
+        $userFavouriteExpert = $this->UserFavouriteExperts->findByUserId($userId)->where(['expert_id' => $expertId])->first();
+        
         if (!$this->UserFavouriteExperts->delete($userFavouriteExpert)) {
             throw new Exception("Expert specialization service could not be deleted.");
         }
