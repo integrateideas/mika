@@ -27,7 +27,7 @@ class UsersController extends ApiController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['login','socialLogin','socialSignup']);
+        $this->Auth->allow(['login','socialLogin','socialSignup','add']);
     }
 
     public function socialSignup($reqData){
@@ -104,12 +104,15 @@ class UsersController extends ApiController
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
         
-        $id = $this->Auth->user('id');
-        pr($id);die;
-        $user = $this->Users->get($id, [
+        $user = $this->Auth->user();
+        
+        if($user['role_id'] != 2){
+           throw new UnauthorizedException(__('You are not authorized to access that location'));
+        }
+        $user = $this->Users->get($user['id'], [
             'contain' => []
         ]);
-              
+        
         $user = $this->Users->patchEntity($user, $this->request->getData());
         
         if (!$this->Users->save($user)) {
