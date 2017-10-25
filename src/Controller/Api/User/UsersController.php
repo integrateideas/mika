@@ -76,7 +76,7 @@ class UsersController extends ApiController
                       'email' => ($reqData['email'])?$reqData['email']:'',
                       'phone' => ($reqData['phoneNumber'])?$reqData['phoneNumber']:'',
                       'password' => '123456789',
-                      'role_id' => 3,
+                      'role_id' => 2,
                       'username' => $reqData['email']
                   ];
           $data['social_connections'][] = [
@@ -219,6 +219,7 @@ class UsersController extends ApiController
       }
       $user = $this->Users->find()
                             ->where(['id' => $user['id']])
+                            ->contain(['SocialConnections'])
                             ->first();
 
       $time = time() + 10000000;
