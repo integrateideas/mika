@@ -30,6 +30,42 @@ class UsersController extends ApiController
         $this->Auth->allow(['login','socialLogin','socialSignup','add']);
     }
 
+    public function linkUserWithFb(){
+
+      if(!$this->request->is(['post'])){
+            throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+      $this->loadModel('SocialConnections');
+      $existingUser = $this->SocialConnections->findByUserId($this->Auth->user('id'))->first();
+
+      if ($existingUser) {
+          throw new Exception("User already linked with Facebook.");
+      }
+
+     $data = [
+                'user_id' => $this->Auth->user('id'),
+                'fb_identifier' => $this->request->data['uid'],
+                'status' => 1
+              ];
+     
+      $newEntity = $this->SocialConnections->newEntity();
+      $updateUser = $this->SocialConnections->patchEntity($newEntity, $data);
+      
+      if (!$this->SocialConnections->save($updateUser)) {
+          
+          if($updateUser->errors()){
+            $this->_sendErrorResponse($updateUser->errors());
+          }
+          throw new Exception("Error Processing Request");
+        }
+        
+        $success = true;
+
+        $this->set(compact('updateUser','success'));
+        $this->set('_serialize', ['updateUser','success']);
+      
+    }
+
     public function socialSignup($reqData){
 
           $displayName = preg_split('/\s+/', $reqData['displayName']);
