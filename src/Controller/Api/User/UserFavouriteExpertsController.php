@@ -37,7 +37,7 @@ class UserFavouriteExpertsController extends ApiController
         }
         
         $userFavouriteExperts = $this->UserFavouriteExperts->findByUserId($this->Auth->user('id'))
-                                                            ->contain(['Users', 'Experts'])
+                                                            ->contain(['Users', 'Experts.Users'])
                                                             ->all();
 
         $this->set('response',$userFavouriteExperts);

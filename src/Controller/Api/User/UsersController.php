@@ -106,9 +106,6 @@ class UsersController extends ApiController
         
         $user = $this->Auth->user();
         
-        if($user['role_id'] != 2){
-           throw new UnauthorizedException(__('You are not authorized to access that location'));
-        }
         $user = $this->Users->get($user['id'], [
             'contain' => []
         ]);
@@ -150,9 +147,6 @@ class UsersController extends ApiController
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
 
-      if ($user->role_id != 2) {
-        throw new NotFoundException(__('You are not a user of this application.'));
-      }
       $time = time() + 10000000;
       $expTime = Time::createFromTimestamp($time);
       $expTime = $expTime->format('Y-m-d H:i:s');
@@ -200,5 +194,24 @@ class UsersController extends ApiController
       $this->set('data',$data['data']);
       $this->set('status',$data['status']);
       $this->set('_serialize', ['status','data']);
+    }
+
+    public function refreshUser(){
+
+      if(!$this->request->is(['get'])){
+          throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+      
+      $user = $this->Auth->identify();
+      if (!$user) {
+        throw new NotFoundException(__('LOGIN_FAILED'));
+      }
+      $response = $this->Users->find()
+                            ->where(['id' => $user['id']])
+                            ->contain(['SocialConnections'])
+                            ->first();
+      
+      $this->set(compact('response'));
+      $this->set('_serialize', ['response']);
     }
 }
