@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Routing\Router;
+use Cake\Event\Event;
 
 /**
  * Users Controller
