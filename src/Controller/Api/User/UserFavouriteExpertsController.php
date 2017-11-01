@@ -36,13 +36,17 @@ class UserFavouriteExpertsController extends ApiController
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
         
-        $userFavouriteExperts = $this->UserFavouriteExperts->find()->contain(['Users', 'Experts'])->all();
+        $userFavouriteExperts = $this->UserFavouriteExperts->findByUserId($this->Auth->user('id'))
+                                                            ->contain(['Users', 'Experts'])
+                                                            ->all();
+
 
         $success = true;
         
         $this->set('data',$userFavouriteExperts);
         $this->set('status',$success);
         $this->set('_serialize', ['status','data']);
+
     }
 
     /**
@@ -146,7 +150,7 @@ class UserFavouriteExpertsController extends ApiController
      */
     public function delete($expertId = null)
     {
-        if (!$this->request->is(['patch', 'post', 'put','delete'])) {
+        if (!$this->request->is(['patch', 'get', 'post', 'put','delete'])) {
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
         $userId = $this->Auth->user('id');

@@ -40,7 +40,9 @@ class UsersController extends ApiController
         if (!$this->request->is(['get'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-        
+        // $token = $this->request->header('Authorization');
+        // $token = explode(' ', $token);
+        // $payload = JWT::decode($token[1], Security::salt(), array('HS'));
         $users = $this->Users->find()->contain(['Roles'])->all();
 
         $this->set(compact('users'));

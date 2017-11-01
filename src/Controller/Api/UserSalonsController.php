@@ -8,6 +8,7 @@ use Cake\Core\Exception\Exception;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
 use Cake\I18n\FrozenTime;
+use Cake\I18n\FrozenDate;
 use Cake\Log\Log;
 
 
@@ -114,7 +115,11 @@ class UserSalonsController extends ApiController
         if(!$this->request->is(['get'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-        
+
+        if(!isset($this->request->query['zipcode'])){
+          throw new BadRequestException(__('MANDATORY_FIELD_MISSING','zipcode')); 
+        }
+
         $time = null;
         $serviceId = null;
         $whereCond = [];
@@ -131,25 +136,33 @@ class UserSalonsController extends ApiController
         }
 
         $zipcode = $this->request->query['zipcode'];
-        $zipcode = '%'.$zipcode.'%';
-        
-        $getSearchSalons = $this->UserSalons->find()
-                                            ->where(['zipcode LIKE' => $zipcode])
-                                            ->contain(['Users.Experts' =>function($q)use($whereCond,$serviceId){
-                                              return $q->contain(['ExpertAvailabilities'=> function($x) use($whereCond){
-                                                return $x->where($whereCond);
-                                              },'ExpertSpecializationServices' => function($y) use($serviceId){
-                                                return $y->where(['specialization_service_id' => $serviceId]);
-                                              }]);
-                                            }])
-                                            ->matching('Users.Experts.ExpertAvailabilities', function($q) use ($whereCond){
-                                                return $q->where($whereCond);
-                                            })
-                                            ->all()
-                                            ->toArray();
-        
-        $this->set(compact('getSearchSalons'));
-        $this->set('_serialize', ['getSearchSalons']);
+        $date = new FrozenTime('today');
+        $startdate = $date->modify('00:05:00');
+        $enddate = $date->modify('23:55:00');
+
+        $this->loadModel('Experts');
+        $response = $this->Experts->find()
+                                  // ->contain(['ExpertAvailabilities'])
+                                  // ->where(function ($exp) use ($startdate, $enddate) {
+                                  //                 return $exp->between('ExpertAvailabilities.available_from', $startdate, $enddate);
+                                  //                 })
+                                      ->matching('Users.UserSalons', function ($q) use ($zipcode) {
+                                            return $q->where(['zipcode' => $zipcode]);
+                                        })
+                                      ->matching('ExpertSpecializationServices', function ($q) use ($serviceId) {
+                                            return $q->where(['specialization_service_id' => $serviceId]);
+                                        })
+                                      ->contain(['Users','ExpertSpecializationServices','ExpertAvailabilities' => function($q) use ($whereCond, $startdate, $enddate){
+                                            return $q->where($whereCond)
+                                                    ->where(function ($exp) use ($startdate, $enddate) {
+                                                  return $exp->between('available_from', $startdate, $enddate);
+                                                });
+                                        }])
+                                      ->all()
+                                      ->toArray();
+
+        $this->set('response',$response);
+        $this->set('_serialize', ['response']);
     }
 
     /**
