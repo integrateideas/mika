@@ -39,9 +39,10 @@ class UserFavouriteExpertsController extends ApiController
         $userFavouriteExperts = $this->UserFavouriteExperts->find()->contain(['Users', 'Experts'])->all();
 
         $success = true;
-
-        $this->set(compact('userFavouriteExperts','success'));
-        $this->set('_serialize', ['userFavouriteExperts','success']);
+        
+        $this->set('data',$userFavouriteExperts);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -62,9 +63,10 @@ class UserFavouriteExpertsController extends ApiController
         ]);
 
         $success = true;
-
-        $this->set(compact('userFavouriteExpert','success'));
-        $this->set('_serialize', ['userFavouriteExpert','success']);
+        
+        $this->set('data',$userFavouriteExpert);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -96,8 +98,9 @@ class UserFavouriteExpertsController extends ApiController
         
         $success = true;
         
-        $this->set(compact('userFavouriteExpert','success'));
-        $this->set('_serialize', ['userFavouriteExpert','success']);
+        $this->set('data',$userFavouriteExpert);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -129,8 +132,9 @@ class UserFavouriteExpertsController extends ApiController
         
         $success = true;
         
-        $this->set(compact('userFavouriteExpert','success'));
-        $this->set('_serialize', ['userFavouriteExpert','success']);
+        $this->set('data',$userFavouriteExpert);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -149,13 +153,17 @@ class UserFavouriteExpertsController extends ApiController
 
         $userFavouriteExpert = $this->UserFavouriteExperts->findByUserId($userId)->where(['expert_id' => $expertId])->first();
         
+        if(!$userFavouriteExpert){
+            throw new NotFoundException(__('No entity found in User favourite Experts Table'));
+        }
+
         if (!$this->UserFavouriteExperts->delete($userFavouriteExpert)) {
             throw new Exception("Expert specialization service could not be deleted.");
         }
 
         $success = true;
         
-        $this->set(compact('success'));
-        $this->set('_serialize', ['success']);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status']);
     }
 }

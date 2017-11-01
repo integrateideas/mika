@@ -169,10 +169,11 @@ class UsersController extends ApiController
           throw new Exception("Error Processing Request");
         }
         
-        $success = true;
+      $success = true;
 
-        $this->set(compact('updateUser','success'));
-        $this->set('_serialize', ['updateUser','success']);
+      $this->set('data',$updateUser);
+      $this->set('status',$success);
+      $this->set('_serialize', ['status','data']);
       
     }
 

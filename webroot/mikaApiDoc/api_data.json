@@ -1120,6 +1120,13 @@
       ]
     },
     "parameter": {
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n      \"uid\": \"555\",\n      \"displayName\":\"Kshitiz Sekhri\",\n      \"email\":\"kshitizsekhri@gmail.com\",\n      \"password\":\"123456789\",\n      \"role_id\":3,\n      \"username\" :\"kshitizsekhri@gmail.com\"\n}",
+          "type": "json"
+        }
+      ],
       "fields": {
         "Parameter": [
           {
@@ -1437,8 +1444,8 @@
     "url": "",
     "version": "0.0.0",
     "filename": "mikaApiDoc/main.js",
-    "group": "_var_www_html_ApiDoc_mikaApiDoc_main_js",
-    "groupTitle": "_var_www_html_ApiDoc_mikaApiDoc_main_js",
+    "group": "_var_www_html_mika_webroot_mikaApiDoc_main_js",
+    "groupTitle": "_var_www_html_mika_webroot_mikaApiDoc_main_js",
     "name": ""
   }
 ]
