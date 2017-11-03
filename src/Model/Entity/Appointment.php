@@ -14,12 +14,16 @@ use Cake\ORM\Entity;
  * @property int $expert_specialization_id
  * @property bool $is_confirmed
  * @property bool $is_completed
+ * @property \Cake\I18n\FrozenTime $created
+ * @property \Cake\I18n\FrozenTime $modified
+ * @property int $transaction_id
+ * @property int $user_card_id
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Expert $expert
  * @property \App\Model\Entity\ExpertAvailability $expert_availability
  * @property \App\Model\Entity\ExpertSpecializationService $expert_specialization_service
- * @property \App\Model\Entity\Service $service
+ * @property \App\Model\Entity\ExpertSpecialization $expert_specialization
  * @property \App\Model\Entity\AppointmentTransaction[] $appointment_transactions
  */
 class Appointment extends Entity
@@ -42,11 +46,15 @@ class Appointment extends Entity
         'expert_specialization_id' => true,
         'is_confirmed' => true,
         'is_completed' => true,
+        'created' => true,
+        'modified' => true,
+        'transaction_id' => true,
+        'user_card_id' => true,
         'user' => true,
         'expert' => true,
         'expert_availability' => true,
         'expert_specialization_service' => true,
-        'service' => true,
+        'expert_specialization' => true,
         'appointment_transactions' => true
     ];
 }
