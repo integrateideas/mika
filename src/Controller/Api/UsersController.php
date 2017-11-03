@@ -30,6 +30,51 @@ class UsersController extends ApiController
         $this->Auth->allow(['add','login','socialLogin','socialSignup']);
     }
 
+    // public function addCard($userId = null){
+
+    //   $this->loadComponent('Stripe');
+    //   $userId = $this->Auth->user('id');
+
+    //   $data = $this->Stripe->addCard($userId);
+      
+    //   $this->set('status',$data['status']);
+    //   $this->set('newCard',$data['newCard']);
+    //   $this->set('_serialize', ['status','newCard']);
+    // }
+
+    // public function deleteCard($userId = null){
+    //   $this->loadComponent('Stripe');
+    //   $userId = $this->Auth->user('id');
+
+    //   $data = $this->Stripe->deleteCard($userId);
+    //   $this->set('status',$data['status']);
+    //   $this->set('deleteCard',$data['deleteCard']);
+    //   $this->set('_serialize', ['status','deleteCard']);
+    // }
+
+    // public function listCard($userId = null){
+    //   $this->loadComponent('Stripe');
+    //   $userId = $this->Auth->user('id');
+
+    //   $data = $this->Stripe->listCards($userId);
+      
+    //   $this->set('status',$data['status']);
+    //   $this->set('data',$data['data']);
+    //   $this->set('_serialize', ['status','data']);
+    // }
+
+    // public function chargeCard($userId = null){
+    //   $this->loadComponent('Stripe');
+    //   $userId = $this->Auth->user('id');
+
+    //   $data = $this->Stripe->chargeCards($userId);
+      
+    //   $this->set('status',$data['status']);
+    //   $this->set('data',$data['data']);
+    //   $this->set('_serialize', ['status','data']);
+    // }
+
+
     /**
      * Index method
      *
@@ -330,88 +375,90 @@ class UsersController extends ApiController
       $this->set('_serialize', ['data']);
     }
 
-    public function addCard(){
-      
-      if (!$this->request->is(['post'])) {
-        throw new MethodNotAllowedException(__('BAD_REQUEST'));
-      }
-      
-      $data = $this->request->getData();
-      
-      if(!isset($data['stripeJsToken']) && !$data['stripeJsToken']){
-        throw new MethodNotAllowedException(__('BAD_REQUEST'));
-      }
-      
-      \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
+    
 
-      $userExpert = $this->Users->findById($this->Auth->user('id'))
-                                  ->contain('Experts.ExpertCards')
-                                  ->first();
+    // public function addCard(){
       
-      if(!isset($userExpert->experts[0]->expert_cards[0])){
+    //   if (!$this->request->is(['post'])) {
+    //     throw new MethodNotAllowedException(__('BAD_REQUEST'));
+    //   }
       
-        //when the user is NOT registered on stripe.
+    //   $data = $this->request->getData();
+      
+    //   if(!isset($data['stripeJsToken']) && !$data['stripeJsToken']){
+    //     throw new MethodNotAllowedException(__('BAD_REQUEST'));
+    //   }
+      
+    //   \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
+
+    //   $userExpert = $this->Users->findById($this->Auth->user('id'))
+    //                               ->contain('Experts.ExpertCards')
+    //                               ->first();
+      
+    //   if(!isset($userExpert->experts[0]->expert_cards[0])){
+      
+    //     //when the user is NOT registered on stripe.
         
-        try {
+    //     try {
               
-              $customer = \Stripe\Customer::create([
-                "description" => "Customer for sofia.moore@example.com",
-                "source" => $data['stripeJsToken'] // obtained with Stripe.js
-              ]);
-              $expertCard = [
-                              'expert_id' => $userExpert->experts[0]->id,
-                              'stripe_customer_id' => $customer->id,
-                              'stripe_card_id' => $customer->default_source,
-                              'status' => 1
-                            ];
-              $this->loadModel('ExpertCards');
-              $newCard = $this->ExpertCards->newEntity($expertCard);
+    //           $customer = \Stripe\Customer::create([
+    //             "description" => "Customer for sofia.moore@example.com",
+    //             "source" => $data['stripeJsToken'] // obtained with Stripe.js
+    //           ]);
+    //           $expertCard = [
+    //                           'expert_id' => $userExpert->experts[0]->id,
+    //                           'stripe_customer_id' => $customer->id,
+    //                           'stripe_card_id' => $customer->default_source,
+    //                           'status' => 1
+    //                         ];
+    //           $this->loadModel('ExpertCards');
+    //           $newCard = $this->ExpertCards->newEntity($expertCard);
               
-              if($this->ExpertCards->save($newCard)){
-                $status = true;
-              }else{
-                throw new Exception("User card could not be saved.");
-              }
+    //           if($this->ExpertCards->save($newCard)){
+    //             $status = true;
+    //           }else{
+    //             throw new Exception("User card could not be saved.");
+    //           }
               
-          } catch (Exception $e) {
-            // pr($e); die;
-              throw new Exception("User card could not be saved."); 
+    //       } catch (Exception $e) {
+    //         // pr($e); die;
+    //           throw new Exception("User card could not be saved."); 
               
-          }  
+    //       }  
       
-      }else{
+    //   }else{
       
-        //when the user is already registered on stripe.
-        $stripeCusId = $userExpert->experts[0]->expert_cards[0]->stripe_customer_id;
+    //     //when the user is already registered on stripe.
+    //     $stripeCusId = $userExpert->experts[0]->expert_cards[0]->stripe_customer_id;
         
-        try {
+    //     try {
               
-            $customer = \Stripe\Customer::retrieve($stripeCusId);
-            $customer->sources->create(["source" => $data['stripeJsToken']]);
-            $response = json_decode($customer->sources->getlastResponse()->body);
-            $expertCard = [
-                            'expert_id' => $userExpert->experts[0]->id,
-                            'stripe_customer_id' => $response->customer,
-                            'stripe_card_id' => $response->id,
-                            'status' => 1
-                          ];
-            $this->loadModel('ExpertCards');
-            $newCard = $this->ExpertCards->newEntity($expertCard);
+    //         $customer = \Stripe\Customer::retrieve($stripeCusId);
+    //         $customer->sources->create(["source" => $data['stripeJsToken']]);
+    //         $response = json_decode($customer->sources->getlastResponse()->body);
+    //         $expertCard = [
+    //                         'expert_id' => $userExpert->experts[0]->id,
+    //                         'stripe_customer_id' => $response->customer,
+    //                         'stripe_card_id' => $response->id,
+    //                         'status' => 1
+    //                       ];
+    //         $this->loadModel('ExpertCards');
+    //         $newCard = $this->ExpertCards->newEntity($expertCard);
             
-            if($this->ExpertCards->save($newCard)){
-              $status = true;
-            }else{
-              throw new Exception("User card could not be saved.");
-            }
+    //         if($this->ExpertCards->save($newCard)){
+    //           $status = true;
+    //         }else{
+    //           throw new Exception("User card could not be saved.");
+    //         }
             
-          } catch (Exception $e) {
-              throw new Exception("User card could not be saved.");
-          }
+    //       } catch (Exception $e) {
+    //           throw new Exception("User card could not be saved.");
+    //       }
       
-      }
-      $this->set('status',$status);
-      $this->set('newCard',$newCard);
-      $this->set('_serialize', ['status','newCard']);
-    }
+    //   }
+    //   $this->set('status',$status);
+    //   $this->set('newCard',$newCard);
+    //   $this->set('_serialize', ['status','newCard']);
+    // }
 
 }

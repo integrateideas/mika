@@ -25,6 +25,10 @@ class AppointmentsFixture extends TestFixture
         'expert_specialization_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'is_confirmed' => ['type' => 'boolean', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'is_completed' => ['type' => 'boolean', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
+        'created' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
+        'modified' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
+        'transaction_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
+        'user_card_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
         ],
@@ -49,7 +53,11 @@ class AppointmentsFixture extends TestFixture
             'expert_specialization_service_id' => 1,
             'expert_specialization_id' => 1,
             'is_confirmed' => 1,
-            'is_completed' => 1
+            'is_completed' => 1,
+            'created' => '2017-11-03 08:10:09',
+            'modified' => '2017-11-03 08:10:09',
+            'transaction_id' => 1,
+            'user_card_id' => 1
         ],
     ];
 }

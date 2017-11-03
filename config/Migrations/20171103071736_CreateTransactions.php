@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class CreateAppointmentTransactions extends AbstractMigration
+class CreateTransactions extends AbstractMigration
 {
     /**
      * Change Method.
@@ -12,20 +12,15 @@ class CreateAppointmentTransactions extends AbstractMigration
      */
     public function change()
     {
-        $table = $this->table('appointment_transactions');
-        $table->addColumn('appointment_id', 'integer', [
-            'default' => null,
-            'limit' => 11,
-            'null' => false,
-        ]);
+        $table = $this->table('transactions');
         $table->addColumn('transaction_amount', 'integer', [
             'default' => null,
             'limit' => 11,
             'null' => false,
         ]);
-        $table->addColumn('charge_id', 'string', [
+        $table->addColumn('stripe_card_id', 'integer', [
             'default' => null,
-            'limit' => 255,
+            'limit' => 11,
             'null' => false,
         ]);
         $table->addColumn('status', 'boolean', [
@@ -35,6 +30,11 @@ class CreateAppointmentTransactions extends AbstractMigration
         $table->addColumn('remark', 'string', [
             'default' => null,
             'limit' => 255,
+            'null' => true,
+        ]);
+        $table->addColumn('user_card_id', 'integer', [
+            'default' => null,
+            'limit' => 11,
             'null' => false,
         ]);
         $table->create();

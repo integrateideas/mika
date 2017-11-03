@@ -13,8 +13,9 @@ use Cake\Validation\Validator;
  * @property \App\Model\Table\ExpertsTable|\Cake\ORM\Association\BelongsTo $Experts
  * @property \App\Model\Table\ExpertAvailabilitiesTable|\Cake\ORM\Association\BelongsTo $ExpertAvailabilities
  * @property \App\Model\Table\ExpertSpecializationServicesTable|\Cake\ORM\Association\BelongsTo $ExpertSpecializationServices
- * @property |\Cake\ORM\Association\BelongsTo $ExpertSpecializations
- * @property \App\Model\Table\AppointmentTransactionsTable|\Cake\ORM\Association\HasMany $AppointmentTransactions
+ * @property \App\Model\Table\ExpertSpecializationsTable|\Cake\ORM\Association\BelongsTo $ExpertSpecializations
+ * @property |\Cake\ORM\Association\BelongsTo $Transactions
+ * @property |\Cake\ORM\Association\BelongsTo $UserCards
  *
  * @method \App\Model\Entity\Appointment get($primaryKey, $options = [])
  * @method \App\Model\Entity\Appointment newEntity($data = null, array $options = [])
@@ -23,6 +24,8 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Appointment patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
  * @method \App\Model\Entity\Appointment[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Appointment findOrCreate($search, callable $callback = null, $options = [])
+ *
+ * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class AppointmentsTable extends Table
 {
@@ -63,8 +66,12 @@ class AppointmentsTable extends Table
             'foreignKey' => 'expert_specialization_id',
             'joinType' => 'INNER'
         ]);
-        $this->hasMany('AppointmentTransactions', [
-            'foreignKey' => 'appointment_id'
+        $this->belongsTo('Transactions', [
+            'foreignKey' => 'transaction_id'
+        ]);
+        $this->belongsTo('UserCards', [
+            'foreignKey' => 'user_card_id',
+            'joinType' => 'INNER'
         ]);
     }
 
@@ -105,6 +112,8 @@ class AppointmentsTable extends Table
         $rules->add($rules->existsIn(['expert_availability_id'], 'ExpertAvailabilities'));
         $rules->add($rules->existsIn(['expert_specialization_service_id'], 'ExpertSpecializationServices'));
         $rules->add($rules->existsIn(['expert_specialization_id'], 'ExpertSpecializations'));
+        $rules->add($rules->existsIn(['transaction_id'], 'Transactions'));
+        $rules->add($rules->existsIn(['user_card_id'], 'UserCards'));
 
         return $rules;
     }
