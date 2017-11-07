@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class CreateExpertCards extends AbstractMigration
+class CreateUserCards extends AbstractMigration
 {
     /**
      * Change Method.
@@ -12,11 +12,16 @@ class CreateExpertCards extends AbstractMigration
      */
     public function change()
     {
-        $table = $this->table('expert_cards');
-        $table->addColumn('expert_id', 'integer', [
+        $table = $this->table('user_cards');
+        $table->addColumn('user_id', 'integer', [
             'default' => null,
             'limit' => 11,
             'null' => false,
+        ]);
+        $table->addColumn('expert_id', 'integer', [
+            'default' => null,
+            'limit' => 11,
+            'null' => true,
         ]);
         $table->addColumn('stripe_customer_id', 'string', [
             'default' => null,

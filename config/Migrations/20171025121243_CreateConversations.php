@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class CreateAppointmentTransactions extends AbstractMigration
+class CreateConversations extends AbstractMigration
 {
     /**
      * Change Method.
@@ -12,18 +12,13 @@ class CreateAppointmentTransactions extends AbstractMigration
      */
     public function change()
     {
-        $table = $this->table('appointment_transactions');
-        $table->addColumn('appointment_id', 'integer', [
+        $table = $this->table('conversations');
+        $table->addColumn('user_id', 'integer', [
             'default' => null,
             'limit' => 11,
             'null' => false,
         ]);
-        $table->addColumn('transaction_amount', 'integer', [
-            'default' => null,
-            'limit' => 11,
-            'null' => false,
-        ]);
-        $table->addColumn('charge_id', 'string', [
+        $table->addColumn('block_identifier', 'string', [
             'default' => null,
             'limit' => 255,
             'null' => false,
@@ -32,9 +27,12 @@ class CreateAppointmentTransactions extends AbstractMigration
             'default' => null,
             'null' => false,
         ]);
-        $table->addColumn('remark', 'string', [
+        $table->addColumn('created', 'datetime', [
             'default' => null,
-            'limit' => 255,
+            'null' => false,
+        ]);
+        $table->addColumn('modified', 'datetime', [
+            'default' => null,
             'null' => false,
         ]);
         $table->create();

@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\AppointmentsTable;
+use App\Model\Table\UserCardsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\AppointmentsTable Test Case
+ * App\Model\Table\UserCardsTable Test Case
  */
-class AppointmentsTableTest extends TestCase
+class UserCardsTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\AppointmentsTable
+     * @var \App\Model\Table\UserCardsTable
      */
-    public $Appointments;
+    public $UserCards;
 
     /**
      * Fixtures
@@ -24,9 +24,10 @@ class AppointmentsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.appointments',
+        'app.user_cards',
         'app.users',
         'app.roles',
+        'app.appointments',
         'app.experts',
         'app.user_salons',
         'app.expert_availabilities',
@@ -37,9 +38,8 @@ class AppointmentsTableTest extends TestCase
         'app.specializations',
         'app.specialization_services',
         'app.user_favourite_experts',
-        'app.social_connections',
-        'app.user_cards',
-        'app.appointment_transactions'
+        'app.appointment_transactions',
+        'app.social_connections'
     ];
 
     /**
@@ -50,8 +50,8 @@ class AppointmentsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Appointments') ? [] : ['className' => AppointmentsTable::class];
-        $this->Appointments = TableRegistry::get('Appointments', $config);
+        $config = TableRegistry::exists('UserCards') ? [] : ['className' => UserCardsTable::class];
+        $this->UserCards = TableRegistry::get('UserCards', $config);
     }
 
     /**
@@ -61,7 +61,7 @@ class AppointmentsTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->Appointments);
+        unset($this->UserCards);
 
         parent::tearDown();
     }

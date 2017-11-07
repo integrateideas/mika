@@ -104,9 +104,10 @@ class ExpertSpecializationsController extends ApiController
         }
 
         $success = true;
-
-        $this->set(compact('expertSpecialization', 'success'));
-        $this->set('_serialize', ['expertSpecialization', 'success']);
+        
+        $this->set('data',$expertSpecialization);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
 
@@ -177,7 +178,7 @@ class ExpertSpecializationsController extends ApiController
 
         $success = true;
         
-        $this->set(compact('success'));
-        $this->set('_serialize', ['success']);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status']);
     }
 }

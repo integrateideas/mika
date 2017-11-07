@@ -13,6 +13,7 @@
         "josegonzalez/dotenv": "2.*",
         "josegonzalez/cakephp-upload": "^3.6",
         "muffin/trash": "^1.1",
+        "bandwidth/catapult": "^0.8.2",
         "integrateideas/inspiniaTheme" : "dev-InspiniaTheme",
         "admad/cakephp-hybridauth": "^4.1",
         "stripe/stripe-php": "^5.2"
