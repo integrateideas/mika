@@ -38,10 +38,11 @@ class UserSalonsController extends ApiController
         if (!$this->request->is(['get'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-        $userSalons = $this->UserSalons->find()->all();
+        $data = $this->UserSalons->find()->all();
 
-        $this->set(compact('userSalons'));
-        $this->set('_serialize', ['userSalons']);
+        $this->set(compact('data'));
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -61,8 +62,8 @@ class UserSalonsController extends ApiController
             'contain' => []
         ]);
         
-        $this->set('userSalon', $userSalon);
-        $this->set('_serialize', ['userSalon']);
+        $this->set('data', $userSalon);
+        $this->set('_serialize', ['data']);
     }
 
     /**
@@ -161,8 +162,9 @@ class UserSalonsController extends ApiController
                                       ->all()
                                       ->toArray();
 
-        $this->set('response',$response);
-        $this->set('_serialize', ['response']);
+        $this->set('data',$response);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -207,6 +209,9 @@ class UserSalonsController extends ApiController
         $userSalon = $this->UserSalons->get($id);
         if (!$this->UserSalons->delete($userSalon)) {
             throw new Exception("The user salon could not be deleted.");
-        } 
+        }
+
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
 }
