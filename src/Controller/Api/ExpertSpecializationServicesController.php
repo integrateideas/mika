@@ -19,7 +19,7 @@ class ExpertSpecializationServicesController extends ApiController
 
     /**
      * Index method
-     *
+     * Index all the expert specific services
      * @return \Cake\Http\Response|void
      */
     public function index()
@@ -36,8 +36,9 @@ class ExpertSpecializationServicesController extends ApiController
                                                 ->contain(['Experts', 'ExpertSpecializations', 'SpecializationServices'])
                                                 ->all();
 
-        $this->set(compact('expertSpecializationServices'));
-        $this->set('_serialize', ['expertSpecializationServices']);
+        $this->set('data',$expertSpecializationServices);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
 
     public function indexAll()
@@ -51,8 +52,9 @@ class ExpertSpecializationServicesController extends ApiController
                                                 ->contain(['Experts', 'ExpertSpecializations', 'SpecializationServices'])
                                                 ->all();
 
-        $this->set(compact('expertSpecializationServices'));
-        $this->set('_serialize', ['expertSpecializationServices']);
+        $this->set('data',$expertSpecializationServices);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -72,8 +74,9 @@ class ExpertSpecializationServicesController extends ApiController
             'contain' => ['Experts', 'ExpertSpecializations', 'SpecializationServices']
         ]);
 
-        $this->set('expertSpecializationService', $expertSpecializationService);
-        $this->set('_serialize', ['expertSpecializationService']);
+        $this->set('data',$expertSpecializationService);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -150,10 +153,9 @@ class ExpertSpecializationServicesController extends ApiController
             throw new Exception("Expert specialization service edits could not be saved.");
         }
 
-        $success = true; 
-
-        $this->set(compact('expertSpecializationService', 'success'));
-        $this->set('_serialize', ['expertSpecializationService', 'success']);
+        $this->set('data',$expertSpecializationService);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**

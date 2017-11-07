@@ -19,7 +19,7 @@ class ExpertSpecializationsController extends ApiController
 
     /**
      * Index method
-     *
+     * Index all the expert specific specializations and its services.
      * @return \Cake\Http\Response|void
      */
     public function index()
@@ -36,8 +36,9 @@ class ExpertSpecializationsController extends ApiController
                                         ->contain(['Experts', 'Specializations', 'ExpertSpecializationServices.SpecializationServices'])
                                         ->all();
 
-        $this->set(compact('expertSpecializations'));
-        $this->set('_serialize', ['expertSpecializations']);
+        $this->set('data', $expertSpecializations);
+        $this->set('status', true);
+        $this->set('_serialize', ['status','data']);
     }
 
     public function indexAll()
@@ -51,8 +52,9 @@ class ExpertSpecializationsController extends ApiController
                                         ->contain(['Experts', 'Specializations'])
                                         ->all();
 
-        $this->set(compact('expertSpecializations'));
-        $this->set('_serialize', ['expertSpecializations']);
+        $this->set('data', $expertSpecializations);
+        $this->set('status', true);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -73,8 +75,9 @@ class ExpertSpecializationsController extends ApiController
                                     ->contain(['Experts', 'Specializations', 'ExpertSpecializationServices'])
                                     ->first();
 
-        $this->set('expertSpecialization', $expertSpecialization);
-        $this->set('_serialize', ['expertSpecialization']);
+        $this->set('data', $expertSpecialization);
+        $this->set('status', true);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -142,8 +145,9 @@ class ExpertSpecializationsController extends ApiController
             throw new Exception("Expert specialization edits could not be saved.");
         }
 
-        $this->set(compact('expertSpecialization', 'experts', 'specializations'));
-        $this->set('_serialize', ['expertSpecialization']);
+        $this->set('status',true);
+        $this->set('data',$expertSpecialization);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**

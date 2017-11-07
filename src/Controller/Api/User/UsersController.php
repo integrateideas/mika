@@ -270,7 +270,8 @@ class UsersController extends ApiController
                                                     ->indexBy('expert_id')
                                                     ->toArray();
                                                           
-      $this->set(compact('response'));
-      $this->set('_serialize', ['response']);
+      $this->set('data',$response);
+      $this->set('status',true);
+      $this->set('_serialize', ['status','data']);
     }
 }

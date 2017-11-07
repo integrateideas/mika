@@ -31,7 +31,8 @@ class ExpertProfileController extends ApiController
                                         ->first();
 
         $this->set('data',$expertProfile);
-        $this->set('_serialize', ['data']);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
 
     public function todaysAvailabilities($expertId = null)

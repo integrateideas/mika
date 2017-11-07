@@ -30,51 +30,6 @@ class UsersController extends ApiController
         $this->Auth->allow(['add','login','socialLogin','socialSignup']);
     }
 
-    // public function addCard($userId = null){
-
-    //   $this->loadComponent('Stripe');
-    //   $userId = $this->Auth->user('id');
-
-    //   $data = $this->Stripe->addCard($userId);
-      
-    //   $this->set('status',$data['status']);
-    //   $this->set('newCard',$data['newCard']);
-    //   $this->set('_serialize', ['status','newCard']);
-    // }
-
-    // public function deleteCard($userId = null){
-    //   $this->loadComponent('Stripe');
-    //   $userId = $this->Auth->user('id');
-
-    //   $data = $this->Stripe->deleteCard($userId);
-    //   $this->set('status',$data['status']);
-    //   $this->set('deleteCard',$data['deleteCard']);
-    //   $this->set('_serialize', ['status','deleteCard']);
-    // }
-
-    // public function listCard($userId = null){
-    //   $this->loadComponent('Stripe');
-    //   $userId = $this->Auth->user('id');
-
-    //   $data = $this->Stripe->listCards($userId);
-      
-    //   $this->set('status',$data['status']);
-    //   $this->set('data',$data['data']);
-    //   $this->set('_serialize', ['status','data']);
-    // }
-
-    // public function chargeCard($userId = null){
-    //   $this->loadComponent('Stripe');
-    //   $userId = $this->Auth->user('id');
-
-    //   $data = $this->Stripe->chargeCards($userId);
-      
-    //   $this->set('status',$data['status']);
-    //   $this->set('data',$data['data']);
-    //   $this->set('_serialize', ['status','data']);
-    // }
-
-
     /**
      * Index method
      *
@@ -111,8 +66,9 @@ class UsersController extends ApiController
             'contain' => []
         ]);
 
-        $this->set('user', $user);
-        $this->set('_serialize', ['user']);
+        $this->set('data', $user);
+        $this->set('status', true);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -145,10 +101,10 @@ class UsersController extends ApiController
           throw new Exception("Error Processing Request");
         }
         
-        $success = true;
 
-        $this->set(compact('user','success'));
-        $this->set('_serialize', ['user','success']);
+        $this->set('data',$user);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','user']);
     }
 
     /**
@@ -183,8 +139,9 @@ class UsersController extends ApiController
             throw new Exception("User edits could not be saved.");
         }
         
-        $this->set(compact('user'));
-        $this->set('_serialize', ['user']);
+        $this->set('data',$user);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
 
     public function linkUserWithFb(){
@@ -372,7 +329,8 @@ class UsersController extends ApiController
       $data['user'] = $return['user'];
 
       $this->set('data', $data);
-      $this->set('_serialize', ['data']);
+      $this->set('status',true);
+      $this->set('_serialize', ['data','status']);
     }
 
     

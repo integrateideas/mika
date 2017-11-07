@@ -39,8 +39,9 @@ class UserDeviceTokensController extends ApiController
             throw new Exception("Error adding device token", 1); 
         } 
 
-        $this->set('userDeviceToken', $userDeviceToken);
-        $this->set('_serialize', ['userDeviceToken']);
+        $this->set('data', $userDeviceToken);
+        $this->set('status', true);
+        $this->set('_serialize', ['status','data']);
     }
 
 
