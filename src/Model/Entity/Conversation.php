@@ -4,19 +4,18 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * AppointmentTransaction Entity
+ * Conversation Entity
  *
  * @property int $id
- * @property int $appointment_id
- * @property int $transaction_amount
- * @property string $charge_id
+ * @property int $user_id
+ * @property string $block_identifier
  * @property bool $status
- * @property string $remark
+ * @property \Cake\I18n\FrozenTime $created
+ * @property \Cake\I18n\FrozenTime $modified
  *
- * @property \App\Model\Entity\Appointment $appointment
- * @property \App\Model\Entity\Charge $charge
+ * @property \App\Model\Entity\User $user
  */
-class AppointmentTransaction extends Entity
+class Conversation extends Entity
 {
 
     /**
@@ -29,12 +28,11 @@ class AppointmentTransaction extends Entity
      * @var array
      */
     protected $_accessible = [
-        'appointment_id' => true,
-        'transaction_amount' => true,
-        'charge_id' => true,
+        'user_id' => true,
+        'block_identifier' => true,
         'status' => true,
-        'remark' => true,
-        'appointment' => true,
-        'charge' => true
+        'created' => true,
+        'modified' => true,
+        'user' => true
     ];
 }

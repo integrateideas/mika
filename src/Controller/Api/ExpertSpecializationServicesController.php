@@ -90,9 +90,15 @@ class ExpertSpecializationServicesController extends ApiController
 
         $this->loadModel('Experts');
         $expert = $this->Experts->findByUserId($this->Auth->user('id'))
-                                            ->first();
+                                ->first();
+        
         $this->loadModel('ExpertSpecializations');
         $expertSpecializationId = $this->ExpertSpecializations->find()->where(['expert_id' => $expert['id'],'specialization_id' => $data['specialization_id']])->first()->id;
+        
+
+        if(!$expertSpecializationId){
+          throw new NotFoundException(__('No entity found in Expert Specializations'));
+        }
         
         $data['expert_specialization_id'] = $expertSpecializationId;
         $data['expert_id'] = $expert['id'];
@@ -100,15 +106,15 @@ class ExpertSpecializationServicesController extends ApiController
         $expertSpecializationService = $this->ExpertSpecializationServices->newEntity();
     
         $expertSpecializationService = $this->ExpertSpecializationServices->patchEntity($expertSpecializationService, $data);
-
         if (!$this->ExpertSpecializationServices->save($expertSpecializationService)) {
             throw new Exception("Expert specialization services could not be saved.");
         }
             
         $success = true;
-
-        $this->set(compact('expertSpecializationService', 'success'));
-        $this->set('_serialize', ['expertSpecializationService', 'success']);
+        
+        $this->set('data',$expertSpecializationService);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -187,7 +193,7 @@ class ExpertSpecializationServicesController extends ApiController
 
         $success = true;
         
-        $this->set(compact('success'));
+        $this->set('status',$success);
         $this->set('_serialize', ['success']);
     }
 }

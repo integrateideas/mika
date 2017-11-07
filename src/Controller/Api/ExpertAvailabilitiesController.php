@@ -41,8 +41,11 @@ class ExpertAvailabilitiesController extends ApiController
                                                            ->contain(['Experts'])
                                                            ->all();
 
-        $this->set(compact('expertAvailabilities'));
-        $this->set('_serialize', ['expertAvailabilities']);
+        $success = true;
+        
+        $this->set('data',$expertAvailabilities);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     public function indexAll()
@@ -55,8 +58,11 @@ class ExpertAvailabilitiesController extends ApiController
                                                            ->contain(['Experts'])
                                                            ->all();
 
-        $this->set(compact('expertAvailabilities'));
-        $this->set('_serialize', ['expertAvailabilities']);
+        $success = true;
+        
+        $this->set('data',$expertAvailabilities);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     //TODO: add time constraints
@@ -92,8 +98,11 @@ class ExpertAvailabilitiesController extends ApiController
             'contain' => ['Experts']
         ]);
 
-        $this->set(compact('expertAvailabilities'));
-        $this->set('_serialize', ['expertAvailabilities']);
+        $success = true;
+        
+        $this->set('data',$expertAvailabilities);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -108,8 +117,8 @@ class ExpertAvailabilitiesController extends ApiController
         $this->loadModel('Experts');
         $this->request->data['expert_id'] = $this->Experts->findByUserId($userId)->first()->get('id');
         
-        $conn = ConnectionManager::get('default');
-        $conn->driver()->autoQuoting(true);
+        // $conn = ConnectionManager::get('default');
+        // $conn->driver()->autoQuoting(true);
         if (!$this->request->is(['post'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
@@ -123,14 +132,15 @@ class ExpertAvailabilitiesController extends ApiController
         $expertAvailabilities = $this->ExpertAvailabilities->patchEntity($expertAvailabilities, $this->request->getData());
 
         if (!$this->ExpertAvailabilities->save($expertAvailabilities)) {
-          // pr($expertAvailabilities); die;
+        
             throw new Exception("Availability could not be saved.");
         }
         
         $success = true;
 
-        $this->set(compact('expertAvailabilities', 'success'));
-        $this->set('_serialize', ['expertAvailabilities','success']);
+        $this->set('data',$expertAvailabilities);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -166,9 +176,10 @@ class ExpertAvailabilitiesController extends ApiController
         }
       
         $success = true;
-        
-        $this->set(compact('expertAvailabilities', 'success'));
-        $this->set('_serialize', ['expertAvailabilities','success']);
+
+        $this->set('data',$expertAvailabilities);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**

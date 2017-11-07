@@ -95,7 +95,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -201,7 +201,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -300,7 +300,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -385,7 +385,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -484,7 +484,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -569,7 +569,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -654,7 +654,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -753,7 +753,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -852,7 +852,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -924,7 +924,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -1009,7 +1009,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -1081,7 +1081,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -1120,6 +1120,13 @@ define({ "api": [
       ]
     },
     "parameter": {
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n      \"uid\": \"555\",\n      \"displayName\":\"Kshitiz Sekhri\",\n      \"email\":\"kshitizsekhri@gmail.com\",\n      \"password\":\"123456789\",\n      \"role_id\":3,\n      \"username\" :\"kshitizsekhri@gmail.com\"\n}",
+          "type": "json"
+        }
+      ],
       "fields": {
         "Parameter": [
           {
@@ -1194,7 +1201,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -1266,7 +1273,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -1338,7 +1345,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -1410,7 +1417,7 @@ define({ "api": [
         }
       ]
     },
-    "filename": "mikaApiDoc/mika.js",
+    "filename": "webroot/mikaApiDoc/mika.js",
     "groupTitle": "Mika_API"
   },
   {
@@ -1436,9 +1443,9 @@ define({ "api": [
     "type": "",
     "url": "",
     "version": "0.0.0",
-    "filename": "mikaApiDoc/main.js",
-    "group": "_var_www_html_ApiDoc_mikaApiDoc_main_js",
-    "groupTitle": "_var_www_html_ApiDoc_mikaApiDoc_main_js",
+    "filename": "webroot/mikaApiDoc/main.js",
+    "group": "_home_twinspark_public_html_dev_mika_webroot_mikaApiDoc_main_js",
+    "groupTitle": "_home_twinspark_public_html_dev_mika_webroot_mikaApiDoc_main_js",
     "name": ""
   }
 ] });

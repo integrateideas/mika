@@ -61,8 +61,9 @@ class UsersController extends ApiController
         
         $success = true;
 
-        $this->set(compact('updateUser','success'));
-        $this->set('_serialize', ['updateUser','success']);
+        $this->set('data',$user);
+        $this->set('status',$updateUser);
+        $this->set('_serialize', ['status','data']);
       
     }
 
@@ -129,8 +130,9 @@ class UsersController extends ApiController
         
         $success = true;
 
-        $this->set(compact('user','success'));
-        $this->set('_serialize', ['user','success']);
+        $this->set('data',$user);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']); 
     }
 
     public function edit($id = null)
@@ -152,8 +154,11 @@ class UsersController extends ApiController
             throw new Exception("User edits could not be saved.");
         }
         
-        $this->set(compact('user'));
-        $this->set('_serialize', ['user']);
+        $success = true;
+
+        $this->set('data',$user);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']); 
     }
 
     public function socialLogin(){

@@ -11,6 +11,15 @@
     * @apiHeaderExample {php} Header-Example:
     *       "Accept"=> "application/json"
     *       "Content-Type"=> "application/json"
+    * @apiParamExample {json} Request-Example:
+    *  {
+    *        "uid": "555",
+    *        "displayName":"Kshitiz Sekhri",
+    *        "email":"kshitizsekhri@gmail.com",
+    *        "password":"123456789",
+    *        "role_id":3,
+    *        "username" :"kshitizsekhri@gmail.com"
+    *  }
     * @apiParam {String} uid                   Facebook identifier
     * @apiParam {String} displayName           Name
     * @apiParam {String} email                 Email address
@@ -73,6 +82,12 @@
     *       "Accept"=> "application/json"
     *       "Content-Type"=> "application/json" 
     *       "Authorization "=> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEzLCJleHAiOjE1MTcyOTAwMDUsImV4cGVydF9pZCI6MTJ9.Cw-f3dKt0uUVljCkO7-si_2pRCQDzmj3D5rz2NHXB1E" 
+    * @apiParamExample {json} Request-Example:
+    *  {
+    *        "salon_name": "Weirdo",
+    *        "location":"LA",
+    *        "zipcode":"90115"
+    *  }
     * @apiParam {String} salon_name            Name of the Salon
     * @apiParam {String} location              Location of the Salon
     * @apiParam {String} zipcode               Zipcode of that area
@@ -115,6 +130,12 @@
     *       "Accept"=> "application/json"
     *       "Content-Type"=> "application/json" 
     *       "Authorization "=> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEzLCJleHAiOjE1MTcyOTAwMDUsImV4cGVydF9pZCI6MTJ9.Cw-f3dKt0uUVljCkO7-si_2pRCQDzmj3D5rz2NHXB1E"
+    * @apiParamExample {json} Request-Example:
+    *  {
+    *        "salon_name": "Stylist",
+    *        "location":"New York",
+    *        "zipcode": "92010"
+    *  }
     * @apiParam {String} salon_name            Name of the Salon
     * @apiParam {String} location              Location of the Salon
     * @apiParam {String} zipcode               Zipcode of that area
@@ -157,6 +178,12 @@
     *       "Accept"=> "application/json"
     *       "Content-Type"=> "application/json" 
     *       "Authorization "=> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEzLCJleHAiOjE1MTcyOTAwMDUsImV4cGVydF9pZCI6MTJ9.Cw-f3dKt0uUVljCkO7-si_2pRCQDzmj3D5rz2NHXB1E"
+    * @apiParamExample {json} Request-Example:
+    *  {
+    *        "available_from": "2017-10-11 07:00:00",
+    *        "available_to": "2017-10-11 08:00:00",
+    *        "overlapping_allowed": 1
+    *  }
     * @apiParam {Datetime} available_from            Expert Available-from 
     * @apiParam {Datetime} available_to              Expert Available-to
     * @apiParam {Boolean}  overlapping_allowed       Expert is avaialble for some other user in this time-slot
@@ -210,6 +237,12 @@
     *       "Accept"=> "application/json"
     *       "Content-Type"=> "application/json" 
     *       "Authorization "=> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEzLCJleHAiOjE1MTcyOTAwMDUsImV4cGVydF9pZCI6MTJ9.Cw-f3dKt0uUVljCkO7-si_2pRCQDzmj3D5rz2NHXB1E"
+    * @apiParamExample {json} Request-Example:
+    *  {
+    *        "available_from": "2017-10-11 07:00:00",
+    *        "available_to": "2017-10-11 08:00:00",
+    *        "overlapping_allowed": 0
+    *  }
     * @apiParam {Datetime} available_from            Expert Available-from 
     * @apiParam {Datetime} available_to              Expert Available-to
     * @apiParam {Boolean}  overlapping_allowed       Expert is avaialble for some other user in this time-slot

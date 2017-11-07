@@ -42,8 +42,11 @@ class AppointmentsController extends ApiController
             'contain' => ['Users', 'Experts', 'ExpertAvailabilities', 'ExpertSpecializationServices', 'ExpertSpecializations', 'AppointmentTransactions']
         ]);
 
-        $this->set('appointment', $appointment);
-        $this->set('_serialize', ['appointment']);
+        $success = true;
+
+        $this->set('data',$appointment);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -83,23 +86,28 @@ class AppointmentsController extends ApiController
         
         $success = true;
 
-        $this->set(compact('appointment','success'));
-        $this->set('_serialize', ['appointment','success']);        
+        $this->set('data',$appointment);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);        
     }
 
-    public function UserOrderHistory(){
+
+
+    public function getExpertOrderHistory(){
       
         if (!$this->request->is(['get'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
         $userId = $this->Auth->user('id');
+        //if user is expert or not
         $getUserOrderHistory = $this->Appointments->findByUserId($userId)
                                                   ->contain(['AppointmentTransactions'])
                                                   ->all();
         $success = true;
 
-        $this->set(compact('getUserOrderHistory','success'));
-        $this->set('_serialize', ['getUserOrderHistory','success']);
+        $this->set('data',$getUserOrderHistory);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 }

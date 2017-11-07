@@ -106,9 +106,9 @@ class UserSalonsController extends ApiController
         }
         
         $success = true;
-        
-        $this->set(compact('userSalon', 'success','experts'));
-        $this->set('_serialize', ['userSalon','success','experts']);
+        $this->set('data',$userSalon);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     public function searchSalon(){
@@ -187,9 +187,11 @@ class UserSalonsController extends ApiController
         if (!$this->UserSalons->save($userSalon)) {
             throw new Exception("The user salon could not be saved.");
         }
-        
-        $this->set(compact('userSalon', 'users'));
-        $this->set('_serialize', ['userSalon']);
+        $success = true;
+
+        $this->set('data',$userSalon);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**

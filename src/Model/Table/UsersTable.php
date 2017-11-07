@@ -68,6 +68,9 @@ class UsersTable extends Table
         $this->hasMany('UserDeviceTokens', [
             'foreignKey' => 'user_id'
         ]);
+        $this->hasMany('UserCards', [
+            'foreignKey' => 'user_id'
+        ]);
     }
 
     /**

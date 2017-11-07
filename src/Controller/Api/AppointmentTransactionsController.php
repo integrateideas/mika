@@ -41,8 +41,11 @@ class AppointmentTransactionsController extends ApiController
             'contain' => ['Appointments']
         ]);
 
-        $this->set('appointmentTransaction', $appointmentTransaction);
-        $this->set('_serialize', ['appointmentTransaction']);
+        $success = true;
+        
+        $this->set('data',$appointmentTransaction);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -75,7 +78,10 @@ class AppointmentTransactionsController extends ApiController
           throw new Exception("Error Processing Request");
         }
 
-        $this->set(compact('appointmentTransaction', 'appointments', 'charges'));
-        $this->set('_serialize', ['appointmentTransaction']);
+        $success = true;
+        
+        $this->set('data',$appointmentTransaction);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
     }
 }
