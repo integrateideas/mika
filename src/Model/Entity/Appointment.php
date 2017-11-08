@@ -24,7 +24,8 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\ExpertAvailability $expert_availability
  * @property \App\Model\Entity\ExpertSpecializationService $expert_specialization_service
  * @property \App\Model\Entity\ExpertSpecialization $expert_specialization
- * @property \App\Model\Entity\AppointmentTransaction[] $appointment_transactions
+ * @property \App\Model\Entity\Transaction $transaction
+ * @property \App\Model\Entity\UserCard $user_card
  */
 class Appointment extends Entity
 {
@@ -55,6 +56,7 @@ class Appointment extends Entity
         'expert_availability' => true,
         'expert_specialization_service' => true,
         'expert_specialization' => true,
-        'appointment_transactions' => true
+        'transaction' => true,
+        'user_card' => true
     ];
 }

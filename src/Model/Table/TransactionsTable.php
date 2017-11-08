@@ -9,7 +9,7 @@ use Cake\Validation\Validator;
 /**
  * Transactions Model
  *
- * @property \App\Model\Table\StripeCardsTable|\Cake\ORM\Association\BelongsTo $StripeCards
+ * @property |\Cake\ORM\Association\BelongsTo $StripeCharges
  * @property \App\Model\Table\UserCardsTable|\Cake\ORM\Association\BelongsTo $UserCards
  * @property \App\Model\Table\AppointmentsTable|\Cake\ORM\Association\HasMany $Appointments
  *
@@ -20,6 +20,8 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Transaction patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
  * @method \App\Model\Entity\Transaction[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Transaction findOrCreate($search, callable $callback = null, $options = [])
+ *
+ * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class TransactionsTable extends Table
 {
@@ -38,8 +40,10 @@ class TransactionsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        // $this->belongsTo('StripeCards', [
-        //     'foreignKey' => 'stripe_card_id',
+        $this->addBehavior('Timestamp');
+
+        // $this->belongsTo('StripeCharges', [
+        //     'foreignKey' => 'stripe_charge_id',
         //     'joinType' => 'INNER'
         // ]);
         $this->belongsTo('UserCards', [
@@ -89,7 +93,7 @@ class TransactionsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        // $rules->add($rules->existsIn(['stripe_card_id'], 'StripeCards'));
+        // $rules->add($rules->existsIn(['stripe_charge_id'], 'StripeCharges'));
         $rules->add($rules->existsIn(['user_card_id'], 'UserCards'));
 
         return $rules;

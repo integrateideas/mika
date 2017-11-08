@@ -39,7 +39,7 @@ class AppointmentsTableTest extends TestCase
         'app.user_favourite_experts',
         'app.social_connections',
         'app.user_cards',
-        'app.appointment_transactions'
+        'app.transactions'
     ];
 
     /**

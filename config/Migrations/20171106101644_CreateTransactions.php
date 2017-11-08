@@ -18,9 +18,9 @@ class CreateTransactions extends AbstractMigration
             'limit' => 11,
             'null' => false,
         ]);
-        $table->addColumn('stripe_card_id', 'integer', [
+        $table->addColumn('stripe_charge_id', 'string', [
             'default' => null,
-            'limit' => 11,
+            'limit' => 255,
             'null' => false,
         ]);
         $table->addColumn('status', 'boolean', [
@@ -35,6 +35,14 @@ class CreateTransactions extends AbstractMigration
         $table->addColumn('user_card_id', 'integer', [
             'default' => null,
             'limit' => 11,
+            'null' => false,
+        ]);
+        $table->addColumn('created', 'datetime', [
+            'default' => null,
+            'null' => false,
+        ]);
+        $table->addColumn('modified', 'datetime', [
+            'default' => null,
             'null' => false,
         ]);
         $table->create();

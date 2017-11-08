@@ -8,12 +8,13 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property int $transaction_amount
- * @property int $stripe_card_id
+ * @property string $stripe_charge_id
  * @property bool $status
  * @property string $remark
  * @property int $user_card_id
+ * @property \Cake\I18n\FrozenTime $created
+ * @property \Cake\I18n\FrozenTime $modified
  *
- * @property \App\Model\Entity\StripeCard $stripe_card
  * @property \App\Model\Entity\UserCard $user_card
  * @property \App\Model\Entity\Appointment[] $appointments
  */
@@ -31,11 +32,12 @@ class Transaction extends Entity
      */
     protected $_accessible = [
         'transaction_amount' => true,
-        'stripe_card_id' => true,
+        'stripe_charge_id' => true,
         'status' => true,
         'remark' => true,
         'user_card_id' => true,
-        'stripe_card' => true,
+        'created' => true,
+        'modified' => true,
         'user_card' => true,
         'appointments' => true
     ];
