@@ -33,7 +33,6 @@ class ApiController extends Controller
 {
 public function initialize()
   {
-    // Log::write('debug', "Reached Here");
     parent::initialize();
     $this->loadComponent('RequestHandler');
     if($this->request->params['action'] == 'login'){

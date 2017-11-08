@@ -207,31 +207,39 @@ class StripeComponent extends Component
       return ['data' => $reqData, 'status' => true];
     }
 
-    public function chargeCards($userId){
+    public function chargeCards($userId,$stripeCardId,$stripeCustomerId = null){
 
       if (!$this->request->is(['post'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
-      
+      // pr($userId);
+      // pr($stripeCardId);die;
+      // pr($stripeCustomerId);
+      // die;
       $data = $this->request->getData();
       
-      if(!isset($data['stripe_card_id']) || !$data['stripe_card_id']){
+      if(!isset($stripeCardId) || !$stripeCardId){
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
+      if(!isset($stripeCustomerId) || !$stripeCustomerId){
+        throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+      // if(!isset($stripeCustomerId) || !$stripeCustomerId){
 
-      $userCards = TableRegistry::get('UserCards'); 
-      $getCardDetails = $userCards->findByUserId($userId)
-                    ->first();
-      
-      $stripeCustomerId = null;   
-      
-      if($getCardDetails){
-        $stripeCustomerId = $getCardDetails->stripe_customer_id;
-      }
-    
-      if(!$stripeCustomerId || !isset($stripeCustomerId)){
-        throw new NotFoundException(__("Stripe Customer Id doesn't found"));
-      }
+      //   $userCards = TableRegistry::get('UserCards'); 
+      //   $getCardDetails = $userCards->findByUserId($userId)
+      //                               ->first();
+      //   $stripeCustomerId = null;   
+        
+      //   if($getCardDetails){
+      //     $stripeCustomerId = $getCardDetails->stripe_customer_id;
+      //   }
+
+      // }
+      // pr($stripeCustomerId);die;
+      // if(!$stripeCustomerId || !isset($stripeCustomerId)){
+      //   throw new NotFoundException(__("Stripe Customer Id doesn't found"));
+      // }
 
       try {
 
@@ -240,15 +248,13 @@ class StripeComponent extends Component
         $customer = \Stripe\Charge::create(array(
                                                   "amount" => 2000,
                                                   "currency" => "usd",
-                                                  "source" => $data['stripe_card_id'], // card-id,
+                                                  "source" => $stripeCardId, // card-id,
                                                   "customer" => $stripeCustomerId,
                                                   "description" => "Charge for jacob.smith@example.com"
                                                 ));
         
         if($customer){
-            $customerChargeDetails = $customer->jsonSerialize();
-            pr($customerChargeDetails);die;
-            
+          $customerChargeDetails = $customer->jsonSerialize();
         }
          
       } catch (Exception $e) {
@@ -256,7 +262,7 @@ class StripeComponent extends Component
         throw new Exception("User card not charged. Error in Stripe."); 
       } 
 
-      return ['data' => $reqData, 'status' => true];
+      return [ 'status' => true,'data' => $customerChargeDetails];
         
     }
 
