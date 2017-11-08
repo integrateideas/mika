@@ -44,6 +44,42 @@ class UserDeviceTokensController extends ApiController
         $this->set('_serialize', ['status','data']);
     }
 
+    /**
+     * Edit method
+     *
+     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
+     */
+    public function edit()
+    {
+        if (!$this->request->is(['post','put'])) {
+            throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+
+        $existingEntry = $this->UserDeviceTokens->findByDeviceToken($this->request->getData('old_token'))
+                                                ->where(['user_id' => $this->Auth->user('id')])
+                                                ->first();
+
+        if(!$existingEntry){
+    //not found exception            
+        }
+
+        $userDeviceTokenRequest['user_id'] = $this->Auth->user('id') ; //obtain from auth
+        $userDeviceTokenRequest['device_token'] = $this->request->getData('new_token'); //obtain from request
+
+        if(!$userDeviceTokenRequest['device_token']) {
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING','device_token'));
+        }
+
+        $userDeviceToken = $this->UserDeviceTokens->patchEntity($existingEntry, $userDeviceTokenRequest);
+        if (!$this->UserDeviceTokens->save($userDeviceToken)) {
+            throw new Exception("Error adding device token", 1); 
+        } 
+
+        $this->set('data', $userDeviceToken);
+        $this->set('status', true);
+        $this->set('_serialize', ['status','data']);
+    }
+
 
     /**
      * Delete method
