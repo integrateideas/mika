@@ -144,9 +144,6 @@ class UsersController extends ApiController
         
         $user = $this->Auth->user();
         
-        if($user['role_id'] != 2){
-           throw new UnauthorizedException(__('You are not authorized to access that location'));
-        }
         $user = $this->Users->get($user['id'], [
             'contain' => []
         ]);
@@ -185,20 +182,24 @@ class UsersController extends ApiController
       $user = $this->Users->find()
                           ->where(['id' => $userId])
                           ->contain(['SocialConnections'])
-                          ->first();     
+                          ->first();
+
+      $favouriteExperts = $this->Users->UserFavouriteExperts->findByUserId($userId)
+                                                          ->all()
+                                                          ->indexBy('expert_id');
       
       if (!$user) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
 
-      if ($user->role_id != 2) {
-        throw new NotFoundException(__('You are not a user of this application.'));
-      }
       $time = time() + 10000000;
       $expTime = Time::createFromTimestamp($time);
       $expTime = $expTime->format('Y-m-d H:i:s');
+      
       $data['status']=true;
       $data['data']['user']=$user;
+      $data['data']['user']['favouriteExperts']=$favouriteExperts;
+
       $data['data']['token']=JWT::encode([
         'sub' => $user['id'],
         'exp' =>  $time,
@@ -216,7 +217,7 @@ class UsersController extends ApiController
       if (!$this->request->is(['post'])) {
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
-      
+
       $data =array();
       $user = $this->Auth->identify();
       if (!$user) {
@@ -227,11 +228,17 @@ class UsersController extends ApiController
                             ->contain(['SocialConnections'])
                             ->first();
 
+      $favouriteExperts = $this->Users->UserFavouriteExperts->findByUserId($user['id'])
+                                                    ->all()
+                                                    ->indexBy('expert_id');
+
       $time = time() + 10000000;
       $expTime = Time::createFromTimestamp($time);
       $expTime = $expTime->format('Y-m-d H:i:s');
       $data['status']=true;
       $data['data']['user']=$user;
+      $data['data']['user']['favouriteExperts']=$favouriteExperts;
+      
       $data['data']['token']=JWT::encode([
         'sub' => $user['id'],
         'exp' =>  $time,
@@ -240,6 +247,31 @@ class UsersController extends ApiController
       $data['data']['expires']=$expTime;
       $this->set('data',$data['data']);
       $this->set('status',$data['status']);
+      $this->set('_serialize', ['status','data']);
+    }
+
+    public function refreshUser(){
+
+      if(!$this->request->is(['get'])){
+          throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+      
+      $user = $this->Auth->identify();
+      if (!$user) {
+        throw new NotFoundException(__('LOGIN_FAILED'));
+      }
+      $response = $this->Users->find()
+                            ->where(['id' => $user['id']])
+                            ->contain(['SocialConnections'])
+                            ->first();
+      
+      $response['favouriteExperts'] = $this->Users->UserFavouriteExperts->findByUserId($user['id'])
+                                                    ->all()
+                                                    ->indexBy('expert_id')
+                                                    ->toArray();
+                                                          
+      $this->set('data',$response);
+      $this->set('status',true);
       $this->set('_serialize', ['status','data']);
     }
 }
