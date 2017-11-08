@@ -76,6 +76,7 @@ class UserDeviceTokensTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
+        $rules->add($rules->isUnique(['user_id','device_token'], 'This device is already saved for this user.'));
 
         return $rules;
     }
