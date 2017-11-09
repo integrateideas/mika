@@ -44,6 +44,7 @@ use Cake\Routing\Route\DashedRoute;
 Router::defaultRouteClass(DashedRoute::class);
 
 Router::prefix('api', function ($routes) {
+  $routes->connect('/sms_fallback',array('controller'=>'ConversationReceives', 'action'=>'fallback',"_method" => "POST"));
   $routes->connect('/:controller',array('controller'=>':controller', 'action'=>'add',"_method" => "POST"));
   $routes->connect('/:controller',array('controller'=>':controller', 'action'=>'index',"_method" => "GET"));
  
