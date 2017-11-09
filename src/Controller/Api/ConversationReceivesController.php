@@ -37,10 +37,11 @@ class ConversationReceivesController extends ApiController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['index']);
+        $this->Auth->allow(['add','fallback']);
     }
 
-    public function index(){
+    public function add(){
+      Log::write('debug',$this->request->data);
 
       if(!$this->request->is(['post'])){
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
@@ -48,13 +49,16 @@ class ConversationReceivesController extends ApiController
       $phoneNo = $this->request->data['from'];
       $this->loadModel('Users');
       $getExpert = $this->Users->find()->where(['phone' => $phoneNo])->first();
-      // pr($getExpert->id);die;
+      
+      if(!$getExpert){
+         throw new NotFoundException(__('Your number is not registered with us. So we are not able to identify you.')); 
+      }
+      Log::write('debug',$getExpert);
       $this->loadModel('Conversations');
       $findExpertConversation = $this->Conversations->findByUserId($getExpert->id)->last();
-      
+      Log::write('debug',$findExpertConversation);
       if(!$findExpertConversation){
-          pr('send sms for not identify the user in conversation');die;
-          throw new NotFoundException(__('Your number is not registered with us. Please try again later.'));
+          throw new NotFoundException(__('No conversation exist with this expert.'));
       }else{
           
           $appHelper = new AppHelper();
@@ -79,5 +83,10 @@ class ConversationReceivesController extends ApiController
           }
       }
 
+    }
+
+    public function fallback(){
+      Log::write('debug',$this->request->data);
+      pr('adasda');die;  
     }
 }
