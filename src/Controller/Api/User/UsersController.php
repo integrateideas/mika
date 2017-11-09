@@ -30,6 +30,49 @@ class UsersController extends ApiController
         $this->Auth->allow(['login','socialLogin','socialSignup','add']);
     }
 
+    public function addCard(){
+
+      if (!$this->request->is(['post'])) {
+        throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+      $data = $this->request->getData();
+      
+      if(!isset($data['stripeJsToken']) || !$data['stripeJsToken']){
+        throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+
+      $userId = $this->Auth->user('id');
+      if(!$userId){
+        throw new NotFoundException(__('We cant identify the user.'));
+      }
+      
+      $this->loadComponent('Stripe');
+      $stripeData = $this->Stripe->addCard($userId,$data['stripeJsToken']);
+      
+      $data = [
+                'user_id'=> $userId,
+                'stripe_customer_id' => $stripeData['stripe_customer_id'],
+                'stripe_card_id' => $stripeData['stripe_card_id'],
+                'status' => 1
+              ];
+              
+      $this->loadModel('UserCards');
+      $userCards = $this->UserCards->newEntity();
+      $userCards = $this->UserCards->patchEntity($userCards,$data);
+
+      if (!$this->UserCards->save($userCards)) {  
+        if($userCards->errors()){
+          $this->_sendErrorResponse($userCards->errors());
+        }
+        throw new Exception("Error Processing Request");
+      }
+        
+
+      $this->set('data',$userCards);
+      $this->set('status',true);
+      $this->set('_serialize', ['status','data']);
+    }
+
     public function linkUserWithFb(){
 
       if(!$this->request->is(['post'])){
