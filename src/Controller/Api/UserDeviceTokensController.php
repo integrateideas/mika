@@ -21,14 +21,14 @@ class UserDeviceTokensController extends ApiController
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
     public function add()
-    {
+    {   
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
         $userDeviceTokenRequest['user_id'] = $this->Auth->user('id') ; //obtain from auth
         $userDeviceTokenRequest['device_token'] = $this->request->getData('device_token'); //obtain from request
-
+        
         if(!$userDeviceTokenRequest['device_token']) {
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING','device_token'));
         }
@@ -60,7 +60,7 @@ class UserDeviceTokensController extends ApiController
                                                 ->first();
 
         if(!$existingEntry){
-    //not found exception            
+            throw new NotFoundException(__('Entity not found.'));      
         }
 
         $userDeviceTokenRequest['user_id'] = $this->Auth->user('id') ; //obtain from auth
