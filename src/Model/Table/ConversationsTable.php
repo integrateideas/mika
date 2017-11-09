@@ -91,6 +91,7 @@ class ConversationsTable extends Table
     {   
         //offsetExists = Returns whether the requested index exists
         // pr($entity->user_id);die;
+        Log::write('debug',$entity);
         if($entity){
             // $users = $options->offsetGet('users');
             $userId = $entity->user_id;
@@ -103,6 +104,7 @@ class ConversationsTable extends Table
             //     $user = $users;
             // }
         }
+        Log::write('debug',$user);
         if(isset($user) && !$entity->status){
             
             if($this->sendMessage($entity->block_identifier,$user)){
@@ -116,6 +118,7 @@ class ConversationsTable extends Table
         
         $appHelper = new AppHelper();
         $text = $appHelper->getConversationText($block_id);
+        Log::write('debug',$text);
         $phoneNumber = $user->phone;
         
         // $this->Bandwidth->sendMessage($phoneNumber,$text);
