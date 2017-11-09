@@ -25,59 +25,34 @@ class StripeComponent extends Component
      */
     protected $_defaultConfig = [];
 
-    public function addCard($userId){
-      
-      if (!$this->request->is(['post'])) {
-        throw new MethodNotAllowedException(__('BAD_REQUEST'));
-      }
-      
-      $data = $this->request->getData();
-      
-      if(!isset($data['stripeJsToken']) || !$data['stripeJsToken']){
-        throw new MethodNotAllowedException(__('BAD_REQUEST'));
-      }
+    public function addCard($userId,$stripeToken){
       
       \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
 
       $model = TableRegistry::get('Users');
       
       $users = $model->findById($userId)
-                     ->contain(['Experts','UserCards'])
+                     ->contain(['UserCards'])
                      ->first();
       
       $userCards = TableRegistry::get('UserCards'); 
 
       if(!isset($users->user_cards[0])){
       	
-        //when the user is NOT registered on stripe.
-        
+        //when the user is NOT registered on stripe.  
         try {
               
               $customer = \Stripe\Customer::create([
                 "description" => "Customer for sofia.moore@example.com",
-                "source" => $data['stripeJsToken'] // obtained with Stripe.js
-              ]);
-              $userCard = [
-              				  'user_id' => $userId,
-                              'expert_id' => $users->experts[0]->id,
-                              'stripe_customer_id' => $customer->id,
-                              'stripe_card_id' => $customer->default_source,
-                              'status' => 1
-                            ];
-
-              
-              $newCard = $userCards->newEntity($userCard);
-              if($userCards->save($newCard)){
-                $status = true;
-              }else{
-                throw new Exception("User card could not be saved. Error while saving the data.");
-              }
-              
+                "source" => $stripeToken // obtained with Stripe.js
+              ]);           
               
           } catch (Exception $e) {
               throw new Exception("User card could not be saved. Error via Stripe."); 
-          }  
-      
+          }
+
+        return ['stripe_customer_id' => $stripeCustomerId, 'stripe_card_id'=> $customer->default_source]; 
+
       }else{
       	
         //when the user is already registered on stripe.
@@ -87,30 +62,17 @@ class StripeComponent extends Component
               
             $customer = \Stripe\Customer::retrieve($stripeCusId);
             
-            $customer->sources->create(["source" => $data['stripeJsToken']]);
+            $customer->sources->create(["source" => $stripeToken]);
             $response = json_decode($customer->sources->getlastResponse()->body);
-            $userCard = [
-            				'user_id'=> $userId,
-                            'expert_id' => $users->experts[0]->id,
-                            'stripe_customer_id' => $response->customer,
-                            'stripe_card_id' => $response->id,
-                            'status' => 1
-                          ];
-
-            $newCard = $userCards->newEntity($userCard);
-            
-            if($userCards->save($newCard)){
-              $status = true;
-            }else{
-              throw new Exception("User card could not be saved. Error while saving the data.");
-            }
-            
+               
           } catch (Exception $e) {
               throw new Exception("User card could not be saved. Error via Stripe.");
           }
-      
+
+        return ['stripe_customer_id' => $response->customer, 'stripe_card_id'=> $response->id];
+
       }
-      return ['newCard' => $newCard, 'status'=> $status];
+      
     }
 
     public function deleteCard($userId){
@@ -127,8 +89,9 @@ class StripeComponent extends Component
   		
   		$userCards = TableRegistry::get('UserCards'); 
   		$getCardDetails = $userCards->findByUserId($userId)
-  									->where(['stripe_card_id' => $data['stripe_card_id']])
-  									->first();
+  									              ->where(['stripe_card_id' => $data['stripe_card_id']])
+  									              ->first();
+
   		$stripeCustomerId = null;		
   		
   		if($getCardDetails){
