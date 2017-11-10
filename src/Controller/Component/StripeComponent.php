@@ -11,6 +11,7 @@ use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Core\Exception\Exception;
 use Cake\Network\Exception\NotFoundException;
+use Cake\Log\Log;
 
 /**
  * Stripe component
@@ -51,7 +52,7 @@ class StripeComponent extends Component
               throw new Exception("User card could not be saved. Error via Stripe."); 
           }
 
-        return ['stripe_customer_id' => $stripeCustomerId, 'stripe_card_id'=> $customer->default_source]; 
+        return ['stripe_customer_id' => $customer->id, 'stripe_card_id'=> $customer->default_source]; 
 
       }else{
       	
