@@ -7,6 +7,7 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use App\Bandwidth\Bandwidth;
 use App\Controller\AppHelper;
+use Cake\Log\Log;
 /**
  * Conversations Model
  *

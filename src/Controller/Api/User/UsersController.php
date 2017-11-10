@@ -73,6 +73,23 @@ class UsersController extends ApiController
       $this->set('_serialize', ['status','data']);
     }
 
+
+     public function listCard($userId = null){
+
+      if (!$this->request->is(['get'])) {
+          throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+
+      $this->loadComponent('Stripe');
+      $userId = $this->Auth->user('id');
+
+      $data = $this->Stripe->listCards($userId);
+      
+      $this->set('status',$data['status']);
+      $this->set('data',$data['data']);
+      $this->set('_serialize', ['status','data']);
+    }
+
     public function linkUserWithFb(){
 
       if(!$this->request->is(['post'])){

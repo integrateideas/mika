@@ -128,10 +128,6 @@ class StripeComponent extends Component
 
     public function listCards($userId){
 
-    	if (!$this->request->is(['get'])) {
-	        throw new MethodNotAllowedException(__('BAD_REQUEST'));
-	    }
-
 	    $userCards = TableRegistry::get('UserCards'); 
   		$getCardDetails = $userCards->findByUserId($userId)
   									->first();
@@ -151,7 +147,7 @@ class StripeComponent extends Component
 				\Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
 
 				$customer = \Stripe\Customer::retrieve($stripeCustomerId)->sources
-																		 ->all(array('limit'=>3, 'object' => 'card'));
+																		 ->all(array('limit'=>5, 'object' => 'card'));
 
 				$reqData = [];
 
