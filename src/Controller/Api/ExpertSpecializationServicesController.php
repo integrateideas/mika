@@ -71,7 +71,7 @@ class ExpertSpecializationServicesController extends ApiController
         }
 
         $expertSpecializationService = $this->ExpertSpecializationServices->get($id, [
-            'contain' => ['Experts', 'ExpertSpecializations', 'SpecializationServices']
+            'contain' => ['Experts', 'ExpertSpecializations.Specializations', 'SpecializationServices']
         ]);
 
         $this->set('data',$expertSpecializationService);
