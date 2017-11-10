@@ -54,8 +54,8 @@ class AppointmentsFixture extends TestFixture
             'expert_specialization_id' => 1,
             'is_confirmed' => 1,
             'is_completed' => 1,
-            'created' => '2017-11-03 08:10:09',
-            'modified' => '2017-11-03 08:10:09',
+            'created' => '2017-11-04 18:04:19',
+            'modified' => '2017-11-04 18:04:19',
             'transaction_id' => 1,
             'user_card_id' => 1
         ],

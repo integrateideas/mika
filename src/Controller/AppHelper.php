@@ -42,7 +42,7 @@ class AppHelper
                                                                 ],
 
                                     "Availability_updated" => [
-                                                                "text"=>"Hi, <<expert name>>, good morning", 
+                                                                "text"=>"Thanks <<expert name>>, for your valuable response. We will update your availability", 
                                                                 "response"=>[
                                                                         [
                                                                             "intent" => ['Yes','Yo','Ya','Yup'],
@@ -85,15 +85,23 @@ class AppHelper
     }
 
     public function getNextBlock($blockIdentifier,$intent){
+      $conversationResponses = self::$conversationArray[$blockIdentifier]['response'];
       
-      if(isset(self::$conversationArray[$blockIdentifier])){
-        $response = self::$conversationArray[$blockIdentifier]['response'];
-        pr($response);die;
-        //compare intent with define intents
-        //return block identifier of the intent which is matched
-      } else{
-        die('bhai galat value hai/');
-      }   
+      foreach ($conversationResponses as $key => $value) {
+          
+          if(in_array($intent,$value['intent'])){
+            $newBlockId =  $value['block_identifier'];
+          }else{
+            $newBlockId = null;
+          }
+          if(isset(self::$conversationArray[$newBlockId])){
+            if(isset(self::$conversationArray[$newBlockId]['text'])){
+              return ['text' => self::$conversationArray[$newBlockId]['text'], 'block_id' => $newBlockId];
+            }else{
+              die('block k paas text ni hai');  
+            }
+          }
+      }  
     }
 
 }

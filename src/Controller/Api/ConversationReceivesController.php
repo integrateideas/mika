@@ -12,7 +12,8 @@ use Firebase\JWT\JWT;
 use Cake\Utility\Security;
 use Cake\I18n\Time;
 use Cake\Core\Configure;
-use Cake\Log\Log;;
+use Cake\Log\Log;
+use App\Controller\AppHelper;
 
 /**
  * Appointments Controller
@@ -36,25 +37,56 @@ class ConversationReceivesController extends ApiController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['receiveResponse']);
+        $this->Auth->allow(['add','fallback']);
     }
 
-    public function index(){
+    public function add(){
+      Log::write('debug',$this->request->data);
 
       if(!$this->request->is(['post'])){
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
       $phoneNo = $this->request->data['from'];
+      $this->loadModel('Users');
       $getExpert = $this->Users->find()->where(['phone' => $phoneNo])->first();
-      $this->loadModel('Conversations');
-      $findExpertConversation = $this->Conversations->findByUserId($getExpert->id)->first();
       
+      if(!$getExpert){
+         throw new NotFoundException(__('Your number is not registered with us. So we are not able to identify you.')); 
+      }
+      Log::write('debug',$getExpert);
+      $this->loadModel('Conversations');
+      $findExpertConversation = $this->Conversations->findByUserId($getExpert->id)->last();
+      Log::write('debug',$findExpertConversation);
       if(!$findExpertConversation){
-          pr('send sms for not identify the user in conversation');die;
-          throw new NotFoundException(__('Your number is not registered with us. Please try again later.'));
+          throw new NotFoundException(__('No conversation exist with this expert.'));
       }else{
-          pr($findExpertConversation);die;
+          
+          $appHelper = new AppHelper();
+          $reqData = $appHelper->getNextBlock($findExpertConversation->block_identifier,$this->request->data['text']);
+          if(!empty($reqData['block_id'])){
+            $data = [
+                      'block_identifier' => $reqData['block_id'],
+                      'user_id' => $getExpert->id,
+                      'status' => 0
+                    ];
+            $updateConversation = $this->Conversations->newEntity();
+            $updateConversation = $this->Conversations->patchEntity($updateConversation,$data);
+            
+            if ($this->Conversations->save($updateConversation)) {
+              pr('in save');die;
+            }else{
+              Log::write('debug',$updateConversation);
+              throw new Exception("Error while updating user_salon_id in Experts");
+              
+            }
+            // pr($updateConversation);die;
+          }
       }
 
+    }
+
+    public function fallback(){
+      Log::write('debug',$this->request->data);
+      pr('adasda');die;  
     }
 }
