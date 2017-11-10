@@ -181,7 +181,7 @@ class UsersController extends ApiController
       $data =array();            
       $user = $this->Users->find()
                           ->where(['id' => $userId])
-                          ->contain(['SocialConnections'])
+                          ->contain(['SocialConnections','UserCards'])
                           ->first();
 
       $favouriteExperts = $this->Users->UserFavouriteExperts->findByUserId($userId)
@@ -225,7 +225,7 @@ class UsersController extends ApiController
       }
       $user = $this->Users->find()
                             ->where(['id' => $user['id']])
-                            ->contain(['SocialConnections'])
+                            ->contain(['SocialConnections','UserCards'])
                             ->first();
 
       $favouriteExperts = $this->Users->UserFavouriteExperts->findByUserId($user['id'])
@@ -262,7 +262,7 @@ class UsersController extends ApiController
       }
       $response = $this->Users->find()
                             ->where(['id' => $user['id']])
-                            ->contain(['SocialConnections'])
+                            ->contain(['SocialConnections','UserCards'])
                             ->first();
       
       $response['favouriteExperts'] = $this->Users->UserFavouriteExperts->findByUserId($user['id'])
