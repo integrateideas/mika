@@ -57,36 +57,37 @@ class ConversationReceivesController extends ApiController
       $this->loadModel('Conversations');
       $findExpertConversation = $this->Conversations->findByUserId($getExpert->id)->last();
       Log::write('debug',$findExpertConversation);
-      if(!$findExpertConversation){
-          throw new NotFoundException(__('No conversation exist with this expert.'));
-      }else{
-          
-          $appHelper = new AppHelper();
-          $reqData = $appHelper->getNextBlock($findExpertConversation->block_identifier,$this->request->data['text']);
-          if(!empty($reqData['block_id'])){
-            $data = [
-                      'block_identifier' => $reqData['block_id'],
-                      'user_id' => $getExpert->id,
-                      'status' => 0
-                    ];
-            $updateConversation = $this->Conversations->newEntity();
-            $updateConversation = $this->Conversations->patchEntity($updateConversation,$data);
+        if(!$findExpertConversation){
+            throw new NotFoundException(__('No conversation exist with this expert.'));
+        }else{
             
-            if ($this->Conversations->save($updateConversation)) {
-              pr('in save');die;
-            }else{
-              Log::write('debug',$updateConversation);
-              throw new Exception("Error while updating user_salon_id in Experts");
-              
+            $appHelper = new AppHelper();
+            $reqData = $appHelper->getNextBlock($findExpertConversation->block_identifier,$this->request->data['text']);
+            if(!empty($reqData['block_id'])){
+              $data = [
+                        'block_identifier' => $reqData['block_id'],
+                        'user_id' => $getExpert->id,
+                        'status' => 0
+                      ];
+              $updateConversation = $this->Conversations->newEntity($data);
+              Log::write('debug', $updateConversation);
+              if (!$this->Conversations->save($updateConversation)) {  
+                Log::write('debug',$updateConversation);
+                if($updateConversation->errors()){
+                  $this->_sendErrorResponse($updateConversation->errors());
+                }
+                throw new Exception("Error Processing Request");
+              }
             }
-            // pr($updateConversation);die;
-          }
-      }
+        }      
 
+      $this->set('data',$updateConversation);
+      $this->set('status',true);
+      $this->set('_serialize', ['status','data']);
     }
 
     public function fallback(){
-      Log::write('debug',$this->request->data);
-      pr('adasda');die;  
+      Log::write('debug','in fallback function');
+      Log::write('debug',$this->request->data);  
     }
 }
