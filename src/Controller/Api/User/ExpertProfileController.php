@@ -52,6 +52,7 @@ class ExpertProfileController extends ApiController
         $this->loadModel('ExpertAvailabilities');
         $todaysAvailabilities = $this->ExpertAvailabilities
                                         ->findByExpertId($expertId)
+                                        ->where(['status' => 1])
                                         ->where([function ($exp) use ($startdate, $enddate) {
                                                               return $exp->between('available_from', $startdate, $enddate);
                                                             }])
