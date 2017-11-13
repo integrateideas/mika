@@ -46,16 +46,16 @@ class AppointmentBookingsController extends ApiController
         $data = $this->request->getData();
 
         if(!isset($data['stripeCardId']) || !$data['stripeCardId']){
-            throw new MethodNotAllowedException(__('Missing_Field',"Stripe card id is missing"));
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Stripe card id"));
         }
         if(!isset($data['expertId']) || !$data['expertId']){
-            throw new MethodNotAllowedException(__('Missing_Field',"Expert id is missing"));
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert id"));
         }
         if(!isset($data['availabiltyId']) || !$data['availabiltyId']){
-            throw new MethodNotAllowedException(__('Missing_Field',"Expert Availability id is missing"));
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Availability id"));
         }
         if(!isset($data['expSpecServiceId']) || !$data['expSpecServiceId']){
-            throw new MethodNotAllowedException(__('Missing_Field',"Expert Specialization Service id is missing"));
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Specialization Service id"));
         }
         $this->loadModel('ExpertSpecializationServices');
         $expertSpecializationId = $this->ExpertSpecializationServices->findById($data['expSpecServiceId'])->first()->expert_specialization_id;
