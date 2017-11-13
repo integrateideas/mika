@@ -67,6 +67,48 @@ class AppHelper
                                                                             "block_identifier" => "Availability_not_updated"
                                                                         ]
                                                                     ]
+                                                                ],
+                                    "Appointment_booking" => [
+                                                                "text"=>"Would you like to confirm an appointment for <<customer name>> for this <<service name>>", 
+                                                                "response"=>[
+                                                                        [
+                                                                            "intent" => ['Yes','Yo','Ya','Yup'],
+                                                                            "block_identifier" => "Confirm_booking"
+                                                                        ],
+                                                                        [
+                                                                            "intent" => ['No','Na','Nops','N'],
+                                                                            "block_identifier" => "Booking_deny"
+                                                                        ]
+                                                                    ]
+                                                                   
+                                                                ],
+                                    "Confirm_booking" => [
+                                                                "text"=>"Thanks <<expert name>>, for the confirmation. We will inform the customer for your booking accepatance", 
+                                                                "response"=>[
+                                                                        [
+                                                                            "intent" => ['Yes','Yo','Ya','Yup'],
+                                                                            "block_identifier" => "Availability_updated"
+                                                                        ],
+                                                                        [
+                                                                            "intent" => ['No','Na','Nops','N'],
+                                                                            "block_identifier" => "Availability_not_updated"
+                                                                        ]
+                                                                    ]
+                                                                   
+                                                                ],
+                                    "Booking_deny" => [
+                                                                "text"=>"You deny the booking. We will inform the customer for your denial", 
+                                                                "response"=>[
+                                                                        [
+                                                                            "intent" => ['Yes','Yo','Ya','Yup'],
+                                                                            "block_identifier" => "Availability_updated"
+                                                                        ],
+                                                                        [
+                                                                            "intent" => ['No','Na','Nops','N'],
+                                                                            "block_identifier" => "Availability_not_updated"
+                                                                        ]
+                                                                    ]
+                                                                   
                                                                 ]
 
                              ];
