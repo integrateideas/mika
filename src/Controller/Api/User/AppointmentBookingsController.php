@@ -37,17 +37,51 @@ class AppointmentBookingsController extends ApiController
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
         
-        $data = $this->request->data;
+        $userId = $this->Auth->user('id');
+      
+        if(!$userId){
+            throw new NotFoundException(__('We cant identify the user.'));
+        }
+
+        $data = $this->request->getData();
+
+        if(!isset($data['stripeCardId']) || !$data['stripeCardId']){
+            throw new MethodNotAllowedException(__('Missing_Field',"Stripe card id is missing"));
+        }
+        if(!isset($data['expertId']) || !$data['expertId']){
+            throw new MethodNotAllowedException(__('Missing_Field',"Expert id is missing"));
+        }
+        if(!isset($data['availabiltyId']) || !$data['availabiltyId']){
+            throw new MethodNotAllowedException(__('Missing_Field',"Expert Availability id is missing"));
+        }
+        if(!isset($data['expSpecServiceId']) || !$data['expSpecServiceId']){
+            throw new MethodNotAllowedException(__('Missing_Field',"Expert Specialization Service id is missing"));
+        }
+        $this->loadModel('ExpertSpecializationServices');
+        $expertSpecializationId = $this->ExpertSpecializationServices->findById($data['expSpecServiceId'])->first()->expert_specialization_id;
+
+        if(!$expertSpecializationId){
+            throw new NotFoundException(__('Expert Specialization id not found.'));
+        }
+
+        $this->loadModel('UserCards');
+        $getCardDetails = $this->UserCards->findByUserId($userId)
+                                    ->where(['stripe_card_id' => $data['stripeCardId']])
+                                    ->first();
+
+        if(!$getCardDetails){
+            throw new NotFoundException(__('User Card details not found.'));
+        }
+        $userCardId = $getCardDetails->id;
+
         $data = [
                     'user_id' => $this->Auth->user('id'),
-                    'expert_id' => $this->request->data['expert_id'],
-                    'expert_availability_id' => $this->request->data['expert_availability_id'],
-                    'expert_specialization_id' => $this->request->data['expert_specialization_id'],
-                    'expert_specialization_service_id' => $this->request->data['expert_specialization_service_id'],
-                    'expert_specialization_service_id' => $this->request->data['expert_specialization_service_id'],
-                    'user_card_id' => $this->request->data['user_card_id']
+                    'expert_id' => $data['expertId'],
+                    'expert_availability_id' => $data['availabiltyId'],
+                    'expert_specialization_id' => $expertSpecializationId,
+                    'expert_specialization_service_id' => $data['expSpecServiceId'],
+                    'user_card_id' => $userCardId
                 ];
-
         $this->loadModel('Appointments');
         $bookingAppointment = $this->Appointments->newEntity();
         $bookingAppointment = $this->Appointments->patchEntity($bookingAppointment, $data);
@@ -61,7 +95,22 @@ class AppointmentBookingsController extends ApiController
         }
         
         $success = true;
-        
+
+        $this->loadModel('ExpertAvailabilities');
+        $getAvailabilty = $this->ExpertAvailabilities->findById($data['expert_availability_id'])->first();
+        $updateAvailability = [
+                                'status' => 0
+                              ];
+
+        $patchAvailabilty = $this->ExpertAvailabilities->patchEntity($getAvailabilty,$updateAvailability);
+        if (!$this->ExpertAvailabilities->save($patchAvailabilty)) {
+          
+          if($patchAvailabilty->errors()){
+            $this->_sendErrorResponse($patchAvailabilty->errors());
+          }
+          throw new Exception("Error Processing Request while Updating the Availability status");
+        }
+
         $this->set('data',$bookingAppointment);
         $this->set('status',$success);
         $this->set('_serialize', ['status','data']);
