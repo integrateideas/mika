@@ -155,10 +155,12 @@ class UserSalonsController extends ApiController
                                         })
                                       ->contain(['Users','ExpertSpecializationServices','ExpertAvailabilities' => function($q) use ($whereCond, $startdate, $enddate){
                                             return $q->where($whereCond)
+                                                    ->where(['status' => 1])
                                                     ->where(function ($exp) use ($startdate, $enddate) {
                                                   return $exp->between('available_from', $startdate, $enddate);
                                                 });
                                         }])
+                                      ->where([''])
                                       ->all()
                                       ->toArray();
 
