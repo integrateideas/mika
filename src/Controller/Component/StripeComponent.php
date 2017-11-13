@@ -75,55 +75,30 @@ class StripeComponent extends Component
       
     }
 
-    public function deleteCard($userId){
-
-	    if (!$this->request->is(['post', 'delete'])) {
-	        throw new MethodNotAllowedException(__('BAD_REQUEST'));
-	    }
-
-	    $data = $this->request->getData();
+    public function deleteCard($stripeCardId,$stripeCustomerId){
       
-  		if(!isset($data['stripe_card_id']) || !$data['stripe_card_id']){
-  			throw new MethodNotAllowedException(__('BAD_REQUEST'));
+  		if(!isset($stripeCardId) || !$stripeCardId){
+  			throw new MethodNotAllowedException(__('Missing_Field',"Stripe card id is missing"));
   		}
-  		
-  		$userCards = TableRegistry::get('UserCards'); 
-  		$getCardDetails = $userCards->findByUserId($userId)
-  									              ->where(['stripe_card_id' => $data['stripe_card_id']])
-  									              ->first();
 
-  		$stripeCustomerId = null;		
-  		
-  		if($getCardDetails){
+  		if(!isset($stripeCustomerId) || !$stripeCustomerId){
+        throw new MethodNotAllowedException(__('Missing_Field',"Stripe customer id is missing"));
+      }
 
-  			$stripeCustomerId = $getCardDetails->stripe_customer_id;
-  		}
-  		
-  		if(!$stripeCustomerId || !isset($stripeCustomerId)){
-  			throw new NotFoundException(__("Stripe Customer Id doesn't found"));
-  		}
-  		
   		try {
 
   				\Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
 
   				$customer = \Stripe\Customer::retrieve($stripeCustomerId);
   				
-  				$response = $customer->sources->retrieve($data['stripe_card_id'])->delete();              
-                	if($response){
-
-                		if (!$userCards->delete($getCardDetails)) {
-  			            throw new Exception("User Card could not be deleted.");
-  			        }else{
-  			        	$status = true;
-  			        }
-                	}
+  				$response = $customer->sources->retrieve($stripeCardId)->delete();              
+      
   			} catch (Exception $e) {
   				
   			  throw new Exception("User card not deleted. Error in Stripe."); 
   			} 
 
-		  return ['deleteCard' => $getCardDetails, 'status'=> $status];
+		  return ['deleteCard' => $response];
     }
 
     public function listCards($userId){
@@ -171,10 +146,6 @@ class StripeComponent extends Component
       if (!$this->request->is(['post'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
-      // pr($userId);
-      // pr($stripeCardId);die;
-      // pr($stripeCustomerId);
-      // die;
       $data = $this->request->getData();
       
       if(!isset($stripeCardId) || !$stripeCardId){
@@ -183,22 +154,6 @@ class StripeComponent extends Component
       if(!isset($stripeCustomerId) || !$stripeCustomerId){
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
-      // if(!isset($stripeCustomerId) || !$stripeCustomerId){
-
-      //   $userCards = TableRegistry::get('UserCards'); 
-      //   $getCardDetails = $userCards->findByUserId($userId)
-      //                               ->first();
-      //   $stripeCustomerId = null;   
-        
-      //   if($getCardDetails){
-      //     $stripeCustomerId = $getCardDetails->stripe_customer_id;
-      //   }
-
-      // }
-      // pr($stripeCustomerId);die;
-      // if(!$stripeCustomerId || !isset($stripeCustomerId)){
-      //   throw new NotFoundException(__("Stripe Customer Id doesn't found"));
-      // }
 
       try {
 
@@ -207,7 +162,7 @@ class StripeComponent extends Component
         $customer = \Stripe\Charge::create(array(
                                                   "amount" => 2000,
                                                   "currency" => "usd",
-                                                  "source" => $stripeCardId, // card-id,
+                                                  "source" => $stripeCardId,
                                                   "customer" => $stripeCustomerId,
                                                   "description" => "Charge for jacob.smith@example.com"
                                                 ));

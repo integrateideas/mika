@@ -73,15 +73,58 @@ class UsersController extends ApiController
       $this->set('_serialize', ['status','data']);
     }
 
+    public function deleteCard(){
+      if (!$this->request->is(['post', 'delete'])) {
+          throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
 
-     public function listCard($userId = null){
+      $userId = $this->Auth->user('id');
+      
+      if(!$userId){
+        throw new NotFoundException(__('We cant identify the user.'));
+      }
+      $data = $this->request->getData();
+
+      if(!isset($data['stripe_card_id']) || !$data['stripe_card_id']){
+        throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+      $this->loadModel('UserCards');
+      $getCardDetails = $this->UserCards->findByUserId($userId)
+                                        ->where(['stripe_card_id' => $data['stripe_card_id']])
+                                        ->first();
+      
+      if(!$getCardDetails){
+        throw new NotFoundException(__('We cant identify the card for this user.'));
+      }
+      
+      $stripeCustomerId = $getCardDetails->stripe_customer_id;
+      $status = false;
+      
+      $this->loadComponent('Stripe');
+      $data = $this->Stripe->deleteCard($data['stripe_card_id'],$stripeCustomerId);
+      if(!empty($data)){
+
+        if (!$this->UserCards->delete($getCardDetails)){
+          throw new Exception("Error Processing Request");
+        }
+        $status = true;
+      }
+      $this->set('status',$status);
+      $this->set('_serialize', ['status','deleteCard']);
+    }
+
+     public function listCards($userId = null){
 
       if (!$this->request->is(['get'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
 
       $this->loadComponent('Stripe');
+      
       $userId = $this->Auth->user('id');
+      if(!$userId){
+        throw new NotFoundException(__('We cant identify the user.'));
+      }
 
       $data = $this->Stripe->listCards($userId);
       
