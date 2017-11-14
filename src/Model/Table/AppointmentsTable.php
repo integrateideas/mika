@@ -66,9 +66,9 @@ class AppointmentsTable extends Table
             'foreignKey' => 'expert_specialization_id',
             'joinType' => 'INNER'
         ]);
-        // $this->belongsTo('Transactions', [
-        //     'foreignKey' => 'transaction_id'
-        // ]);
+        $this->belongsTo('Transactions', [
+            'foreignKey' => 'transaction_id'
+        ]);
         $this->belongsTo('UserCards', [
             'foreignKey' => 'user_card_id',
             'joinType' => 'INNER'
@@ -112,7 +112,7 @@ class AppointmentsTable extends Table
         $rules->add($rules->existsIn(['expert_availability_id'], 'ExpertAvailabilities'));
         $rules->add($rules->existsIn(['expert_specialization_service_id'], 'ExpertSpecializationServices'));
         $rules->add($rules->existsIn(['expert_specialization_id'], 'ExpertSpecializations'));
-        // $rules->add($rules->existsIn(['transaction_id'], 'Transactions'));
+        $rules->add($rules->existsIn(['transaction_id'], 'Transactions'));
         $rules->add($rules->existsIn(['user_card_id'], 'UserCards'));
 
         return $rules;
