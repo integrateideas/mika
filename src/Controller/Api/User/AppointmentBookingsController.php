@@ -51,8 +51,10 @@ class AppointmentBookingsController extends ApiController
         if(!isset($data['expertId']) || !$data['expertId']){
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert id"));
         }
-        if(!isset($data['availabiltyId']) || !$data['availabiltyId']){
+
+        if(!isset($data['availabilityId']) || !$data['availabilityId']){
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Availability id"));
+
         }
         if(!isset($data['expSpecServiceId']) || !$data['expSpecServiceId']){
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Specialization Service id"));
@@ -77,7 +79,7 @@ class AppointmentBookingsController extends ApiController
         $data = [
                     'user_id' => $this->Auth->user('id'),
                     'expert_id' => $data['expertId'],
-                    'expert_availability_id' => $data['availabiltyId'],
+                    'expert_availability_id' => $data['availabilityId'],
                     'expert_specialization_id' => $expertSpecializationId,
                     'expert_specialization_service_id' => $data['expSpecServiceId'],
                     'user_card_id' => $userCardId
