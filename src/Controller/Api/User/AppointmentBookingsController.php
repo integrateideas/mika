@@ -198,7 +198,7 @@ class AppointmentBookingsController extends ApiController
             $reqData = $this->Appointments->findByUserId($userId);
         }
         
-        $reqData = $reqData->contain(['ExpertSpecializationServices.SpecializationServices','ExpertSpecializations.Specializations','Transactions']);
+        $reqData = $reqData->contain(['ExpertSpecializationServices.SpecializationServices','ExpertSpecializations.Specializations','Transactions', 'ExpertAvailabilities', 'Experts.Users']);
 
         $filter = $this->request->query('filter');
         if($filter){
