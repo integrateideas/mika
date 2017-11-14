@@ -118,6 +118,10 @@ class AppointmentBookingsController extends ApiController
 
     public function confirmBooking(){
 
+        if(!$this->request->is(['get'])){
+            throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+        
         $data = $this->request->data;
 
         if(!isset($data['appointment_id']) || !$data['appointment_id']){
@@ -167,6 +171,59 @@ class AppointmentBookingsController extends ApiController
         $success = true;
 
         $this->set('data',$updateAppointmentStatus);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
+    }
+
+    // List of Appointmnets on the basis of User or Expert and Filters
+    public function index(){
+        
+        $userId = $this->Auth->user('id');
+        //check weather this user is an expert 
+        $this->loadModel('Experts');
+        $expertId = $this->Experts->findByUserId($userId)->first()->id;
+
+        $this->loadModel('Appointments');
+        
+        if($expertId){
+            $reqData = $this->Appointments->findByExpertId($expertId);
+        }else{
+            $reqData = $this->Appointments->findByUserId($userId);
+        }
+        
+        $reqData = $reqData->contain(['ExpertSpecializationServices.SpecializationServices','ExpertSpecializations.Specializations','Transactions']);
+
+        $filter = $this->request->query('filter');
+        if($filter){
+
+            switch ($filter) {
+                case 'all':
+                    $where = [''];
+                    break;
+                case 'pending':
+                    $where = ['is_confirmed IS NULL','is_completed IS NULL'];
+                    break;
+                case 'rejected':
+                    $where = ['is_confirmed' => 0,'is_completed IS NULL'];
+                    break;
+                case 'confirmed':
+                    $where = ['is_confirmed' => 1,'is_completed IS NULL'];
+                    break;
+                case 'cancelled':
+                    $where = ['is_confirmed' => 1,'is_completed' => 0];
+                    break;
+                case 'completed':
+                    $where = ['is_confirmed' => 1,'is_completed' => 1];
+                    break;
+                
+            }
+        }
+
+        $reqData = $reqData->where($where)->all();
+
+        $success = true;
+
+        $this->set('data',$reqData);
         $this->set('status',$success);
         $this->set('_serialize', ['status','data']);
     }
