@@ -7,11 +7,11 @@ use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Core\Exception\Exception;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
-use Cake\Auth\DefaultPasswordHasher;
-use Firebase\JWT\JWT;
-use Cake\Utility\Security;
-use Cake\I18n\Time;
-use Cake\Core\Configure;
+// use Cake\Auth\DefaultPasswordHasher;
+// use Firebase\JWT\JWT;
+// use Cake\Utility\Security;
+// use Cake\I18n\Time;
+// use Cake\Core\Configure;
 use Cake\Log\Log;
 use Cake\Collection\Collection;
 
@@ -184,16 +184,16 @@ class AppointmentBookingsController extends ApiController
         if(!$this->request->is(['get'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-        
+
         $userId = $this->Auth->user('id');
         //check weather this user is an expert 
         $this->loadModel('Experts');
-        $expertId = $this->Experts->findByUserId($userId)->first()->id;
+        $expert = $this->Experts->findByUserId($userId)->first();
 
         $this->loadModel('Appointments');
         
-        if($expertId){
-            $reqData = $this->Appointments->findByExpertId($expertId);
+        if($expert){
+            $reqData = $this->Appointments->findByExpertId($expert->id);
         }else{
             $reqData = $this->Appointments->findByUserId($userId);
         }
@@ -226,7 +226,7 @@ class AppointmentBookingsController extends ApiController
             }
         }
 
-        $reqData = $reqData->where($where)->all();
+        $reqData = $reqData->where($where)->all()->toArray();
 
         $success = true;
 
