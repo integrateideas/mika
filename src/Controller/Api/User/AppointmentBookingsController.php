@@ -120,10 +120,10 @@ class AppointmentBookingsController extends ApiController
 
     public function confirmBooking(){
 
-        if(!$this->request->is(['get'])){
+        if(!$this->request->is(['post'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-        
+
         $data = $this->request->data;
 
         if(!isset($data['appointment_id']) || !$data['appointment_id']){
@@ -179,6 +179,11 @@ class AppointmentBookingsController extends ApiController
 
     // List of Appointmnets on the basis of User or Expert and Filters
     public function index(){
+        
+
+        if(!$this->request->is(['get'])){
+            throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
         
         $userId = $this->Auth->user('id');
         //check weather this user is an expert 
