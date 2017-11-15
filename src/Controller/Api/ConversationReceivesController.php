@@ -41,21 +41,22 @@ class ConversationReceivesController extends ApiController
     }
 
     public function add(){
-      Log::write('debug',$this->request->data);
 
+      Log::write('debug',$this->request->data);
       if(!$this->request->is(['post'])){
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
       $phoneNo = $this->request->data['from'];
       $this->loadModel('Users');
-      $getExpert = $this->Users->find()->where(['phone' => $phoneNo])->first();
+      $getUser = $this->Users->find()->where(['phone' => $phoneNo])->first();
       
-      if(!$getExpert){
+      if(!$getUser){
          throw new NotFoundException(__('Your number is not registered with us. So we are not able to identify you.')); 
       }
-      Log::write('debug',$getExpert);
+      Log::write('debug',$getUser);
       $this->loadModel('Conversations');
-      $findExpertConversation = $this->Conversations->findByUserId($getExpert->id)->last();
+      $findExpertConversation = $this->Conversations->findByUserId($getUser->id)->last();
+      
       Log::write('debug',$findExpertConversation);
         if(!$findExpertConversation){
             throw new NotFoundException(__('No conversation exist with this expert.'));
@@ -66,18 +67,11 @@ class ConversationReceivesController extends ApiController
             if(!empty($reqData['block_id'])){
               $data = [
                         'block_identifier' => $reqData['block_id'],
-                        'user_id' => $getExpert->id,
+                        'user_id' => $getUser->id,
                         'status' => 0
                       ];
-              $updateConversation = $this->Conversations->newEntity($data);
-              Log::write('debug', $updateConversation);
-              if (!$this->Conversations->save($updateConversation)) {  
-                Log::write('debug',$updateConversation);
-                if($updateConversation->errors()){
-                  $this->_sendErrorResponse($updateConversation->errors());
-                }
-                throw new Exception("Error Processing Request");
-              }
+
+              $updateConversation = $appHelper->createSingleConversation($data);
             }
         }      
 

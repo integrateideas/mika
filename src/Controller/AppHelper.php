@@ -13,6 +13,10 @@
 * @license   http://www.opensource.org/licenses/mit-license.php MIT License
 */
 namespace App\Controller;
+use Cake\ORM\TableRegistry;
+use Cake\Log\Log;
+use Cake\Network\Exception\NotFoundException;
+use Cake\Core\Exception\Exception;
 
 /**
 * Application Controller
@@ -112,17 +116,47 @@ class AppHelper
                                                                 ]
 
                              ];
+  
+    public function createManyConversation($data){
+        $conversations = TableRegistry::get('Conversations');
+        $newEntities = $conversations->newEntities($data);
 
-   public function getConversationText($blockIdentifier){
+        $patchEntities = $conversations->patchEntities($newEntities,$data);
+        
+        if ($conversations->saveMany($patchEntities)){
+            Log::write('debug','Conversations have been saved ');
+            Log::write('debug',$patchEntities);
+            return $patchEntities;
+        }else{
+            throw new Exception("Error Processing Request while saving data.");
+        }
+        
+    }
+    public function createSingleConversation($data){
+        
+        $conversations = TableRegistry::get('Conversations');
+        $newEntity = $conversations->newEntity($data);
+        
+        if ($conversations->save($newEntity)){
+            Log::write('debug','Single Conversation has been saved ');
+            Log::write('debug',$newEntity);
+            return $newEntity;
+        }else{
+            throw new Exception("Error Processing Request while saving data.");
+        }
+        
+    }
+
+    public function getConversationText($blockIdentifier){
 
       if(isset(self::$conversationArray[$blockIdentifier])){
         if(isset(self::$conversationArray[$blockIdentifier]['text'])){
           return self::$conversationArray[$blockIdentifier]['text'];
         }else{
-          die('block k paas text ni hai');  
+          throw new NotFoundException(__('No text found for this Block Identifier.'));  
         }
       } else{
-        die('bhai galat value hai/');
+        throw new NotFoundException(__("This block identifier doesn't exist."));
       }   
     }
 
@@ -140,7 +174,7 @@ class AppHelper
             if(isset(self::$conversationArray[$newBlockId]['text'])){
               return ['text' => self::$conversationArray[$newBlockId]['text'], 'block_id' => $newBlockId];
             }else{
-              die('block k paas text ni hai');  
+              throw new NotFoundException(__('No text found for this Block Identifier.'));  
             }
           }
       }  

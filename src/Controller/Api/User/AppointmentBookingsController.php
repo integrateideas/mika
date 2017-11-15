@@ -88,7 +88,7 @@ class AppointmentBookingsController extends ApiController
         $bookingAppointment = $this->Appointments->newEntity();
         $bookingAppointment = $this->Appointments->patchEntity($bookingAppointment, $data);
 
-        if (!$this->Appointments->save($bookingAppointment)) {
+        if (!$this->Appointments->save($bookingAppointment,['user_id' =>$userId])) {
           
           if($bookingAppointment->errors()){
             $this->_sendErrorResponse($bookingAppointment->errors());
