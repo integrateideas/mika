@@ -46,13 +46,13 @@ class StripeComponent extends Component
               $customer = \Stripe\Customer::create([
                 "description" => "Customer for sofia.moore@example.com",
                 "source" => $stripeToken // obtained with Stripe.js
-              ]);           
+              ]);    
+              $response = json_decode($customer->__toJSON());
+              $response = $response->sources->data[0];   
               
           } catch (Exception $e) {
               throw new Exception("User card could not be saved. Error via Stripe."); 
           }
-
-        return ['stripe_customer_id' => $customer->id, 'stripe_card_id'=> $customer->default_source]; 
 
       }else{
       	
@@ -70,10 +70,8 @@ class StripeComponent extends Component
               throw new Exception("User card could not be saved. Error via Stripe.");
           }
 
-        return ['stripe_customer_id' => $response->customer, 'stripe_card_id'=> $response->id];
-
       }
-      
+      return ['stripe_data' => $response];       
     }
 
     public function deleteCard($stripeCardId,$stripeCustomerId){
