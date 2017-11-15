@@ -7,11 +7,11 @@ use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Core\Exception\Exception;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
-use Cake\Auth\DefaultPasswordHasher;
-use Firebase\JWT\JWT;
-use Cake\Utility\Security;
-use Cake\I18n\Time;
-use Cake\Core\Configure;
+// use Cake\Auth\DefaultPasswordHasher;
+// use Firebase\JWT\JWT;
+// use Cake\Utility\Security;
+// use Cake\I18n\Time;
+// use Cake\Core\Configure;
 use Cake\Log\Log;
 use Cake\Collection\Collection;
 
@@ -51,8 +51,10 @@ class AppointmentBookingsController extends ApiController
         if(!isset($data['expertId']) || !$data['expertId']){
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert id"));
         }
-        if(!isset($data['availabiltyId']) || !$data['availabiltyId']){
+
+        if(!isset($data['availabilityId']) || !$data['availabilityId']){
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Availability id"));
+
         }
         if(!isset($data['expSpecServiceId']) || !$data['expSpecServiceId']){
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Specialization Service id"));
@@ -77,7 +79,7 @@ class AppointmentBookingsController extends ApiController
         $data = [
                     'user_id' => $this->Auth->user('id'),
                     'expert_id' => $data['expertId'],
-                    'expert_availability_id' => $data['availabiltyId'],
+                    'expert_availability_id' => $data['availabilityId'],
                     'expert_specialization_id' => $expertSpecializationId,
                     'expert_specialization_service_id' => $data['expSpecServiceId'],
                     'user_card_id' => $userCardId
@@ -182,21 +184,21 @@ class AppointmentBookingsController extends ApiController
         if(!$this->request->is(['get'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-        
+
         $userId = $this->Auth->user('id');
         //check weather this user is an expert 
         $this->loadModel('Experts');
-        $expertId = $this->Experts->findByUserId($userId)->first()->id;
+        $expert = $this->Experts->findByUserId($userId)->first();
 
         $this->loadModel('Appointments');
         
-        if($expertId){
-            $reqData = $this->Appointments->findByExpertId($expertId);
+        if($expert){
+            $reqData = $this->Appointments->findByExpertId($expert->id);
         }else{
             $reqData = $this->Appointments->findByUserId($userId);
         }
         
-        $reqData = $reqData->contain(['ExpertSpecializationServices.SpecializationServices','ExpertSpecializations.Specializations','Transactions']);
+        $reqData = $reqData->contain(['ExpertSpecializationServices.SpecializationServices','ExpertSpecializations.Specializations','Transactions', 'ExpertAvailabilities', 'Experts.Users']);
 
         $filter = $this->request->query('filter');
         if($filter){
@@ -224,7 +226,7 @@ class AppointmentBookingsController extends ApiController
             }
         }
 
-        $reqData = $reqData->where($where)->all();
+        $reqData = $reqData->where($where)->all()->toArray();
 
         $success = true;
 
