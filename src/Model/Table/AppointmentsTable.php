@@ -5,6 +5,10 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Log\Log;
+use Cake\ORM\TableRegistry;
+use Cake\Network\Exception\NotFoundException;
+use App\Controller\AppHelper;
 
 /**
  * Appointments Model
@@ -96,6 +100,24 @@ class AppointmentsTable extends Table
             ->allowEmpty('is_completed');
 
         return $validator;
+    }
+
+    public function afterSave($event,$entity,$options)
+    {   
+        Log::write('debug',$entity);
+        $userId = $options->offsetGet('user_id');
+        if(!$userId){
+            throw new NotFoundException(__('User id not found.'));
+        }
+        if(!$entity->is_confirmed){
+            $data = [
+                        'block_identifier' => "Appointment_booking",
+                        'user_id' => $userId,
+                        'status' => 0
+                    ];
+            $appHelper = new AppHelper();
+            $updateConversation = $appHelper->createSingleConversation($data); 
+        }
     }
 
     /**

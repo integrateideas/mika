@@ -89,25 +89,17 @@ class ConversationsTable extends Table
     }
     
     public function afterSave($event,$entity,$options)
-    {   
-        //offsetExists = Returns whether the requested index exists
-        // pr($entity->user_id);die;
+    {       
         Log::write('debug',$entity);
         if($entity){
-            // $users = $options->offsetGet('users');
             $userId = $entity->user_id;
             
             $user = $this->Users->findById($userId)->first();
-            // pr($user);die;
-            // $user = $users[$entity->user_id];
             
-            // if(!$user){
-            //     $user = $users;
-            // }
         }
         Log::write('debug',$user);
         if(isset($user) && !$entity->status){
-            
+                
             if($this->sendMessage($entity->block_identifier,$user)){
                 $entity->status = true;
                 $this->save($entity);

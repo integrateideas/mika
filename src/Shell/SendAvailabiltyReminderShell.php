@@ -3,6 +3,7 @@ namespace App\Shell;
 
 use Cake\Console\Shell;
 use Cake\Log\Log;
+use App\Controller\AppHelper;
 
 /**
  * SendAvailabiltyReminder shell command.
@@ -46,15 +47,14 @@ class SendAvailabiltyReminderShell extends Shell
                         'status' => 0
                     ];
         }
-        $this->loadModel('Conversations');
-        $conversation = $this->Conversations->newEntities($data);
-        $conversation = $this->Conversations->patchEntities($conversation,$data);
-        if ($this->Conversations->saveMany($conversation,['users' => $users])){
+        if(!empty($data)){
+            $appHelper = new AppHelper();
+            $reqData = $appHelper->createManyConversation($data);
+            
             $this->out('Conversations have been saved ');
-            print_r($conversation);
-            Log::write('debug','Conversations have been saved ');
-            Log::write('debug',$conversation);
+            print_r($reqData);
         }
-        
     }
+
+    
 }

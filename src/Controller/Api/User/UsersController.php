@@ -36,7 +36,6 @@ class UsersController extends ApiController
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
       $data = $this->request->getData();
-      
       if(!isset($data['stripeJsToken']) || !$data['stripeJsToken']){
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
@@ -49,10 +48,12 @@ class UsersController extends ApiController
       $this->loadComponent('Stripe');
       $stripeData = $this->Stripe->addCard($userId,$data['stripeJsToken']);
       
+      $stripeData = $stripeData['stripe_data'];
+
       $data = [
                 'user_id'=> $userId,
-                'stripe_customer_id' => $stripeData['stripe_customer_id'],
-                'stripe_card_id' => $stripeData['stripe_card_id'],
+                'stripe_customer_id' => $stripeData->customer,
+                'stripe_card_id' => $stripeData->id,
                 'status' => 1
               ];
               
@@ -67,10 +68,10 @@ class UsersController extends ApiController
         throw new Exception("Error Processing Request");
       }
         
-
+      $this->set('stripeData',$stripeData);
       $this->set('data',$userCards);
       $this->set('status',true);
-      $this->set('_serialize', ['status','data']);
+      $this->set('_serialize', ['status','data','stripeData']);
     }
 
     public function deleteCard(){
