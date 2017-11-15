@@ -116,7 +116,7 @@ class AppointmentsTable extends Table
                         'status' => 0
                     ];
             $appHelper = new AppHelper();
-            $updateConversation = $appHelper->createSingleConversation($data);
+            $updateConversation = $appHelper->createSingleConversation($data); 
         }
     }
 
