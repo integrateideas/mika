@@ -68,7 +68,8 @@ class UsersController extends ApiController
         throw new Exception("Error Processing Request");
       }
         
-      $this->set('stripeData',$stripeData);
+      $userCards['stripeData'] = $stripeData;
+      
       $this->set('data',$userCards);
       $this->set('status',true);
       $this->set('_serialize', ['status','data','stripeData']);
