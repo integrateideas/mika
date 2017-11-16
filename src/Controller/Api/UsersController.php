@@ -31,7 +31,6 @@ class UsersController extends ApiController
     }
 
     public function addCard(){
-
       if (!$this->request->is(['post'])) {
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
@@ -338,7 +337,6 @@ class UsersController extends ApiController
       }
       $data =array();
       $user = $this->Auth->identify();
-      
       if (!$user) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
