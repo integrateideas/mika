@@ -143,11 +143,11 @@ class UsersTable extends Table
                     ->where(['id' => $id])
                     ->contain(['Experts.ExpertSpecializations'  => function($q){
                         return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
-                      },'SocialConnections','Experts.ExpertCards'])
+                      },'SocialConnections','UserCards'])
                     ->first();
-
         if(isset($user['experts']) && $user['experts'] != []){  
-        $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
+        $data['data']['userCards'] = $user['user_cards'];
+        
         // pr($user); die();
         if($user['experts'][0]['expert_specializations'] != []){
 

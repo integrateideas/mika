@@ -37,6 +37,7 @@ public function initialize()
     $this->loadComponent('RequestHandler');
     if($this->request->params['action'] == 'login'){
       $this->loadComponent('Auth', [
+        'authorize' => ['Custom' => [] ],
         'authenticate' => [
           'Form' => [
                   'userModel' => 'Users'
@@ -46,6 +47,7 @@ public function initialize()
     }else{
       $this->loadComponent('Auth', [
         'storage' => 'Memory',
+        'authorize' => ['Custom' => [] ],
         'authenticate' => [
           'ADmad/JwtAuth.Jwt' => [
             'parameter' => 'token',
@@ -126,9 +128,9 @@ public function initialize()
     }
   }
   
-  public function isAuthorized($user)
-  {
-    return true;
+  // public function isAuthorized($user)
+  // {
+  //   return true;
 
-  }
+  // }
 }
