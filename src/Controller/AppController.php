@@ -53,7 +53,9 @@ class AppController extends Controller
         $this->loadComponent('Flash');
 
         $this->loadComponent('Auth', [
-            'authorize' => ['Controller'],
+            'authorize' => ['Custom' => [] ],
+            // 'authorize' => ['Controller'],
+            'authError' => 'You have been automatically logged out of your dashboard. Please use valid credentials to log back in.',
             'loginRedirect' => [
                 'controller' => 'Users',
                 'action' => 'index'
@@ -155,8 +157,8 @@ class AppController extends Controller
     }
 
 
-    public function isAuthorized($user)
-    {
-        return true;
-    }
+    // public function isAuthorized($user)
+    // {
+    //     return true;
+    // }
 }
