@@ -10,6 +10,7 @@ use Cake\I18n\Date;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 use Stripe\Stripe;
+use Cake\I18n\FrozenTime;
 
 /**
  * Availabilities Controller
@@ -36,10 +37,18 @@ class ExpertAvailabilitiesController extends ApiController
         $this->loadModel('Experts');
         $expert_id = $this->Experts->findByUserId($userId)->first()->get('id');
 
+        $date = new FrozenTime('today');
+        $startdate = $date->modify('00:05:00');
+        $enddate = $date->modify('23:55:00');
+
         $expertAvailabilities = $this->ExpertAvailabilities->find()
-                                                           ->where(['expert_id' => $expert_id])
-                                                           ->contain(['Experts'])
-                                                           ->all();
+                                                   ->where(['expert_id' => $expert_id])
+                                                   ->where(function ($exp) use ($startdate, $enddate) {
+                                                      return $exp
+                                                        ->between('available_from', $startdate, $enddate);
+                                                          })
+                                                   ->contain(['Experts'])
+                                                   ->all();
 
         $success = true;
         

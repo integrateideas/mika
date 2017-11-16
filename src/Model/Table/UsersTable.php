@@ -139,16 +139,18 @@ class UsersTable extends Table
 
     public function loginExpertInfo($id){
 
-        $user = $this->find()
+      $user = $this->find()
                     ->where(['id' => $id])
                     ->contain(['Experts.ExpertSpecializations'  => function($q){
                         return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
-                      },'SocialConnections','Experts.ExpertCards'])
+                      },'SocialConnections','UserCards','Experts.Appointments' => function($q){
+                        return  $q->where(['is_confirmed IS NULL'])
+                                  ->contain(['ExpertSpecializations.Specializations','ExpertSpecializationServices.SpecializationServices']);
+                      }])
                     ->first();
 
-        if(isset($user['experts']) && $user['experts'] != []){  
-        $data['data']['expertCards'] = $user['experts'][0]['expert_cards'];
-        // pr($user); die();
+      if(isset($user['experts']) && $user['experts'] != []){  
+
         if($user['experts'][0]['expert_specializations'] != []){
 
           $collection = $user['experts'][0]['expert_specializations'];
@@ -160,11 +162,28 @@ class UsersTable extends Table
          
           $user['selected_specializations'] = $coll; 
         }
+
+
+        if(isset($user['experts'][0]['appointments']) && $user['experts'][0]['appointments']){
+
+          //Grouping pending appointments according to the available slots.
+          $pendingAppointmentsCollection = new Collection($user['experts'][0]['appointments']);
+          $groupedPendingAppointments = $pendingAppointmentsCollection->groupBy('expert_availability_id')
+                                                                    ->toArray();
+          $data['data']['groupedPendingAppointments'] = $groupedPendingAppointments;
+
+          //Reducing the pending appointments array to the one appointment that came the earliest.
+          $earliestPendingAppointment = $pendingAppointmentsCollection->min('created');
+          $data['data']['earliestPendingAppointment'] = $earliestPendingAppointment;
+        }
         $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
       }
 
       $return['user'] = $user;
-      $return['data'] = $data;
+
+      if(isset($data)){
+        $return['data'] = $data;
+      }
 
       return $return;
 
