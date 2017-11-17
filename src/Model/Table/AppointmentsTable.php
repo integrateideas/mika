@@ -105,11 +105,13 @@ class AppointmentsTable extends Table
     public function afterSave($event,$entity,$options)
     {   
         Log::write('debug',$entity);
-        $userId = $options->offsetGet('user_id');
-        if(!$userId){
-            throw new NotFoundException(__('User id not found.'));
-        }
-        if(!$entity->is_confirmed){
+        
+        if($entity->is_confirmed === null){
+            
+            $userId = $options->offsetGet('user_id');
+            if(!$userId){
+                throw new NotFoundException(__('User id not found.'));
+            }
             $data = [
                         'block_identifier' => "Appointment_booking",
                         'user_id' => $userId,
