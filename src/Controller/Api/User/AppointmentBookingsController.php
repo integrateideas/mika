@@ -128,7 +128,7 @@ class AppointmentBookingsController extends ApiController
 
         $this->loadModel('UserCards');
         $userCardDetails = $this->UserCards->findById($userCardId)->first();
-        
+
         $this->loadComponent('Stripe');
         $userId = $this->Auth->user('id');
         $cardChargeDetails = $this->Stripe->chargeCards($servicePrice,$userCardDetails['stripe_card_id'],$userCardDetails['stripe_customer_id'],$serviceName,$userName);
@@ -181,13 +181,14 @@ class AppointmentBookingsController extends ApiController
           }
           throw new Exception("Error Processing Request while Updating the Availability status");
         }
-        $this->rejectAppointments($expertId, $availabilityId,$appointmentId);
+        $this->rejectAll($expertId, $availabilityId,$appointmentId);
         $this->set('data',$updateAppointmentStatus);
         $this->set('status',$success);
         $this->set('_serialize', ['status','data']);
     }
 
-    public function rejectAppointments($expertId, $availabilityId,$appointmentId){
+    //Reject all for the slot given in the $appointmentId passed in the params.
+    public function rejectAll($expertId, $availabilityId,$appointmentId){
         
         $appointments = $this->Appointments->find()
                                            ->where(['id IS NOT' => $appointmentId, 'expert_id' => $expertId, 'expert_availability_id' => $availabilityId])
@@ -219,9 +220,14 @@ class AppointmentBookingsController extends ApiController
                                 ];
 
         $appointments = $this->Appointments->patchEntity($appointment,$updateBookingStatus);
-        
+
+        if (!$this->Appointments->save($appointments)) {
+          
+          throw new Exception("Error Processing Request while rejecting the appointment");
+        }
+
         $success = true;
-        $this->rejectAppointments($expertId, $availabilityId,$appointments->id);
+        $this->rejectAll($expertId, $availabilityId,$appointments->id);
         $this->set('data',$appointments);
         $this->set('status',$success);
         $this->set('_serialize', ['status','data']);
