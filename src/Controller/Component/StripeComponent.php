@@ -140,18 +140,16 @@ class StripeComponent extends Component
       return ['data' => $reqData, 'status' => true];
     }
 
-    public function chargeCards($userId,$stripeCardId,$stripeCustomerId = null){
-
-      if (!$this->request->is(['post'])) {
-          throw new MethodNotAllowedException(__('BAD_REQUEST'));
-      }
-      $data = $this->request->getData();
+    public function chargeCards($serviceAmount,$stripeCardId,$stripeCustomerId,$serviceName = null,$userName = null){
       
+      if(!isset($serviceAmount) || !$serviceAmount){
+        throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Amount for the service"));
+      }
       if(!isset($stripeCardId) || !$stripeCardId){
-        throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Stripe card id"));
       }
       if(!isset($stripeCustomerId) || !$stripeCustomerId){
-        throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Stripe customer id"));
       }
 
       try {
@@ -159,11 +157,11 @@ class StripeComponent extends Component
         \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
 
         $customer = \Stripe\Charge::create(array(
-                                                  "amount" => 2000,
+                                                  "amount" => $serviceAmount,
                                                   "currency" => "usd",
                                                   "source" => $stripeCardId,
                                                   "customer" => $stripeCustomerId,
-                                                  "description" => "Charge for jacob.smith@example.com"
+                                                  "description" => "Charge for ".$serviceName." by ".$userName
                                                 ));
         
         if($customer){

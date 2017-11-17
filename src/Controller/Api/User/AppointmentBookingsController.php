@@ -98,47 +98,40 @@ class AppointmentBookingsController extends ApiController
         
         $success = true;
 
-        $this->loadModel('ExpertAvailabilities');
-        $getAvailabilty = $this->ExpertAvailabilities->findById($data['expert_availability_id'])->first();
-        $updateAvailability = [
-                                'status' => 0
-                              ];
-
-        $patchAvailabilty = $this->ExpertAvailabilities->patchEntity($getAvailabilty,$updateAvailability);
-        if (!$this->ExpertAvailabilities->save($patchAvailabilty)) {
-          
-          if($patchAvailabilty->errors()){
-            $this->_sendErrorResponse($patchAvailabilty->errors());
-          }
-          throw new Exception("Error Processing Request while Updating the Availability status");
-        }
-
         $this->set('data',$bookingAppointment);
         $this->set('status',$success);
         $this->set('_serialize', ['status','data']);
     }
 
-    public function confirmBooking(){
+    public function confirmBooking($id){
 
-        if(!$this->request->is(['post'])){
+        if(!$this->request->is(['get'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        $data = $this->request->data;
-
-        if(!isset($data['appointment_id']) || !$data['appointment_id']){
+        if(!isset($id) || !$id){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
         $this->loadModel('Appointments');
-        $appointment = $this->Appointments->findById($data['appointment_id'])->first();
-        $userCardId = $appointment['user_card_id'];
+        $appointment = $this->Appointments->findById($id)
+                                          ->contain(['Users','ExpertSpecializationServices.SpecializationServices'])
+                                          ->first();
+
+        $expertId = $appointment->expert_id;
+        $availabilityId = $appointment->expert_availability_id;                                
+        $userName = $appointment->user->first_name;
         
+        $servicePrice = $appointment->expert_specialization_service->price;
+        $serviceName = $appointment->expert_specialization_service->specialization_service->label;
+        
+        $userCardId = $appointment['user_card_id'];
+
         $this->loadModel('UserCards');
         $userCardDetails = $this->UserCards->findById($userCardId)->first();
         
         $this->loadComponent('Stripe');
         $userId = $this->Auth->user('id');
-        $cardChargeDetails = $this->Stripe->chargeCards($userId,$userCardDetails['stripe_card_id'],$userCardDetails['stripe_customer_id']);
+        $cardChargeDetails = $this->Stripe->chargeCards($servicePrice,$userCardDetails['stripe_card_id'],$userCardDetails['stripe_customer_id'],$serviceName,$userName);
         
         $reqData = [
                         'transaction_amount' => $cardChargeDetails['data']['amount'],
@@ -170,9 +163,66 @@ class AppointmentBookingsController extends ApiController
           }
           throw new Exception("Error Processing Request");
         }
+        
+        $appointmentId = $updateAppointmentStatus->id;
         $success = true;
 
+        $this->loadModel('ExpertAvailabilities');
+        $getAvailabilty = $this->ExpertAvailabilities->findById($availabilityId)->first();
+        $updateAvailability = [
+                                'status' => 0
+                              ];
+
+        $patchAvailabilty = $this->ExpertAvailabilities->patchEntity($getAvailabilty,$updateAvailability);
+        if (!$this->ExpertAvailabilities->save($patchAvailabilty)) {
+          
+          if($patchAvailabilty->errors()){
+            $this->_sendErrorResponse($patchAvailabilty->errors());
+          }
+          throw new Exception("Error Processing Request while Updating the Availability status");
+        }
+        $this->rejectAppointments($expertId, $availabilityId,$appointmentId);
         $this->set('data',$updateAppointmentStatus);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
+    }
+
+    public function rejectAppointments($expertId, $availabilityId,$appointmentId){
+        
+        $appointments = $this->Appointments->find()
+                                           ->where(['id IS NOT' => $appointmentId, 'expert_id' => $expertId, 'expert_availability_id' => $availabilityId])
+                                           ->all()
+                                           ->toArray();
+        
+        foreach ($appointments as $key => $value) {
+            
+            $value->is_confirmed = 0;
+            $appointments = $this->Appointments->save($value);
+        }
+    }
+
+    public function rejectBooking($id){
+
+        if(!$this->request->is(['get'])){
+            throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+
+        $this->loadModel('Appointments');
+        $appointment = $this->Appointments->findById($id)
+                                          ->first();
+
+        $expertId = $appointment->expert_id;
+        $availabilityId = $appointment->expert_availability_id;
+        $appointment->is_confirmed = 0;
+        $updateBookingStatus =  [
+                                    'is_confirmed' => 0
+                                ];
+
+        $appointments = $this->Appointments->patchEntity($appointment,$updateBookingStatus);
+        
+        $success = true;
+        $this->rejectAppointments($expertId, $availabilityId,$appointments->id);
+        $this->set('data',$appointments);
         $this->set('status',$success);
         $this->set('_serialize', ['status','data']);
     }
