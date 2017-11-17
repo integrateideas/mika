@@ -213,16 +213,14 @@ class AppointmentBookingsController extends ApiController
 
         $expertId = $appointment->expert_id;
         $availabilityId = $appointment->expert_availability_id;
-        $appointment->is_confirmed = 0;
         $updateBookingStatus =  [
                                     'is_confirmed' => 0
                                 ];
 
         $appointments = $this->Appointments->patchEntity($appointment,$updateBookingStatus);
         
-        $success = true;
-        $this->rejectAppointments($expertId, $availabilityId,$appointments->id);
-        $this->set('data',$appointments);
+        $this->rejectAppointments($expertId, $availabilityId,$appointmentId);
+        $this->set('data',$updateAppointmentStatus);
         $this->set('status',$success);
         $this->set('_serialize', ['status','data']);
     }

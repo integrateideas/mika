@@ -31,7 +31,7 @@ class AppHelper
 
   private static $conversationArray = [
                                 "Scheduling_Availabilities" =>[
-                                                                "text"=>"Hi, <<expert name>>, Good morning. Would you like to make yourself available on Mika today? Ignore this text to cancel.", 
+                                                                "text"=>"Hi, {{expertName}}, Good morning. Would you like to make yourself available on Mika today? Ignore this text to cancel.", 
                                                                 "response"=>[
                                                                         [
                                                                             "intent" => ['Yes','Yo','Ya','Yup'],
@@ -46,7 +46,7 @@ class AppHelper
                                                                 ],
 
                                     "Availability_updated" => [
-                                                                "text"=>"Thanks <<expert name>>, for your valuable response. We will update your availability", 
+                                                                "text"=>"Thanks {{expertName}}, for your valuable response. We will update your availability", 
                                                                 "response"=>[
                                                                         [
                                                                             "intent" => ['Yes','Yo','Ya','Yup'],
@@ -60,7 +60,7 @@ class AppHelper
                                                                    
                                                                 ],
                                     "Availability_not_updated" => [
-                                                                    "text"=>"Hi, <<expert name>>, good morning", 
+                                                                    "text"=>"Hi, {{expertName}}, good morning", 
                                                                 "response"=>[
                                                                         [
                                                                             "intent" => ['Yes','Yo','Ya','Yup'],
@@ -73,7 +73,7 @@ class AppHelper
                                                                     ]
                                                                 ],
                                     "Appointment_booking" => [
-                                                                "text"=>"Would you like to confirm an appointment for <<customer name>> for this <<service name>>", 
+                                                                "text"=>"{{expertName}}, would you like to confirm an appointment for {{serviceName}}", 
                                                                 "response"=>[
                                                                         [
                                                                             "intent" => ['Yes','Yo','Ya','Yup'],
@@ -87,7 +87,7 @@ class AppHelper
                                                                    
                                                                 ],
                                     "Confirm_booking" => [
-                                                                "text"=>"Thanks <<expert name>>, for the confirmation. We will inform the customer for your booking accepatance", 
+                                                                "text"=>"Thanks {{expertName}}, for the confirmation. We will inform the customer for your booking accepatance", 
                                                                 "response"=>[
                                                                         [
                                                                             "intent" => ['Yes','Yo','Ya','Yup'],
@@ -134,10 +134,20 @@ class AppHelper
     }
     public function createSingleConversation($data){
         
-        $conversations = TableRegistry::get('Conversations');
-        $newEntity = $conversations->newEntity($data);
+        $reqData =  [
+                        'block_identifier' => $data['block_identifier'],
+                        'user_id' => $data['user_id'],
+                        'status' => $data['status']
+                    ];
+        $msgData =  [
+                        'expertName' => $data['expertName'],
+                        'serviceName' => $data['serviceName']
+                    ];
         
-        if ($conversations->save($newEntity)){
+        $conversations = TableRegistry::get('Conversations');
+        $newEntity = $conversations->newEntity($reqData);
+        
+        if ($conversations->save($newEntity,['msgData' => $msgData])){
             Log::write('debug','Single Conversation has been saved ');
             Log::write('debug',$newEntity);
             return $newEntity;
@@ -147,11 +157,32 @@ class AppHelper
         
     }
 
-    public function getConversationText($blockIdentifier){
+     private function __substitute($content, $hash){
+       //write substitute logic
+       $i=0;
+       foreach ($hash as $key => $value) {
+           if(!is_array($value)){
+               $placeholder = sprintf('{{%s}}', $key);
+               if($placeholder=="{{".$key."}}"){
+                   if(!$i){
+                       $afterStr = str_replace($placeholder, $value, $content);
+                   }else{
+                       $afterStr = str_replace($placeholder, $value, $afterStr);
+                   }
+                   $i++;
+               }
+           }
+       }
+       return $afterStr;
+   }
+
+    public function getConversationText($blockIdentifier,$user,$msgData = null){
 
       if(isset(self::$conversationArray[$blockIdentifier])){
         if(isset(self::$conversationArray[$blockIdentifier]['text'])){
-          return self::$conversationArray[$blockIdentifier]['text'];
+            $content = $this->__substitute(self::$conversationArray[$blockIdentifier]['text'],$msgData);
+
+          return $content;
         }else{
           throw new NotFoundException(__('No text found for this Block Identifier.'));  
         }
