@@ -42,7 +42,7 @@ class ExpertAvailabilitiesController extends ApiController
         $enddate = $date->modify('23:55:00');
 
         $expertAvailabilities = $this->ExpertAvailabilities->find()
-                                                   ->where(['expert_id' => $expert_id])
+                                                   ->where(['expert_id' => $expert_id,'status' => 1])
                                                    ->where(function ($exp) use ($startdate, $enddate) {
                                                       return $exp
                                                         ->between('available_from', $startdate, $enddate);
