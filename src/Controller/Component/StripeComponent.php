@@ -157,7 +157,7 @@ class StripeComponent extends Component
         \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
 
         $customer = \Stripe\Charge::create(array(
-                                                  "amount" => $serviceAmount,
+                                                  "amount" => ($serviceAmount*100),
                                                   "currency" => "usd",
                                                   "source" => $stripeCardId,
                                                   "customer" => $stripeCustomerId,
