@@ -52,11 +52,12 @@ class UsersController extends ApiController
       $this->loadComponent('Stripe');
       $stripeData = $this->Stripe->addCard($userId,$data['stripeJsToken']);
       
+      $stripeData = $stripeData['stripe_data'];
       $data = [
                 'user_id'=> $userId,
                 'expert_id' => $expertId,
-                'stripe_customer_id' => $stripeData['stripe_customer_id'],
-                'stripe_card_id' => $stripeData['stripe_card_id'],
+                'stripe_customer_id' => $stripeData->customer,
+                'stripe_card_id' => $stripeData->id,
                 'status' => 1
               ];
               
