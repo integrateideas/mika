@@ -214,12 +214,12 @@ class AppointmentBookingsController extends ApiController
 
         $expertId = $appointment->expert_id;
         $availabilityId = $appointment->expert_availability_id;
-        $appointment->is_confirmed = 0;
         $updateBookingStatus =  [
                                     'is_confirmed' => 0
                                 ];
 
         $appointments = $this->Appointments->patchEntity($appointment,$updateBookingStatus);
+
 
         if (!$this->Appointments->save($appointments)) {
           
