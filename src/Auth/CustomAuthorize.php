@@ -11,6 +11,7 @@ class CustomAuthorize extends BaseAuthorize{
 	
 	public function authorize($user, Request $request){
 		//setting request parameters
+        return true;
 		$this->reqController = $request->params['controller'];
 		$this->reqAction = $request->params['action'];
 		$this->reqPass = $request->params['pass'];
