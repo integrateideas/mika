@@ -88,8 +88,10 @@ class AppointmentBookingsController extends ApiController
         $bookingAppointment = $this->Appointments->newEntity();
         $bookingAppointment = $this->Appointments->patchEntity($bookingAppointment, $data);
 
-        if (!$this->Appointments->save($bookingAppointment,['user_id' =>$userId])) {
-          
+        $expertsUserId = $this->Appointments->Experts->findById($data['expert_id'])->first()->user_id;
+        Log::write('debug',$data); 
+        if (!$this->Appointments->save($bookingAppointment,['user_id' =>$expertsUserId])) { 
+
           if($bookingAppointment->errors()){
             $this->_sendErrorResponse($bookingAppointment->errors());
           }

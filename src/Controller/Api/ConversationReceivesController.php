@@ -47,6 +47,8 @@ class ConversationReceivesController extends ApiController
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
       $phoneNo = $this->request->data['from'];
+      $phoneNo = str_replace("+1","",$phoneNo);
+
       $this->loadModel('Users');
       $getUser = $this->Users->find()->where(['phone' => $phoneNo])->first();
       
