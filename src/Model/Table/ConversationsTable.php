@@ -113,6 +113,7 @@ class ConversationsTable extends Table
         $text = $appHelper->getConversationText($block_id,$user,$msgData);
         Log::write('debug',$text);
         $phoneNumber = $user->phone;
+        Log::write('debug',$user);
         $this->Bandwidth->sendMessage($phoneNumber,$text);
         return true;
     }

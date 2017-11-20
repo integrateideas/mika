@@ -31,53 +31,60 @@ class AppHelper
 
   private static $conversationArray = [
                                 "Scheduling_Availabilities" =>[
-                                                                "text"=>"Hi, {{expertName}}, Good morning. Would you like to make yourself available on Mika today? Ignore this text to cancel.", 
+                                                                "text"=>"Good morning, {{expertName}}. Would you like to make yourself available on Mika today? Ignore this text to cancel.", 
                                                                 "response"=>[
                                                                         [
-                                                                            "intent" => ['Yes','Yo','Ya','Yup'],
-                                                                            "block_identifier" => "Availability_updated"
+                                                                            "intent" => ['Yes','Y','Ya','yes','y','ya'],
+                                                                            "block_identifier" => "confirm_schedule"
                                                                         ],
                                                                         [
-                                                                            "intent" => ['No','Na','Nops','N'],
+                                                                            "intent" => ['No','Na','N','no','n','na'],
                                                                             "block_identifier" => "Availability_not_updated"
                                                                         ]
                                                                     ]
                                                                     
                                                                 ],
 
-                                    "Availability_updated" => [
-                                                                "text"=>"Thanks {{expertName}}, for your valuable response. We will update your availability", 
+                                    "confirm_schedule" => [
+                                                                "text"=>"Great. Here is a quick link where you can update your availability.", 
                                                                 "response"=>[
                                                                         [
-                                                                            "intent" => ['Yes','Yo','Ya','Yup'],
+                                                                            "intent" => [],
                                                                             "block_identifier" => "Availability_updated"
                                                                         ],
                                                                         [
-                                                                            "intent" => ['No','Na','Nops','N'],
+                                                                            "intent" => [],
                                                                             "block_identifier" => "Availability_not_updated"
                                                                         ]
                                                                     ]
                                                                    
                                                                 ],
                                     "Availability_not_updated" => [
-                                                                    "text"=>"Hi, {{expertName}}, good morning", 
+                                                                    "text"=>"It looks like you haven't updated your time, are you no longer available for a booking today?", 
                                                                 "response"=>[
                                                                         [
-                                                                            "intent" => ['Yes','Yo','Ya','Yup'],
-                                                                            "block_identifier" => "Availability_updated"
-                                                                        ],
-                                                                        [
-                                                                            "intent" => ['No','Na','Nops','N'],
-                                                                            "block_identifier" => "Availability_not_updated"
+                                                                            "intent" => ['No','Na','N','no','n','na'],
+                                                                            "block_identifier" => "confirm_not_available"
                                                                         ]
                                                                     ]
                                                                 ],
+                                    "confirm_not_available" => [
+                                                                    "text"=>"Okay, hope you have a nice day. ", 
+                                                                "response"=>[
+                                                                        [
+                                                                            "intent" => [],
+                                                                            "block_identifier" => "Availability_not_updated"
+                                                                        ]
+                                                                    ]
+                                                                ],                                                                
                                     "Appointment_booking" => [
                                                                 "text"=>"{{expertName}}, would you like to confirm an appointment for {{serviceName}}", 
                                                                 "response"=>[
                                                                         [
                                                                             "intent" => ['Yes','Yo','Ya','Yup'],
-                                                                            "block_identifier" => "Confirm_booking"
+                                                                            "block_identifier" => "Confirm_booking",
+                                                                            'api'=>['zcaca',
+                                                                            'data'=>[expertName]]
                                                                         ],
                                                                         [
                                                                             "intent" => ['No','Na','Nops','N'],
@@ -192,16 +199,16 @@ class AppHelper
     }
 
     public function getNextBlock($blockIdentifier,$intent){
+
       $conversationResponses = self::$conversationArray[$blockIdentifier]['response'];
       
       foreach ($conversationResponses as $key => $value) {
-          
           if(in_array($intent,$value['intent'])){
-            $newBlockId =  $value['block_identifier'];
+            $newBlockId =  (isset($value['block_identifier']))?$value['block_identifier']:null;
           }else{
             $newBlockId = null;
           }
-          if(isset(self::$conversationArray[$newBlockId])){
+          if($newBlockId && (isset(self::$conversationArray[$newBlockId]))){
             if(isset(self::$conversationArray[$newBlockId]['text'])){
               return ['text' => self::$conversationArray[$newBlockId]['text'], 'block_id' => $newBlockId];
             }else{
