@@ -380,90 +380,16 @@ class UsersController extends ApiController
       $this->set('_serialize', ['data','status']);
     }
 
-    
+    public function testFCM(){
 
-    // public function addCard(){
-      
-    //   if (!$this->request->is(['post'])) {
-    //     throw new MethodNotAllowedException(__('BAD_REQUEST'));
-    //   }
-      
-    //   $data = $this->request->getData();
-      
-    //   if(!isset($data['stripeJsToken']) && !$data['stripeJsToken']){
-    //     throw new MethodNotAllowedException(__('BAD_REQUEST'));
-    //   }
-      
-    //   \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
+      $this->loadComponent('FCMNotification');
 
-    //   $userExpert = $this->Users->findById($this->Auth->user('id'))
-    //                               ->contain('Experts.ExpertCards')
-    //                               ->first();
-      
-    //   if(!isset($userExpert->experts[0]->expert_cards[0])){
-      
-    //     //when the user is NOT registered on stripe.
-        
-    //     try {
-              
-    //           $customer = \Stripe\Customer::create([
-    //             "description" => "Customer for sofia.moore@example.com",
-    //             "source" => $data['stripeJsToken'] // obtained with Stripe.js
-    //           ]);
-    //           $expertCard = [
-    //                           'expert_id' => $userExpert->experts[0]->id,
-    //                           'stripe_customer_id' => $customer->id,
-    //                           'stripe_card_id' => $customer->default_source,
-    //                           'status' => 1
-    //                         ];
-    //           $this->loadModel('ExpertCards');
-    //           $newCard = $this->ExpertCards->newEntity($expertCard);
-              
-    //           if($this->ExpertCards->save($newCard)){
-    //             $status = true;
-    //           }else{
-    //             throw new Exception("User card could not be saved.");
-    //           }
-              
-    //       } catch (Exception $e) {
-    //         // pr($e); die;
-    //           throw new Exception("User card could not be saved."); 
-              
-    //       }  
-      
-    //   }else{
-      
-    //     //when the user is already registered on stripe.
-    //     $stripeCusId = $userExpert->experts[0]->expert_cards[0]->stripe_customer_id;
-        
-    //     try {
-              
-    //         $customer = \Stripe\Customer::retrieve($stripeCusId);
-    //         $customer->sources->create(["source" => $data['stripeJsToken']]);
-    //         $response = json_decode($customer->sources->getlastResponse()->body);
-    //         $expertCard = [
-    //                         'expert_id' => $userExpert->experts[0]->id,
-    //                         'stripe_customer_id' => $response->customer,
-    //                         'stripe_card_id' => $response->id,
-    //                         'status' => 1
-    //                       ];
-    //         $this->loadModel('ExpertCards');
-    //         $newCard = $this->ExpertCards->newEntity($expertCard);
-            
-    //         if($this->ExpertCards->save($newCard)){
-    //           $status = true;
-    //         }else{
-    //           throw new Exception("User card could not be saved.");
-    //         }
-            
-    //       } catch (Exception $e) {
-    //           throw new Exception("User card could not be saved.");
-    //       }
-      
-    //   }
-    //   $this->set('status',$status);
-    //   $this->set('newCard',$newCard);
-    //   $this->set('_serialize', ['status','newCard']);
-    // }
+      $deviceToken = $this->Users->UserDeviceTokens->findByUserId($this->Auth->user('id'))->first()->device_token;
+      // pr($deviceToken); die;
+      $title = 'Howdy';
+      $body = 'this is a test notification';
+      $data = ['hi' => 'hello'];
+      $notification = $this->FCMNotification->sendToExpertApp($title, $body, $deviceToken, $data);
+    }
 
 }
