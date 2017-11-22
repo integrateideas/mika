@@ -95,26 +95,26 @@ class ConversationsTable extends Table
             $userId = $entity->user_id;
             
             $user = $this->Users->findById($userId)->first();
-            
         }
         Log::write('debug',$user);
         if(isset($user) && !$entity->status){
                 
-            if($this->sendMessage($entity->block_identifier,$user)){
+            if($this->sendMessage($entity->block_identifier,$user,$options)){
                 $entity->status = true;
                 $this->save($entity);
             }
         }
     }
 
-    public function sendMessage($block_id, $user, $options = null){
+    public function sendMessage($block_id,$user, $msgData, $options = null){
         
+        $msgData = $msgData->offsetGet('msgData');
         $appHelper = new AppHelper();
-        $text = $appHelper->getConversationText($block_id);
+        $text = $appHelper->getConversationText($block_id,$user,$msgData);
         Log::write('debug',$text);
         $phoneNumber = $user->phone;
-        
-        // $this->Bandwidth->sendMessage($phoneNumber,$text);
+        Log::write('debug',$user);
+        $this->Bandwidth->sendMessage($phoneNumber,$text);
         return true;
     }
 }

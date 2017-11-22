@@ -112,63 +112,6 @@ class UserSalonsController extends ApiController
         $this->set('_serialize', ['status','data']);
     }
 
-    public function searchSalon(){
-        if(!$this->request->is(['get'])){
-            throw new MethodNotAllowedException(__('BAD_REQUEST'));
-        }
-
-        if(!isset($this->request->query['zipcode'])){
-          throw new BadRequestException(__('MANDATORY_FIELD_MISSING','zipcode')); 
-        }
-
-        $time = null;
-        $serviceId = null;
-        $whereCond = [];
-        
-        if(isset($this->request->query['time']) && !in_array($this->request->query['time'], ["", null, false])){
-            $time = $this->request->query['time'];
-            $time  = new FrozenTime($time);
-            $whereCond = ['ExpertAvailabilities.available_from <=' => $time, 'ExpertAvailabilities.available_to >=' => $time];
-        }
-
-        if(isset($this->request->query['specialization_service_id']) && ($this->request->query['specialization_service_id'])){
-              $serviceId = $this->request->query['specialization_service_id'];
-            
-        }
-
-        $zipcode = $this->request->query['zipcode'];
-        $date = new FrozenTime('today');
-        $startdate = $date->modify('00:05:00');
-        $enddate = $date->modify('23:55:00');
-
-        $this->loadModel('Experts');
-        $response = $this->Experts->find()
-                                  // ->contain(['ExpertAvailabilities'])
-                                  // ->where(function ($exp) use ($startdate, $enddate) {
-                                  //                 return $exp->between('ExpertAvailabilities.available_from', $startdate, $enddate);
-                                  //                 })
-                                      ->matching('Users.UserSalons', function ($q) use ($zipcode) {
-                                            return $q->where(['zipcode' => $zipcode]);
-                                        })
-                                      ->matching('ExpertSpecializationServices', function ($q) use ($serviceId) {
-                                            return $q->where(['specialization_service_id' => $serviceId]);
-                                        })
-                                      ->contain(['Users','ExpertSpecializationServices','ExpertAvailabilities' => function($q) use ($whereCond, $startdate, $enddate){
-                                            return $q->where($whereCond)
-                                                    ->where(['status' => 1])
-                                                    ->where(function ($exp) use ($startdate, $enddate) {
-                                                  return $exp->between('available_from', $startdate, $enddate);
-                                                });
-                                        }])
-                                      ->where([''])
-                                      ->all()
-                                      ->toArray();
-
-        $this->set('data',$response);
-        $this->set('status',true);
-        $this->set('_serialize', ['status','data']);
-    }
-
     /**
      * Edit method
      *

@@ -11,7 +11,6 @@ class CustomAuthorize extends BaseAuthorize{
 	
 	public function authorize($user, Request $request){
 		//setting request parameters
-        return true;
 		$this->reqController = $request->params['controller'];
 		$this->reqAction = $request->params['action'];
 		$this->reqPass = $request->params['pass'];
@@ -22,12 +21,13 @@ class CustomAuthorize extends BaseAuthorize{
                               ->first();
 
 		$userRole = $user['role']['label'];
-
-		//Check if user allowed to acces the resource based on his role
-		if(!$this->_checkRoleAccess($userRole)){
-			
-			return false;
-		} 
+        if(!$this->_ignoreRoleAccess($this->reqPrefix)){
+            if(!$this->_checkRoleAccess($userRole)){	
+                return false;
+    		} 
+        }
+        
+        //Check if user allowed to acces the resource based on his role
 		//if acessing a record then check ownership
         if(isset($this->reqPass[0]) && is_numeric($this->reqPass[0]) && in_array($userRole, ['User', 'Expert'])){
 
@@ -42,9 +42,25 @@ class CustomAuthorize extends BaseAuthorize{
 		return true;
 	}
 
+    //function to ignore the role Access for common apis for both Expert and Customers
+    private function _ignoreRoleAccess($prefix){
+        $commonApis = [
+
+            'api' => [
+                'UserDeviceTokens' => ['add','edit'],
+                'SpecializationServices' => ['index'],
+                'ExpertSpecializationServices' => ['view']
+            ],
+            'api/user' => [
+                'Users' => ['addCard','deleteCard','listCards']
+            ]
+        ];
+        return !$this->_checkUnAuthorized($commonApis[$prefix]);
+    } 
+
 	//method to check wether current controller & action matches some list of un authorized controllers 
 	private function _checkUnAuthorized($unAuthorizedLocations){
-
+        
 		if(isset($unAuthorizedLocations[$this->reqController])){
 
 			if($unAuthorizedLocations[$this->reqController][0] == 'all' || in_array($this->reqAction, $unAuthorizedLocations[$this->reqController])){
@@ -89,20 +105,11 @@ class CustomAuthorize extends BaseAuthorize{
     //method to get unauthorized locations for current user based on the resource ownership of the vendor
     private function _checkOwnerShip($targetId, $userRole, $entityId){
        
-
         $target = Inflector::pluralize($userRole);
-      
-        // $associationRoute = $this->_getFromKnownRoutes($this->reqController, $target);
-        
-        // if(!$associationRoute){
-       		$associationRoute = $this->_getAssociationRoute($this->reqController, $target, [], []);
-        // }
-
-
+   		$associationRoute = $this->_getAssociationRoute($this->reqController, $target, [], []);
         if(!$associationRoute){
             return true;
         }
-        // $associationRoute = $this->_getAssociationRoute('Features', $target, [], []);
         if ($associationRoute == $target) {
            
             if($targetId == $entityId){
@@ -118,7 +125,6 @@ class CustomAuthorize extends BaseAuthorize{
             $foreignKey = $associations->get($target)->foreignKey();
             $entity = $tableObject->findById($entityId)->where([$foreignKey => $targetId])->first();
 
-
         } else{
            
             $direct = false;
@@ -133,7 +139,6 @@ class CustomAuthorize extends BaseAuthorize{
         if(isset($entity) && $entity){
             return true;
         }
-        // return false;
         unset($entity);
         //Check Super Admin OwnerShip
            
@@ -149,9 +154,7 @@ class CustomAuthorize extends BaseAuthorize{
         
         $tableObject = TableRegistry::get($source);
         
-        // pr($tableObject);die;
         $entityClass = $tableObject->entityClass();
-        // pr($entityClass);die;
         $entityClass = (new \ReflectionClass($entityClass))->getShortName();
         //Check if Model Exists or not ($entityClass will equal to 'Entity if no model exists')
         if($entityClass == 'Entity'){
@@ -160,9 +163,7 @@ class CustomAuthorize extends BaseAuthorize{
 
         $associations = $tableObject->associations();
         unset($tableObject);
-        // pr($associations);die;
         $array = $associations->keys();
-        // pr($array);die;
         $source = strtolower($source);
         $target = strtolower($target);
    
@@ -208,27 +209,6 @@ class CustomAuthorize extends BaseAuthorize{
         return !$this->_checkUnAuthorized($allowedLocations[$userRole]);
     }
 
-    //Use known routes instead of find routes recursively
-    // private function _getFromKnownRoutes($source, $target){
-
-    //     $knownRoutes = [
-
-    //         'Expert' => [
-
-    //             'Users' => ['Resellers','ResellerVendors','Vendors','VendorUsers']
-    //         ],
-    //         'Vendors' => [
-
-    //             'Users' => ['Vendors', 'VendorUsers'],
-    //         ]
-    //     ];
-
-    //     if(isset($knownRoutes[$target][$source])){
-    //         return $knownRoutes[$target][$source];
-    //     }
-
-    //     return false;
-    // }
 
 }
 

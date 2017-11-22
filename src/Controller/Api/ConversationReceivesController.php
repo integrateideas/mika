@@ -47,6 +47,8 @@ class ConversationReceivesController extends ApiController
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
       $phoneNo = $this->request->data['from'];
+      $phoneNo = str_replace("+1","",$phoneNo);
+
       $this->loadModel('Users');
       $getUser = $this->Users->find()->where(['phone' => $phoneNo])->first();
       
@@ -64,12 +66,15 @@ class ConversationReceivesController extends ApiController
             
             $appHelper = new AppHelper();
             $reqData = $appHelper->getNextBlock($findExpertConversation->block_identifier,$this->request->data['text']);
+            
             if(!empty($reqData['block_id'])){
               $data = [
                         'block_identifier' => $reqData['block_id'],
                         'user_id' => $getUser->id,
-                        'status' => 0
-                      ];
+                        'status' => 0,
+                        'expertName' => $getUser->first_name,
+                        'serviceName' => ''
+                       ];
 
               $updateConversation = $appHelper->createSingleConversation($data);
             }

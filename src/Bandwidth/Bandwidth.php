@@ -18,7 +18,6 @@ class Bandwidth
     protected $_defaultConfig = [];
 
     public function sendMessage($phone, $message){
-      pr('here');die;
       $length = strlen($message);
       
       if($length <= 160){
