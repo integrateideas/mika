@@ -29,6 +29,33 @@ use Cake\Core\Exception\Exception;
 class AppHelper
 {
 
+  private static $notificationsArray = [
+            "scheduling_availabilities" => [
+                                              "short_title" => 'Schedule Availability',
+                                              "body" => "Would you like to make yourself available on Mika today?"
+                                            ],
+                      "confirm_schedule" => [
+                                              "short_title" => "Availability Confirmed",
+                                              "body" => "Your availability has been updated."
+                                            ],
+                   "appointment_booking" => [ 
+                                              "short_title" => "New Booking Request",
+                                              "body" => "A new booking request has arrived."
+                                            ],
+                       "confirm_booking" => [
+                                              "short_title" => "Booking Confirmed",
+                                              "body" => "Your booking has been confirmed."
+                                            ],
+                       "reject_booking" => [
+                                              "short_title" => "Booking Rejected",
+                                              "body" => "Your booking has been rejected."
+                                            ],
+                       "cancel_booking" => [
+                                              "short_title" => "Booking Cancelled",
+                                              "body" => "Your booking has been cancelled."
+                                            ]          
+  ];
+
   private static $conversationArray = [
                                 "Scheduling_Availabilities" =>[
                                                                 "text"=>"Good morning, {{expertName}}. Would you like to make yourself available on Mika today? Ignore this text to cancel.", 
@@ -83,8 +110,8 @@ class AppHelper
                                                                         [
                                                                             "intent" => ['Yes','Yo','Ya','Yup'],
                                                                             "block_identifier" => "Confirm_booking",
-                                                                            'api'=>['zcaca',
-                                                                            'data'=>[expertName]]
+                                                                            'api'=>['zcaca'],
+                                                                            'data'=>['required data for that api']
                                                                         ],
                                                                         [
                                                                             "intent" => ['No','Na','Nops','N'],
@@ -94,7 +121,7 @@ class AppHelper
                                                                    
                                                                 ],
                                     "Confirm_booking" => [
-                                                                "text"=>"Thanks {{expertName}}, for the confirmation. We will inform the customer for your booking accepatance", 
+                                                                "text"=>"Thanks {{expertName}}, for the confirmation. We will inform the customer for your booking acceptance", 
                                                                 "response"=>[
                                                                         [
                                                                             "intent" => ['Yes','Yo','Ya','Yup'],
@@ -108,7 +135,7 @@ class AppHelper
                                                                    
                                                                 ],
                                     "Booking_deny" => [
-                                                                "text"=>"You deny the booking. We will inform the customer for your denial", 
+                                                                "text"=>"You rejected the booking. We will let the customer know", 
                                                                 "response"=>[
                                                                         [
                                                                             "intent" => ['Yes','Yo','Ya','Yup'],
@@ -123,7 +150,17 @@ class AppHelper
                                                                 ]
 
                              ];
-  
+    
+    public function getNotificationText($blockIdentifier){
+      if(isset(self::$notificationsArray[$blockIdentifier])){
+        if(isset(self::$notificationsArray[$blockIdentifier]['short_title'])){
+          $content = ['title' => self::$notificationsArray[$blockIdentifier]['short_title'],'body' => self::$notificationsArray[$blockIdentifier]['body']];
+
+          return $content;
+        }
+      }
+    }
+
     public function createManyConversation($data){
         $conversations = TableRegistry::get('Conversations');
         $newEntities = $conversations->newEntities($data);
@@ -150,15 +187,17 @@ class AppHelper
                         'expertName' => $data['expertName'],
                         'serviceName' => $data['serviceName']
                     ];
-        
+
         $conversations = TableRegistry::get('Conversations');
         $newEntity = $conversations->newEntity($reqData);
-        
+      
         if ($conversations->save($newEntity,['msgData' => $msgData])){
+
             Log::write('debug','Single Conversation has been saved ');
             Log::write('debug',$newEntity);
             return $newEntity;
         }else{
+            Log::write('debug',$newEntity->errors());
             throw new Exception("Error Processing Request while saving data.");
         }
         
