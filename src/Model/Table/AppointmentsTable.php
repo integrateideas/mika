@@ -104,7 +104,6 @@ class AppointmentsTable extends Table
 
     public function afterSave($event,$entity,$options)
     {   
-        // pr($entity);die;
         Log::write('debug',$entity);
         $appointmentData = $this->findById($entity->id)->contain(['ExpertSpecializations.Specializations','Users'])->first();
         if($entity->is_confirmed === null){
@@ -115,14 +114,15 @@ class AppointmentsTable extends Table
             }
             $data = [
                         'block_identifier' => "Appointment_booking",
-                        'user_id' => $userId,
+                        'user_id' => $appointmentData->user->id,
                         'status' => 0,
                         'expertName' => $appointmentData->user->first_name,
                         'serviceName' => $appointmentData->expert_specialization->specialization->label
                     ];
-        // pr($data);die;
             $appHelper = new AppHelper();
+        
             $updateConversation = $appHelper->createSingleConversation($data); 
+            
         }
     }
 

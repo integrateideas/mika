@@ -9,6 +9,7 @@ use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
 use Cake\Log\Log;
 use Cake\Collection\Collection;
+use App\Controller\AppHelper;
 
 /**
  * UserFavouriteExperts Controller
@@ -31,7 +32,6 @@ class AppointmentBookingsController extends ApiController
         if(!$this->request->is(['post'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-        
         $userId = $this->Auth->user('id');
       
         if(!$userId){
@@ -82,8 +82,8 @@ class AppointmentBookingsController extends ApiController
         $this->loadModel('Appointments');
         $bookingAppointment = $this->Appointments->newEntity();
         $bookingAppointment = $this->Appointments->patchEntity($bookingAppointment, $data);
-
         $expertsUserId = $this->Appointments->Experts->findById($data['expert_id'])->first()->user_id;
+
         Log::write('debug',$data); 
         if (!$this->Appointments->save($bookingAppointment,['user_id' =>$expertsUserId])) { 
 
@@ -94,6 +94,27 @@ class AppointmentBookingsController extends ApiController
         }
         
         $success = true;
+        $appHelper = new AppHelper();
+        $getNotificationContent = $appHelper->getNotificationText('appointment_booking');
+        
+        if(!empty($getNotificationContent)){
+
+            $this->loadComponent('FCMNotification');
+            $this->loadModel('Users');
+            $deviceToken = $this->Users->UserDeviceTokens->findByUserId($this->Auth->user('id'))->first();
+
+            if($deviceToken){
+                $deviceToken = $deviceToken->device_token;
+            }else{
+                throw new NotFoundException(__('Device token has not been found for this User.'));
+            }
+            $title = $getNotificationContent['title'];
+            $body = $getNotificationContent['body'];
+            $data = ['hi' => 'hello'];
+            $notification = $this->FCMNotification->sendToUserApp($title, $body, $deviceToken, $data);
+        }else{
+            throw new Exception("Error Processing Request. Notification Content is not available.");
+        } 
 
         $this->set('data',$bookingAppointment);
         $this->set('status',$success);

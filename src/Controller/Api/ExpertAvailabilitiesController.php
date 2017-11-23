@@ -11,6 +11,7 @@ use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 use Stripe\Stripe;
 use Cake\I18n\FrozenTime;
+use App\Controller\AppHelper;
 
 /**
  * Availabilities Controller
@@ -126,8 +127,6 @@ class ExpertAvailabilitiesController extends ApiController
         $this->loadModel('Experts');
         $this->request->data['expert_id'] = $this->Experts->findByUserId($userId)->first()->get('id');
         
-        // $conn = ConnectionManager::get('default');
-        // $conn->driver()->autoQuoting(true);
         if (!$this->request->is(['post'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
@@ -146,6 +145,28 @@ class ExpertAvailabilitiesController extends ApiController
         }
         
         $success = true;
+
+        $appHelper = new AppHelper();
+        $getNotificationContent = $appHelper->getNotificationText('confirm_schedule');
+        if(!empty($getNotificationContent)){
+
+            $this->loadComponent('FCMNotification');
+            $this->loadModel('Users');
+            $deviceToken = $this->Users->UserDeviceTokens->findByUserId($this->Auth->user('id'))->first();
+
+            if($deviceToken){
+                $deviceToken = $deviceToken->device_token;
+            }else{
+                throw new NotFoundException(__('Device token has not been found for this User.'));
+            }
+            $title = $getNotificationContent['title'];
+            $body = $getNotificationContent['body'];
+            $data = ['hi' => 'hello'];
+            $notification = $this->FCMNotification->sendToExpertApp($title, $body, $deviceToken, $data);
+            
+        }else{
+            throw new Exception("Error Processing Request. Notification Content is not available.");
+        } 
 
         $this->set('data',$expertAvailabilities);
         $this->set('status',$success);
@@ -216,54 +237,4 @@ class ExpertAvailabilitiesController extends ApiController
         $this->set('_serialize', ['success']);
     }
 
-    public function testStripe()
-    {
-        $this->loadModel('ExpertCards');
-        $expertCards = $this->ExpertCards->findByExpertId(6)
-                                        ->first();
-
-// pr($expertCards); die;
-        \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
-        
-        $sampleToken = 'tok_1B6IZnDIf2kSEMB3iBBoelxp';
-
-        try {
-            
-            $return = \Stripe\Customer::create(array(
-              "description" => "Customer for sofia.moore@example.com",
-              "source" => "tok_visa" // obtained with Stripe.js
-            ));
-
-            // $customer = \Stripe\Customer::retrieve("cus_BTYVHxZAFCSB6s");
-            // $customer->sources->all(['limit'=>3, 'hw_objrec2array(object_record)ect' => 'card']);
-            
-            // $charge = \Stripe\Charge::create(array(
-            //               "amount" => 1600000,
-            //               "currency" => "usd",
-            //               "customer" => $expertCards['stripe_customer_id'],
-            //               "source" => $expertCards['stripe_card_id'], // "card_1B6IZnDIf2kSEMB3NSaxI0iP"
-            //               "description" => "First test Charge for sofia.moore@example.com"
-            //             ));
-
-            // $plan = \Stripe\Plan::create(array(
-            //                                   "amount" => 321,
-            //                                   "interval" => "day",
-            //                                   "name" => "Silver plan",
-            //                                   "currency" => "usd",
-            //                                   "id" => "silver-plan")
-            //                                 );
-
-            $subscription = \Stripe\Subscription::create([
-                                                          "customer" => "cus_BTYVHxZAFCSB6s",
-                                                          "items" => [["plan" => "silver-plan"]]
-                                                        ]);
-                        pr($subscription); die;
-        } catch (Exception $e) {
-            pr($e); die;
-        }
-
-        pr($return); die;
-
-        // $createCard = $http->post($host+'\Stripe\Stripe')::setApiKey("pk_test_0Q6dnCgnIwyVHUdwHGVrwYnU");
-    }
 }

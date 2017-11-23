@@ -23,14 +23,14 @@ class FCMNotificationComponent extends Component
 
     	$authorization = 'key='.(Configure::read('FCMserverKey.expert'));
     	
-    	$this->_sendNotification($authorization, $title, $body, $to, $data);
+    	return $this->_sendNotification($authorization, $title, $body, $to, $data);
     }
 
     public function sendToUserApp($title, $body, $to, $data = []){
 
     	$authorization = 'key='.(Configure::read('FCMserverKey.user'));
 
-    	$this->_sendNotification($authorization, $title, $body, $to, $data);
+    	return $this->_sendNotification($authorization, $title, $body, $to, $data);
     }
 
     //$to could either be a device token or topic.
@@ -38,12 +38,7 @@ class FCMNotificationComponent extends Component
     private function _sendNotification($authorization, $title, $body, $to, $data = []){
 
     	$url = 'https://fcm.googleapis.com/fcm/send';
-	// pr($authorization);
-	// pr($title);
-	// pr($body);
-	// pr($to);
-	// pr($data);
-	// die;
+	
     	$payload = [
 					"notification" => [
 					    "title" => $title,  //Any value
@@ -59,7 +54,7 @@ class FCMNotificationComponent extends Component
 
 		$http = new Client(['headers' => ['Authorization' => $authorization,'Content-Type' => 'application/json']]);
     	$response = $http->post($url, json_encode($payload));
-
-    	pr(json_decode($response->body())); 
+        
+        return json_decode($response->body()); 
 	}
 }
