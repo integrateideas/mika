@@ -4,7 +4,8 @@ namespace App\Shell;
 use Cake\Console\Shell;
 use Cake\Log\Log;
 use App\Controller\AppHelper;
-
+use Cake\Collection\Collection;
+use Cake\Controller\Controller;
 /**
  * SendAvailabiltyReminder shell command.
  */
@@ -50,10 +51,41 @@ class SendAvailabiltyReminderShell extends Shell
         if(!empty($data)){
             $appHelper = new AppHelper();
             $reqData = $appHelper->createManyConversation($data);
-            
-            $this->out('Conversations have been saved ');
             print_r($reqData);
+            $usersIds = (new Collection($reqData))->extract('user_id')->toArray();
+            
+            if(!empty($usersIds)){
+                $this->_sendNotifications($usersIds);
+            }else{
+                Log::write('debug',"No Bookings for rejection");
+                $this->out('No Bookings for rejection');
+                return false;   
+            }
+            $this->_sendNotifications($rejectionUserIds);
+            $this->out('Conversations have been saved ');
         }
+    }
+
+    private function _sendNotifications($data){
+        $controller = new Controller();
+        $notificationComponent = $controller->loadComponent('FCMNotification');
+        
+        $this->loadModel('Users');
+        $appHelper = new AppHelper();
+        $getNotificationContent = $appHelper->getNotificationText('cancel_booking');
+        $deviceTokens = $this->Users->UserDeviceTokens->find()->where(['user_id IN' => $data])->all()->toArray();
+        if(!empty($deviceTokens)){
+
+            foreach ($deviceTokens as $key => $deviceToken) {
+                $deviceToken = $deviceToken->device_token;
+                $title = $getNotificationContent['title'];
+                $body = $getNotificationContent['body'];
+                $data = ['hi' => 'hello'];
+                $notification = $notificationComponent->sendToExpertApp($title, $body, $deviceToken, $data);
+            }
+        }else{
+            throw new NotFoundException(__('Device token has not been found.'));
+        }   
     }
 
     
