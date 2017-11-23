@@ -51,39 +51,51 @@ class AppointmentBookingsController extends ApiController
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Availability id"));
 
         }
-        if(!isset($data['expSpecServiceId']) || !$data['expSpecServiceId']){
-            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Specialization Service id"));
-        }
+        // if(!isset($data['expSpecServiceIds']) || !$data['expSpecServiceIds']){
+        //     throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Specialization Service id"));
+        // }
         $this->loadModel('ExpertSpecializationServices');
-        $expertSpecializationId = $this->ExpertSpecializationServices->findById($data['expSpecServiceId'])->first()->expert_specialization_id;
+        $expertSpecializationIds = $this->ExpertSpecializationServices->find()
+                                                                    ->where(['id IN' => $data['expSpecServiceIds']])
+                                                                    ->all()
+                                                                    ->combine('id','expert_specialization_id')
+                                                                    ->toArray();
 
-        if(!$expertSpecializationId){
-            throw new NotFoundException(__('Expert Specialization id not found.'));
+        
+        if(!$expertSpecializationIds){
+            throw new NotFoundException(__('Expert Specialization ids not found.'));
         }
-
         $this->loadModel('UserCards');
         $getCardDetails = $this->UserCards->findByUserId($userId)
-                                    ->where(['stripe_card_id' => $data['stripeCardId']])
-                                    ->first();
+                                          ->where(['stripe_card_id' => $data['stripeCardId']])
+                                          ->first();
 
         if(!$getCardDetails){
             throw new NotFoundException(__('User Card details not found.'));
         }
         $userCardId = $getCardDetails->id;
 
-        $data = [
-                    'user_id' => $this->Auth->user('id'),
-                    'expert_id' => $data['expertId'],
-                    'expert_availability_id' => $data['availabilityId'],
-                    'expert_specialization_id' => $expertSpecializationId,
-                    'expert_specialization_service_id' => $data['expSpecServiceId'],
-                    'user_card_id' => $userCardId
-                ];
+        $reqData = [
+                        'user_id' => $this->Auth->user('id'),
+                        'expert_id' => $data['expertId'],
+                        'expert_availability_id' => $data['availabilityId'],
+                        'user_card_id' => $userCardId
+                    ];
+
+        $services = [];
+        foreach ($data['expSpecServiceIds'] as $key => $value) {
+            $reqData['appointment_services'][] = [
+                                                    'expert_specialization_id' => $expertSpecializationIds[$value],
+                                                    'expert_specialization_service_id' => $value,
+                                                    'status' => 1
+                                                  ];
+        }
+        
         $this->loadModel('Appointments');
         $bookingAppointment = $this->Appointments->newEntity();
-        $bookingAppointment = $this->Appointments->patchEntity($bookingAppointment, $data);
-        $expertsUserId = $this->Appointments->Experts->findById($data['expert_id'])->first()->user_id;
-
+        $bookingAppointment = $this->Appointments->patchEntity($bookingAppointment, $reqData,['associated' => 'AppointmentServices']);
+        
+        $expertsUserId = $this->Appointments->Experts->findById($reqData['expert_id'])->first()->user_id;
         Log::write('debug',$data); 
         if (!$this->Appointments->save($bookingAppointment,['user_id' =>$expertsUserId])) { 
 
@@ -133,7 +145,6 @@ class AppointmentBookingsController extends ApiController
         //check weather this user is an expert 
         $this->loadModel('Experts');
         $expert = $this->Experts->findByUserId($userId)->first();
-
         $this->loadModel('Appointments');
         
         if($expert){
@@ -141,8 +152,7 @@ class AppointmentBookingsController extends ApiController
         }else{
             $reqData = $this->Appointments->findByUserId($userId);
         }
-        
-        $reqData = $reqData->contain(['ExpertSpecializationServices.SpecializationServices','ExpertSpecializations.Specializations','Transactions', 'ExpertAvailabilities', 'Experts.Users']);
+        $reqData = $reqData->contain(['AppointmentServices.ExpertSpecializationServices.SpecializationServices','AppointmentServices.ExpertSpecializations.Specializations','Transactions', 'ExpertAvailabilities', 'Experts.Users']);
 
         $filter = $this->request->query('filter');
         if($filter){
@@ -171,6 +181,9 @@ class AppointmentBookingsController extends ApiController
         }
 
         $reqData = $reqData->where($where)->all()->toArray();
+        if(empty($reqData)){
+            throw new NotFoundException(__('No Appointment found for this user.'));
+        }
 
         $success = true;
 

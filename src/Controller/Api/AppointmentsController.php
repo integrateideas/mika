@@ -17,6 +17,7 @@ use Cake\Collection\Collection;
 use App\Controller\AppHelper;
 use Cake\I18n\FrozenTime;
 
+
 /**
  * Appointments Controller
  *
@@ -28,89 +29,89 @@ class AppointmentsController extends ApiController
 {
 
 
-    /**
-     * View method
-     *
-     * @param string|null $id Appointment id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        if (!$this->request->is(['get'])) {
-          throw new MethodNotAllowedException(__('BAD_REQUEST'));
-        }
+    // /**
+    //  * View method
+    //  *
+    //  * @param string|null $id Appointment id.
+    //  * @return \Cake\Http\Response|void
+    //  * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+    //  */
+    // public function view($id = null)
+    // {
+    //     if (!$this->request->is(['get'])) {
+    //       throw new MethodNotAllowedException(__('BAD_REQUEST'));
+    //     }
 
-        $appointment = $this->Appointments->get($id, [
-            'contain' => ['Users', 'Experts', 'ExpertAvailabilities', 'ExpertSpecializationServices', 'ExpertSpecializations', 'AppointmentTransactions']
-        ]);
+    //     $appointment = $this->Appointments->get($id, [
+    //         'contain' => ['Users', 'Experts', 'ExpertAvailabilities', 'ExpertSpecializationServices', 'ExpertSpecializations', 'AppointmentTransactions']
+    //     ]);
 
-        $success = true;
+    //     $success = true;
 
-        $this->set('data',$appointment);
-        $this->set('status',$success);
-        $this->set('_serialize', ['status','data']);
-    }
+    //     $this->set('data',$appointment);
+    //     $this->set('status',$success);
+    //     $this->set('_serialize', ['status','data']);
+    // }
 
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        if(!$this->request->is(['post'])){
-            throw new MethodNotAllowedException(__('BAD_REQUEST'));
-        }
-        $userId = $this->Auth->user('id');        
-        $this->loadModel('Experts');
-        $expertId = $this->Experts->findByUserId($userId)
-                                    ->first()
-                                    ->get('id');
+    // /**
+    //  * Add method
+    //  *
+    //  * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
+    //  */
+    // public function add()
+    // {
+    //     if(!$this->request->is(['post'])){
+    //         throw new MethodNotAllowedException(__('BAD_REQUEST'));
+    //     }
+    //     $userId = $this->Auth->user('id');        
+    //     $this->loadModel('Experts');
+    //     $expertId = $this->Experts->findByUserId($userId)
+    //                                 ->first()
+    //                                 ->get('id');
 
-        $data = [
-                    'user_id' => $userId,
-                    'expert_id' => $expertId,
-                    'expert_availability_id' => $this->request->data['expert_availability_id'],
-                    'expert_specialization_service_id' =>  $this->request->data['expert_specialization_service_id'],
-                    'expert_specialization_id' =>  $this->request->data['expert_specialization_id']
-                ];
+    //     $data = [
+    //                 'user_id' => $userId,
+    //                 'expert_id' => $expertId,
+    //                 'expert_availability_id' => $this->request->data['expert_availability_id'],
+    //                 'expert_specialization_service_id' =>  $this->request->data['expert_specialization_service_id'],
+    //                 'expert_specialization_id' =>  $this->request->data['expert_specialization_id']
+    //             ];
                 
-        $appointment = $this->Appointments->newEntity();
-        $appointment = $this->Appointments->patchEntity($appointment, $data);
+    //     $appointment = $this->Appointments->newEntity();
+    //     $appointment = $this->Appointments->patchEntity($appointment, $data);
 
-        if (!$this->Appointments->save($appointment)) {
+    //     if (!$this->Appointments->save($appointment)) {
           
-          if($appointment->errors()){
-            $this->_sendErrorResponse($appointment->errors());
-          }
-          throw new Exception("Error Processing Request");
-        }
+    //       if($appointment->errors()){
+    //         $this->_sendErrorResponse($appointment->errors());
+    //       }
+    //       throw new Exception("Error Processing Request");
+    //     }
         
-        $success = true;
+    //     $success = true;
 
-        $this->set('data',$appointment);
-        $this->set('status',$success);
-        $this->set('_serialize', ['status','data']);        
-    }
+    //     $this->set('data',$appointment);
+    //     $this->set('status',$success);
+    //     $this->set('_serialize', ['status','data']);        
+    // }
 
-    public function getExpertOrderHistory(){
+    // public function getExpertOrderHistory(){
       
-        if (!$this->request->is(['get'])) {
-          throw new MethodNotAllowedException(__('BAD_REQUEST'));
-        }
+    //     if (!$this->request->is(['get'])) {
+    //       throw new MethodNotAllowedException(__('BAD_REQUEST'));
+    //     }
 
-        $userId = $this->Auth->user('id');
-        //if user is expert or not
-        $getUserOrderHistory = $this->Appointments->findByUserId($userId)
-                                                  ->contain(['AppointmentTransactions'])
-                                                  ->all();
-        $success = true;
+    //     $userId = $this->Auth->user('id');
+    //     //if user is expert or not
+    //     $getUserOrderHistory = $this->Appointments->findByUserId($userId)
+    //                                               ->contain(['AppointmentTransactions'])
+    //                                               ->all();
+    //     $success = true;
 
-        $this->set('data',$getUserOrderHistory);
-        $this->set('status',$success);
-        $this->set('_serialize', ['status','data']);
-    }
+    //     $this->set('data',$getUserOrderHistory);
+    //     $this->set('status',$success);
+    //     $this->set('_serialize', ['status','data']);
+    // }
 
     public function confirmBooking($id){
 
@@ -123,25 +124,24 @@ class AppointmentsController extends ApiController
         }
         $this->loadModel('Appointments');
         $appointment = $this->Appointments->findById($id)
-                                          ->contain(['Users','ExpertSpecializationServices.SpecializationServices'])
+                                          ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices'])
                                           ->first();
 
         $expertId = $appointment->expert_id;
         $availabilityId = $appointment->expert_availability_id;                                
         $userName = $appointment->user->first_name;
-        
-        $servicePrice = $appointment->expert_specialization_service->price;
-        $serviceName = $appointment->expert_specialization_service->specialization_service->label;
-        
+        $serviceName = (new Collection($appointment->appointment_services))->extract('expert_specialization_service.specialization_service.label')->toArray();
+        $servicePrice = (new Collection($appointment->appointment_services))->extract('expert_specialization_service.price')->toArray();
         $userCardId = $appointment['user_card_id'];
 
+        $servicePrice = array_sum($servicePrice);
+        $serviceName = implode(', ', $serviceName);
         $this->loadModel('UserCards');
         $userCardDetails = $this->UserCards->findById($userCardId)->first();
 
         $this->loadComponent('Stripe');
         $userId = $this->Auth->user('id');
         $cardChargeDetails = $this->Stripe->chargeCards($servicePrice,$userCardDetails['stripe_card_id'],$userCardDetails['stripe_customer_id'],$serviceName,$userName);
-        
         $reqData = [
                         'transaction_amount' => $cardChargeDetails['data']['amount'],
                         'stripe_charge_id' => $cardChargeDetails['data']['id'],
