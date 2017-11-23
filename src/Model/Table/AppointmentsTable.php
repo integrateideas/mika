@@ -9,6 +9,7 @@ use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Network\Exception\NotFoundException;
 use App\Controller\AppHelper;
+use Cake\Collection\Collection;
 
 /**
  * Appointments Model
@@ -62,20 +63,23 @@ class AppointmentsTable extends Table
             'foreignKey' => 'expert_availability_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('ExpertSpecializationServices', [
-            'foreignKey' => 'expert_specialization_service_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('ExpertSpecializations', [
-            'foreignKey' => 'expert_specialization_id',
-            'joinType' => 'INNER'
-        ]);
+        // $this->belongsTo('ExpertSpecializationServices', [
+        //     'foreignKey' => 'expert_specialization_service_id',
+        //     'joinType' => 'INNER'
+        // ]);
+        // $this->belongsTo('ExpertSpecializations', [
+        //     'foreignKey' => 'expert_specialization_id',
+        //     'joinType' => 'INNER'
+        // ]);
         $this->belongsTo('Transactions', [
             'foreignKey' => 'transaction_id'
         ]);
         $this->belongsTo('UserCards', [
             'foreignKey' => 'user_card_id',
             'joinType' => 'INNER'
+        ]);
+        $this->hasMany('AppointmentServices', [
+            'foreignKey' => 'appointment_id'
         ]);
     }
 
@@ -105,7 +109,9 @@ class AppointmentsTable extends Table
     public function afterSave($event,$entity,$options)
     {   
         Log::write('debug',$entity);
-        $appointmentData = $this->findById($entity->id)->contain(['ExpertSpecializations.Specializations','Users'])->first();
+        $appointmentData = $this->findById($entity->id)->contain(['AppointmentServices.ExpertSpecializations.Specializations','Users'])->first();
+        $services = (new Collection($appointmentData->appointment_services))->extract('expert_specialization.specialization.label')->toArray();
+        $services = implode(', ', $services);
         if($entity->is_confirmed === null){
             
             $userId = $options->offsetGet('user_id');
@@ -117,10 +123,10 @@ class AppointmentsTable extends Table
                         'user_id' => $appointmentData->user->id,
                         'status' => 0,
                         'expertName' => $appointmentData->user->first_name,
-                        'serviceName' => $appointmentData->expert_specialization->specialization->label
+                        'serviceName' => $services
                     ];
+
             $appHelper = new AppHelper();
-        
             $updateConversation = $appHelper->createSingleConversation($data); 
             
         }
@@ -138,8 +144,8 @@ class AppointmentsTable extends Table
         $rules->add($rules->existsIn(['user_id'], 'Users'));
         $rules->add($rules->existsIn(['expert_id'], 'Experts'));
         $rules->add($rules->existsIn(['expert_availability_id'], 'ExpertAvailabilities'));
-        $rules->add($rules->existsIn(['expert_specialization_service_id'], 'ExpertSpecializationServices'));
-        $rules->add($rules->existsIn(['expert_specialization_id'], 'ExpertSpecializations'));
+        // $rules->add($rules->existsIn(['expert_specialization_service_id'], 'ExpertSpecializationServices'));
+        // $rules->add($rules->existsIn(['expert_specialization_id'], 'ExpertSpecializations'));
         $rules->add($rules->existsIn(['transaction_id'], 'Transactions'));
         $rules->add($rules->existsIn(['user_card_id'], 'UserCards'));
 

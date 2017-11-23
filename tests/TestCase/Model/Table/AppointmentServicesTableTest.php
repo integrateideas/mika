@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\AppointmentsTable;
+use App\Model\Table\AppointmentServicesTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\AppointmentsTable Test Case
+ * App\Model\Table\AppointmentServicesTable Test Case
  */
-class AppointmentsTableTest extends TestCase
+class AppointmentServicesTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\AppointmentsTable
+     * @var \App\Model\Table\AppointmentServicesTable
      */
-    public $Appointments;
+    public $AppointmentServices;
 
     /**
      * Fixtures
@@ -24,6 +24,7 @@ class AppointmentsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
+        'app.appointment_services',
         'app.appointments',
         'app.users',
         'app.roles',
@@ -40,8 +41,7 @@ class AppointmentsTableTest extends TestCase
         'app.social_connections',
         'app.user_device_tokens',
         'app.user_cards',
-        'app.transactions',
-        'app.appointment_services'
+        'app.transactions'
     ];
 
     /**
@@ -52,8 +52,8 @@ class AppointmentsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Appointments') ? [] : ['className' => AppointmentsTable::class];
-        $this->Appointments = TableRegistry::get('Appointments', $config);
+        $config = TableRegistry::exists('AppointmentServices') ? [] : ['className' => AppointmentServicesTable::class];
+        $this->AppointmentServices = TableRegistry::get('AppointmentServices', $config);
     }
 
     /**
@@ -63,7 +63,7 @@ class AppointmentsTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->Appointments);
+        unset($this->AppointmentServices);
 
         parent::tearDown();
     }
@@ -84,16 +84,6 @@ class AppointmentsTableTest extends TestCase
      * @return void
      */
     public function testValidationDefault()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test afterSave method
-     *
-     * @return void
-     */
-    public function testAfterSave()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
