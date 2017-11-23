@@ -26,6 +26,7 @@ class CustomAuthorize extends BaseAuthorize{
                 return false;
     		} 
         }
+
         //Check if user allowed to acces the resource based on his role
         //if acessing a record then check ownership
         if(isset($this->reqPass[0]) && is_numeric($this->reqPass[0]) && in_array($userRole, ['User', 'Expert'])){

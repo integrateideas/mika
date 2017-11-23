@@ -204,7 +204,13 @@ class UsersController extends ApiController
           throw new Exception("User already linked with Facebook.");
       }
 
-     $data = [
+      $existingFbAccount = $this->SocialConnections->findByFbIdentifier($this->request->data['uid'])->first();
+
+      if($existingFbAccount){
+        throw new Exception("This fb account is already linked with another user.");
+      }
+
+      $data = [
                 'user_id' => $this->Auth->user('id'),
                 'fb_identifier' => $this->request->data['uid'],
                 'status' => 1
