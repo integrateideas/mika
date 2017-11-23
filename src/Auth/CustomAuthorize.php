@@ -26,9 +26,9 @@ class CustomAuthorize extends BaseAuthorize{
                 return false;
     		} 
         }
-        return true;
+
         //Check if user allowed to acces the resource based on his role
-		//if acessing a record then check ownership
+        //if acessing a record then check ownership
         if(isset($this->reqPass[0]) && is_numeric($this->reqPass[0]) && in_array($userRole, ['User', 'Expert'])){
 
             if($this->_checkExemptedLocations($userRole)){
@@ -104,12 +104,13 @@ class CustomAuthorize extends BaseAuthorize{
 
     //method to get unauthorized locations for current user based on the resource ownership of the vendor
     private function _checkOwnerShip($targetId, $userRole, $entityId){
-       
-        $target = Inflector::pluralize($userRole);
-   		$associationRoute = $this->_getAssociationRoute($this->reqController, $target, [], []);
+        
+        $target = 'Users';
+        $associationRoute = $this->_getAssociationRoute($this->reqController, $target, [], []);
         if(!$associationRoute){
             return true;
         }
+        // pr($associationRoute);die;
         if ($associationRoute == $target) {
            
             if($targetId == $entityId){
@@ -118,7 +119,6 @@ class CustomAuthorize extends BaseAuthorize{
             return false;
 
         }elseif ($associationRoute[0] == $target && count($associationRoute) == 1) {
-           
             $direct = true;
             $tableObject = TableRegistry::get($this->reqController);
             $associations = $tableObject->associations();
@@ -126,7 +126,6 @@ class CustomAuthorize extends BaseAuthorize{
             $entity = $tableObject->findById($entityId)->where([$foreignKey => $targetId])->first();
 
         } else{
-           
             $direct = false;
             $pathToModel = $this->_decorateRoute($associationRoute);
             $tableObject = TableRegistry::get($this->reqController);
@@ -143,6 +142,36 @@ class CustomAuthorize extends BaseAuthorize{
         //Check Super Admin OwnerShip
            
         return false;
+    }
+
+    private function _decorateRoute($associations) {
+        // $associations = array_reverse($associations);
+
+        $associationPath = implode('.', array_reverse($associations));
+        
+        ////For PHP 7.0 only
+        // $associations = array_merge_recursive(...array_reverse($associations));
+        ////For getting association types
+        // $pathToTragetId = '';
+        // foreach ($associations['className'] as $key => $value) {
+
+        //  switch ($associations['associationType'][$key]) {
+        //      case 'oneToOne':
+        //      case 'manyToOne':
+        //          $pathToTragetId = $pathToTragetId.'->'.Inflector::underscore(Inflector::singularize($value));
+        //          break;
+                
+        //      case 'oneToMany':
+        //      case 'ManyToMany':
+
+        //          $pathToTragetId = $pathToTragetId.'->'.Inflector::underscore($value).'[0]';
+        //          // pr($pathToTragetId);die;
+        //          break;              
+        //      default:
+        //          break;
+        //  }
+        // }
+        return $associationPath;
     }
 
     //Calculates an association route between source and target model
