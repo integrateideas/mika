@@ -43,6 +43,25 @@ class CustomAuthorize extends BaseAuthorize{
 		return true;
 	}
 
+      //Use known routes instead of find routes recursively
+    private function _getFromKnownRoutes($source, $target){
+
+        $knownRoutes = [
+
+            'Expert' => [
+
+                'Appointments' => ['confirmBooking','rejectBooking']
+            ],
+            'Users' => []
+        ];
+
+        if(isset($knownRoutes[$target][$source])){
+            return $knownRoutes[$target][$source];
+        }
+
+        return false;
+    }
+
     //function to ignore the role Access for common apis for both Expert and Customers
     private function _ignoreRoleAccess($prefix){
         $commonApis = [
@@ -108,7 +127,11 @@ class CustomAuthorize extends BaseAuthorize{
     private function _checkOwnerShip($targetId, $userRole, $entityId){
         
         $target = 'Users';
-        $associationRoute = $this->_getAssociationRoute($this->reqController, $target, [], []);
+         $associationRoute = $this->_getFromKnownRoutes($this->reqController, $target);
+       
+        if(!$associationRoute){
+            $associationRoute = $this->_getAssociationRoute($this->reqController, $target, [], []);
+        }
         if(!$associationRoute){
             return true;
         }
