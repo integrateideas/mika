@@ -22,6 +22,7 @@ class CustomAuthorize extends BaseAuthorize{
 
 		$userRole = $user['role']['label'];
         if(!$this->_ignoreRoleAccess($this->reqPrefix)){
+
             if(!$this->_checkRoleAccess($userRole)){	
                 return false;
     		} 
@@ -45,16 +46,17 @@ class CustomAuthorize extends BaseAuthorize{
     //function to ignore the role Access for common apis for both Expert and Customers
     private function _ignoreRoleAccess($prefix){
         $commonApis = [
-
             'api' => [
                 'UserDeviceTokens' => ['add','edit'],
                 'SpecializationServices' => ['index'],
                 'ExpertSpecializationServices' => ['view']
             ],
             'api/user' => [
+                'AppointmentBookings' => ['index'],
                 'Users' => ['addCard','deleteCard','listCards']
             ]
         ];
+
         return !$this->_checkUnAuthorized($commonApis[$prefix]);
     } 
 
@@ -64,7 +66,7 @@ class CustomAuthorize extends BaseAuthorize{
 		if(isset($unAuthorizedLocations[$this->reqController])){
 
 			if($unAuthorizedLocations[$this->reqController][0] == 'all' || in_array($this->reqAction, $unAuthorizedLocations[$this->reqController])){
-				
+
 				return false;
 			}
 		}	
@@ -228,7 +230,8 @@ class CustomAuthorize extends BaseAuthorize{
 
             'User' => [
                 'ExpertProfile' => ['view','todaysAvailabilities'],
-                'UserFavouriteExperts' => ['delete']
+                'UserFavouriteExperts' => ['delete'],
+                'ExpertSpecializationServices' => ['view']
             ],
             'Expert' => [
                 'ExpertSpecializations' => ['edit','delete']
