@@ -145,7 +145,7 @@ class UsersTable extends Table
                         return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
                       },'SocialConnections','UserCards','Experts.Appointments' => function($q){
                         return  $q->where(['is_confirmed IS NULL'])
-                                  ->contain(['ExpertSpecializations.Specializations','ExpertSpecializationServices.SpecializationServices']);
+                                  ->contain(['AppointmentServices.ExpertSpecializations.Specializations','AppointmentServices.ExpertSpecializationServices.SpecializationServices']);
                       }])
                     ->first();
 
