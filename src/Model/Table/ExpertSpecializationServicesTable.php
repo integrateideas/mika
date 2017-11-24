@@ -101,6 +101,7 @@ class ExpertSpecializationServicesTable extends Table
         $rules->add($rules->existsIn(['expert_id'], 'Experts'));
         $rules->add($rules->existsIn(['expert_specialization_id'], 'ExpertSpecializations'));
         $rules->add($rules->existsIn(['specialization_service_id'], 'SpecializationServices'));
+        $rules->add($rules->isUnique(['expert_specialization_id','specialization_service_id'], 'This service already exists for this Expert Specialization.'));
 
         return $rules;
     }
