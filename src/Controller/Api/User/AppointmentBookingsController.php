@@ -55,11 +55,15 @@ class AppointmentBookingsController extends ApiController
         //     throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Specialization Service id"));
         // }
         $this->loadModel('ExpertSpecializationServices');
-        $expertSpecializationIds = $this->ExpertSpecializationServices->find()
-                                                                    ->where(['id IN' => $data['expSpecServiceIds']])
-                                                                    ->all()
-                                                                    ->combine('id','expert_specialization_id')
-                                                                    ->toArray();
+        // $checkExistingServices = $this->ExpertSpecializationServices->findByExpertId($data['expertId'])
+        //                                                             ->where(['id IN' => $data['expSpecServiceIds']])
+        //                                                             ->all();
+
+        $expertSpecializationIds = $this->ExpertSpecializationServices->findByExpertId($data['expertId'])
+                                                                      ->where(['id IN' => $data['expSpecServiceIds']])
+                                                                      ->all()
+                                                                      ->combine('id','expert_specialization_id')
+                                                                      ->toArray();
 
         
         if(!$expertSpecializationIds){
