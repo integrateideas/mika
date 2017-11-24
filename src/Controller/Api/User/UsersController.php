@@ -425,7 +425,7 @@ class UsersController extends ApiController
                                   ->matching('ExpertSpecializationServices', function ($q) use ($serviceId) {
                                         return $q->where(['specialization_service_id' => $serviceId]);
                                     })
-                                  ->contain(['Users','ExpertSpecializationServices','ExpertAvailabilities' => function($q) use ($whereCond, $startdate, $enddate){
+                                  ->contain(['Users','ExpertSpecializationServices.SpecializationServices','ExpertAvailabilities' => function($q) use ($whereCond, $startdate, $enddate){
                                         return $q->where($whereCond)
                                                 ->where(['status' => 1])
                                                 ->where(function ($exp) use ($startdate, $enddate) {
