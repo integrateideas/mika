@@ -36,8 +36,8 @@ class ConversationReceivesController extends ApiController
 
     public function initialize()
     {
-        parent::initialize();
-        $this->Auth->allow(['add','fallback']);
+      parent::initialize();
+      $this->Auth->allow(['add','fallback']);
     }
 
     public function add(){
@@ -47,46 +47,61 @@ class ConversationReceivesController extends ApiController
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
       $phoneNo = $this->request->data['from'];
-      $phoneNo = str_replace("+1","",$phoneNo);
-
+      // $phoneNo = str_replace("+1","",$phoneNo);
       $this->loadModel('Users');
-      $getUser = $this->Users->find()->where(['phone' => $phoneNo])->first();
-      
+      $getUser = $this->Users->find()->contain(['Experts'])->where(['phone' => $phoneNo])->first();
+      // pr($getUser);die;
       if(!$getUser){
-         throw new NotFoundException(__('Your number is not registered with us. So we are not able to identify you.')); 
+       throw new NotFoundException(__('Your number is not registered with us. So we are not able to identify you.')); 
+     }
+     Log::write('debug',$getUser);
+     $this->loadModel('Conversations');
+     $findExpertConversation = $this->Conversations->findByExpertId($getUser->experts[0]->id)
+     ->contain(['Users','Experts.Users','Appointments.ExpertAvailabilities'])
+     ->last();
+      // pr($findExpertConversation);die;
+     Log::write('debug',$findExpertConversation);
+     if(!$findExpertConversation){
+      throw new NotFoundException(__('No conversation exist with this expert.'));
+    }else{
+            // pr($findExpertConversation);die;
+      $appHelper = new AppHelper();
+      $reqData = $appHelper->getNextBlock($findExpertConversation,$this->request->data['text']);
+            // pr($findExpertConversation);die;
+      if($reqData && isset($reqData['block_id']) &&!empty($reqData['block_id'])){
+        $data = [
+        'block_identifier' => $reqData['block_id'],
+        'user_id' => $findExpertConversation->user_id,
+        'status' => 0,
+        'expertName' => $getUser->first_name,
+        'expertId' => $findExpertConversation->expert_id,
+        ];
+        if(!empty($findExpertConversation->user)){
+          $data['custName'] = $findExpertConversation->user->first_name. ' '.(isset($findExpertConversation->user->last_name)?$findExpertConversation->user->last_name:'');
+        }
+        if(!empty($findExpertConversation->appointment)){
+          $data['appointmentId'] = $findExpertConversation->appointment_id;
+          $data['reqTime'] = $findExpertConversation->appointment->expert_availability->available_from;
+          $data['serviceName'] = 'hair color';
+        }
+       
+        
+        $updateConversation = $appHelper->createSingleConversation($data);
+        $this->set('data',$updateConversation);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
+      }else{
+        Log::write('debug','unable to get next block');
+        $this->set('status',true);
+        $this->set('_serialize', ['status']);
       }
-      Log::write('debug',$getUser);
-      $this->loadModel('Conversations');
-      $findExpertConversation = $this->Conversations->findByUserId($getUser->id)->last();
-      
-      Log::write('debug',$findExpertConversation);
-        if(!$findExpertConversation){
-            throw new NotFoundException(__('No conversation exist with this expert.'));
-        }else{
-            
-            $appHelper = new AppHelper();
-            $reqData = $appHelper->getNextBlock($findExpertConversation->block_identifier,$this->request->data['text']);
-            
-            if(!empty($reqData['block_id'])){
-              $data = [
-                        'block_identifier' => $reqData['block_id'],
-                        'user_id' => $getUser->id,
-                        'status' => 0,
-                        'expertName' => $getUser->first_name,
-                        'serviceName' => ''
-                       ];
+    }      
 
-              $updateConversation = $appHelper->createSingleConversation($data);
-            }
-        }      
 
-      $this->set('data',$updateConversation);
-      $this->set('status',true);
-      $this->set('_serialize', ['status','data']);
-    }
+  }
 
-    public function fallback(){
-      Log::write('debug','in fallback function');
-      Log::write('debug',$this->request->data);  
-    }
+  public function fallback(){
+    Log::write('debug','in fallback function');
+    Log::write('debug',$this->request->data);  
+  }
 }

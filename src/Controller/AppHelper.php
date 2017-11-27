@@ -17,7 +17,10 @@ use Cake\ORM\TableRegistry;
 use Cake\Log\Log;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Core\Exception\Exception;
-
+use Cake\Controller\Controller;
+use Cake\Datasource\ModelAwareTrait;
+use App\Controller\Api\AppointmentsController;
+use Cake\Collection\Collection;
 /**
 * Application Controller
 *
@@ -28,6 +31,7 @@ use Cake\Core\Exception\Exception;
 */
 class AppHelper
 {
+  use ModelAwareTrait;
 
   private static $notificationsArray = [
             "scheduling_availabilities" => [
@@ -57,36 +61,28 @@ class AppHelper
   ];
 
   private static $conversationArray = [
-                                "Scheduling_Availabilities" =>[
-                                                                "text"=>"Good morning, {{expertName}}. Would you like to make yourself available on Mika today? Ignore this text to cancel.", 
+                                "scheduling_availabilities" =>[
+                                                                "text"=>"Good morning. Would you like to make yourself available on Mika today? Ignore this text to cancel.", 
                                                                 "response"=>[
                                                                         [
                                                                             "intent" => ['Yes','Y','Ya','yes','y','ya'],
-                                                                            "block_identifier" => "confirm_schedule"
+                                                                            "block_identifier" => "add_schedule"
                                                                         ],
                                                                         [
                                                                             "intent" => ['No','Na','N','no','n','na'],
-                                                                            "block_identifier" => "Availability_not_updated"
+                                                                            "block_identifier" => "availability_not_updated"
                                                                         ]
                                                                     ]
                                                                     
                                                                 ],
 
-                                    "confirm_schedule" => [
-                                                                "text"=>"Great. Here is a quick link where you can update your availability.", 
-                                                                "response"=>[
-                                                                        [
-                                                                            "intent" => [],
-                                                                            "block_identifier" => "Availability_updated"
-                                                                        ],
-                                                                        [
-                                                                            "intent" => [],
-                                                                            "block_identifier" => "Availability_not_updated"
-                                                                        ]
-                                                                    ]
-                                                                   
-                                                                ],
-                                    "Availability_not_updated" => [
+                                    "add_schedule" => [
+                                                              "text"=>"Great. Here is a quick link where you can update your availability. {{ deepLink}}"
+                                                      ],
+                                    "availability_updated" => [
+                                                                    "text"=>"Thanks for updating your availability for today. I will reach out to you if there are any bookings."
+                                                              ],
+                                    "availability_not_updated" => [
                                                                     "text"=>"It looks like you haven't updated your time, are you no longer available for a booking today?", 
                                                                 "response"=>[
                                                                         [
@@ -94,59 +90,31 @@ class AppHelper
                                                                             "block_identifier" => "confirm_not_available"
                                                                         ]
                                                                     ]
-                                                                ],
-                                    "confirm_not_available" => [
-                                                                    "text"=>"Okay, hope you have a nice day. ", 
-                                                                "response"=>[
-                                                                        [
-                                                                            "intent" => [],
-                                                                            "block_identifier" => "Availability_not_updated"
-                                                                        ]
-                                                                    ]
                                                                 ],                                                                
-                                    "Appointment_booking" => [
-                                                                "text"=>"{{expertName}}, would you like to confirm an appointment for {{serviceName}}", 
+                                    "confirm_not_available" => [
+                                                                    "text"=>"Okay, hope you have a nice day."
+                                                                ],                                                                
+                                    "appointment_booking_request" => [
+                                                                "text"=>"Hey, {{custName}} is looking to book {{serviceName}} at {{reqTime}} today. Click this {{bookingConfirmationLink}} to confirm. Ignore this text to cancel",
                                                                 "response"=>[
                                                                         [
                                                                             "intent" => ['Yes','Yo','Ya','Yup'],
-                                                                            "block_identifier" => "Confirm_booking",
-                                                                            'api'=>['zcaca'],
-                                                                            'data'=>['required data for that api']
+                                                                            "block_identifier" => "confirm_booking",
+                                                                            'api'=>'confirmBooking'
                                                                         ],
                                                                         [
                                                                             "intent" => ['No','Na','Nops','N'],
-                                                                            "block_identifier" => "Booking_deny"
+                                                                            "block_identifier" => "booking_deny",
+                                                                            'api'=>'denyBooking'
                                                                         ]
                                                                     ]
                                                                    
                                                                 ],
-                                    "Confirm_booking" => [
-                                                                "text"=>"Thanks {{expertName}}, for the confirmation. We will inform the customer for your booking acceptance", 
-                                                                "response"=>[
-                                                                        [
-                                                                            "intent" => ['Yes','Yo','Ya','Yup'],
-                                                                            "block_identifier" => "Availability_updated"
-                                                                        ],
-                                                                        [
-                                                                            "intent" => ['No','Na','Nops','N'],
-                                                                            "block_identifier" => "Availability_not_updated"
-                                                                        ]
-                                                                    ]
-                                                                   
+                                    "confirm_booking" => [
+                                                                "text"=>"Your booking with {{custName}} for {{serviceName}} at  {{reqTime}} is confirmed."
                                                                 ],
-                                    "Booking_deny" => [
-                                                                "text"=>"You rejected the booking. We will let the customer know", 
-                                                                "response"=>[
-                                                                        [
-                                                                            "intent" => ['Yes','Yo','Ya','Yup'],
-                                                                            "block_identifier" => "Availability_updated"
-                                                                        ],
-                                                                        [
-                                                                            "intent" => ['No','Na','Nops','N'],
-                                                                            "block_identifier" => "Availability_not_updated"
-                                                                        ]
-                                                                    ]
-                                                                   
+                                    "booking_deny" => [
+                                                                "text"=>"Your booking with {{custName}} for {{serviceName}} at  {{reqTime}} is cancelled."
                                                                 ]
 
                              ];
@@ -163,11 +131,17 @@ class AppHelper
 
     public function createManyConversation($data){
         $conversations = TableRegistry::get('Conversations');
+        // pr($data);die;
+        $msgData = (new Collection($data))->extract('msg_data')->toArray();
+        // pr($msgData);die;
+        if(count($msgData) !== count($data)){
+          print_r('doabara bhej data');die;
+        }
+        // pr($msgData);die;
         $newEntities = $conversations->newEntities($data);
 
         $patchEntities = $conversations->patchEntities($newEntities,$data);
-        
-        if ($conversations->saveMany($patchEntities)){
+        if ($conversations->saveMany($patchEntities,['msgData'=>$msgData,'is_multiple'=>true])){
             Log::write('debug','Conversations have been saved ');
             Log::write('debug',$patchEntities);
             return $patchEntities;
@@ -177,27 +151,31 @@ class AppHelper
         
     }
     public function createSingleConversation($data){
-        
         $reqData =  [
                         'block_identifier' => $data['block_identifier'],
-                        'user_id' => $data['user_id'],
-                        'status' => $data['status']
+                        'user_id' => (isset($data['user_id'])?$data['user_id']:null),
+                        'expert_id' => $data['expertId'],
+                        'status' => $data['status'],
+                        'appointment_id' => (isset($data['appointmentId'])?$data['appointmentId']:null)
                     ];
         $msgData =  [
-                        'expertName' => $data['expertName'],
-                        'serviceName' => $data['serviceName']
+                        'expertName' =>(isset($data['expertName'])?$data['expertName']:null),
+                        'custName' => (isset($data['custName'])?$data['custName']:null),
+                        'serviceName' => (isset($data['serviceName'])?$data['serviceName']:null),
+                        'reqTime'=> (isset($data['reqTime'])?$data['reqTime']:null)
                     ];
 
         $conversations = TableRegistry::get('Conversations');
         $newEntity = $conversations->newEntity($reqData);
-      
-        if ($conversations->save($newEntity,['msgData' => $msgData])){
+        $patchEntity = $conversations->patchEntity($newEntity,$reqData);
+
+        if ($conversations->save($patchEntity,['msgData' => $msgData])){
 
             Log::write('debug','Single Conversation has been saved ');
-            Log::write('debug',$newEntity);
-            return $newEntity;
+            Log::write('debug',$patchEntity);
+            return $patchEntity;
         }else{
-            Log::write('debug',$newEntity->errors());
+            Log::write('error',$patchEntity->errors());
             throw new Exception("Error Processing Request while saving data.");
         }
         
@@ -206,6 +184,8 @@ class AppHelper
      private function __substitute($content, $hash){
        //write substitute logic
        $i=0;
+       $afterStr = false;
+       // pr($hash);die;
        foreach ($hash as $key => $value) {
            if(!is_array($value)){
                $placeholder = sprintf('{{%s}}', $key);
@@ -223,11 +203,9 @@ class AppHelper
    }
 
     public function getConversationText($blockIdentifier,$user,$msgData = null){
-
       if(isset(self::$conversationArray[$blockIdentifier])){
         if(isset(self::$conversationArray[$blockIdentifier]['text'])){
             $content = $this->__substitute(self::$conversationArray[$blockIdentifier]['text'],$msgData);
-
           return $content;
         }else{
           throw new NotFoundException(__('No text found for this Block Identifier.'));  
@@ -237,15 +215,27 @@ class AppHelper
       }   
     }
 
-    public function getNextBlock($blockIdentifier,$intent){
-
-      $conversationResponses = self::$conversationArray[$blockIdentifier]['response'];
-      
+    public function getNextBlock($conversation,$intent){
+      // pr($conversation);
+      $blockIdentifier = $conversation->block_identifier;
+      $conversationResponses = (isset(self::$conversationArray[$blockIdentifier]['response'])?self::$conversationArray[$blockIdentifier]['response']:null);
+      if(!$conversationResponses){
+        return false;
+      }
+      // pr($conversationResponses);
       foreach ($conversationResponses as $key => $value) {
-          if(in_array($intent,$value['intent'])){
-            $newBlockId =  (isset($value['block_identifier']))?$value['block_identifier']:null;
-          }else{
-            $newBlockId = null;
+// pr($value);die;
+          if(isset($value['intent'])){
+            if(in_array($intent,$value['intent'])){
+              $newBlockId =  (isset($value['block_identifier']))?$value['block_identifier']:null;
+            }else{
+              $newBlockId = null;
+            }  
+            
+          }
+          //if we need to hit any api
+          if(isset($value['api'])){
+            $this->_callApis($conversation,$value['api']);
           }
           if($newBlockId && (isset(self::$conversationArray[$newBlockId]))){
             if(isset(self::$conversationArray[$newBlockId]['text'])){
@@ -255,6 +245,29 @@ class AppHelper
             }
           }
       }  
+    }
+
+    private function _callApis($conversation,$value){
+
+      switch ($value) {
+        case 'confirmBooking':
+        $this->loadModel('Appointments');
+        $appointment = $this->Appointments->findById($conversation->appointment_id)
+                                          ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices'])
+                                          // ->where([])
+                                          ->first();
+        
+        $updateBookingStatus = [
+                                    'is_confirmed' => 1
+                                ];
+        $appointment = $this->Appointments->patchEntity($appointment,$updateBookingStatus);
+        if (!$this->Appointments->save($appointment)) {
+          if($appointment->errors()){
+            $this->_sendErrorResponse($appointment->errors());
+          }
+          throw new Exception("Error Processing Request");
+        }
+      }
     }
 
 }

@@ -23,6 +23,8 @@ class ConversationsFixture extends TestFixture
         'status' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
+        'appointment_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
+        'expert_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
         ],
@@ -44,8 +46,10 @@ class ConversationsFixture extends TestFixture
             'user_id' => 1,
             'block_identifier' => 'Lorem ipsum dolor sit amet',
             'status' => 1,
-            'created' => '2017-10-25 13:03:48',
-            'modified' => '2017-10-25 13:03:48'
+            'created' => '2017-11-24 10:00:43',
+            'modified' => '2017-11-24 10:00:43',
+            'appointment_id' => 1,
+            'expert_id' => 1
         ],
     ];
 }

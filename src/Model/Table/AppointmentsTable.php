@@ -10,7 +10,9 @@ use Cake\ORM\TableRegistry;
 use Cake\Network\Exception\NotFoundException;
 use App\Controller\AppHelper;
 use Cake\Collection\Collection;
-
+use Cake\Datasource\ModelAwareTrait;
+use Cake\Controller\Controller;
+use Cake\Controller\ComponentRegistry;
 /**
  * Appointments Model
  *
@@ -34,7 +36,7 @@ use Cake\Collection\Collection;
  */
 class AppointmentsTable extends Table
 {
-
+use ModelAwareTrait;
     /**
      * Initialize method
      *
@@ -61,7 +63,7 @@ class AppointmentsTable extends Table
         ]);
         $this->belongsTo('ExpertAvailabilities', [
             'foreignKey' => 'expert_availability_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
         // $this->belongsTo('ExpertSpecializationServices', [
         //     'foreignKey' => 'expert_specialization_service_id',
@@ -106,30 +108,109 @@ class AppointmentsTable extends Table
         return $validator;
     }
 
-    public function afterSave($event,$entity,$options)
+     public function beforeSave($event,$entity, $options)
     {   
-        Log::write('debug',$entity);
-        $appointmentData = $this->findById($entity->id)->contain(['AppointmentServices.ExpertSpecializations.Specializations','Users'])->first();
+
+    
+        if($entity->is_confirmed){
+             $expertId = $entity->expert_id;
+             $availabilityId = $entity->expert_availability_id;                                
+             $userName = $entity->user->first_name;
+             $serviceName = (new Collection($entity->appointment_services))->extract('expert_specialization_service.specialization_service.label')->toArray();
+            $servicePrice = (new Collection($entity->appointment_services))->extract('expert_specialization_service.price')->toArray();
+            $userCardId = $entity['user_card_id'];
+
+            $servicePrice = array_sum($servicePrice);
+            $serviceName = implode(', ', $serviceName);
+             $controller = new Controller();
+            $stripe = $controller->loadComponent('Stripe');
+        
+            $this->loadModel('UserCards');
+            $userCardDetails = $this->UserCards->findById($userCardId)->first();
+
+            $cardChargeDetails = $stripe->chargeCards($servicePrice,$userCardDetails['stripe_card_id'],$userCardDetails['stripe_customer_id'],$serviceName,$userName);
+                
+          $reqData = [
+                        'transaction_amount' => $cardChargeDetails['data']['amount'],
+                        'stripe_charge_id' => $cardChargeDetails['data']['id'],
+                        'status' => $cardChargeDetails['status'],
+                        'remark' => $cardChargeDetails['data']['description']? $cardChargeDetails['data']['description'] : null,
+                        'user_card_id' => $userCardDetails->id
+                    ];
+
+        $this->loadModel('Transactions');
+        $transaction = $this->Transactions->newEntity();
+        $transaction = $this->Transactions->patchEntity($transaction,$reqData);
+        if (!$this->Transactions->save($transaction)) {
+          
+          if($transaction->errors()){
+            $this->_sendErrorResponse($transaction->errors());
+          }
+          throw new Exception("Error Processing Request");
+        }
+        
+        $entity->transaction_id = $transaction->id;
+    }
+}
+
+
+    public function afterSave($event,$entity, $options)
+    {   
+       
+        // pr($entity->id);die;
+        $appointmentData = $this->findById($entity->id)->contain(['ExpertAvailabilities','AppointmentServices.ExpertSpecializations.Specializations','Users','Experts.Users'])->first();
         $services = (new Collection($appointmentData->appointment_services))->extract('expert_specialization.specialization.label')->toArray();
         $services = implode(', ', $services);
         if($entity->is_confirmed === null){
-            
-            $userId = $options->offsetGet('user_id');
-            if(!$userId){
-                throw new NotFoundException(__('User id not found.'));
-            }
             $data = [
-                        'block_identifier' => "Appointment_booking",
+                        'block_identifier' => "appointment_booking_request",
                         'user_id' => $appointmentData->user->id,
+                        'custName' => $appointmentData->user->first_name.' '.(($appointmentData->user->last_name)?$appointmentData->user->last_name:''),
                         'status' => 0,
-                        'expertName' => $appointmentData->user->first_name,
+                        'appointmentId' => $appointmentData->id,
+                        'reqTime'=>$appointmentData->expert_availability->available_from,
+                        'expertName' => $appointmentData->expert->user->first_name.' '.(($appointmentData->expert->user->last_name)?$appointmentData->expert->user->last_name:''),
+                        'expertId' => $appointmentData->expert_id,
                         'serviceName' => $services
                     ];
 
             $appHelper = new AppHelper();
             $updateConversation = $appHelper->createSingleConversation($data); 
             
+        }elseif($entity->is_confirmed){
+            $this->loadModel('ExpertAvailabilities');
+
+            $this->ExpertAvailabilities->updateAll(['status'=>0],['id'=>$entity->expert_availability_id]);
+
+        $this->rejectAll($appointmentData->expert_id, $entity->expert_availability_id,$appointmentData->id);
+
+        $appHelper = new AppHelper();
+        $getNotificationContent = $appHelper->getNotificationText('confirm_booking');
+        if(!empty($getNotificationContent)){
+            $this->sendNotification($getNotificationContent,$entity->user_id);
         }
+        }
+    }
+
+    public function rejectAll($expertId, $availabilityId,$appointmentId){
+        $this->updateAll(['is_confirmed'=>0],['id IS NOT' => $appointmentId, 'expert_id' => $expertId, 'expert_availability_id' => $availabilityId]);
+    }
+
+     public function sendNotification($getNotificationContent,$userId){
+
+         $controller = new Controller();
+            $this->FCMNotification = $controller->loadComponent('FCMNotification');
+        $this->loadModel('Users');
+        $deviceToken = $this->Users->UserDeviceTokens->findByUserId($userId)->first();
+            if($deviceToken){
+                $deviceToken = $deviceToken->device_token;
+            }else{
+                throw new NotFoundException(__('Device token has not been found for this User.'));
+            }
+        $title = $getNotificationContent['title'];
+        $body = $getNotificationContent['body'];
+        $data = ['hi' => 'hello'];
+        $notification = $this->FCMNotification->sendToUserApp($title, $body, $deviceToken, $data);
     }
 
     /**

@@ -66,6 +66,7 @@ class RejectBookingShell extends Shell
     }
 
     private function _sendNotifications($data){
+        die('asdads');
         $controller = new Controller();
         $notificationComponent = $controller->loadComponent('FCMNotification');
         
