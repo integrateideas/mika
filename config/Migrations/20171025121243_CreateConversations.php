@@ -16,7 +16,7 @@ class CreateConversations extends AbstractMigration
         $table->addColumn('user_id', 'integer', [
             'default' => null,
             'limit' => 11,
-            'null' => false,
+            'null' => true,
         ]);
         $table->addColumn('block_identifier', 'string', [
             'default' => null,

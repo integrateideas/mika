@@ -8,10 +8,13 @@ use Cake\Validation\Validator;
 use App\Bandwidth\Bandwidth;
 use App\Controller\AppHelper;
 use Cake\Log\Log;
+use Cake\Datasource\ModelAwareTrait;
 /**
  * Conversations Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
+ * @property |\Cake\ORM\Association\BelongsTo $Appointments
+ * @property |\Cake\ORM\Association\BelongsTo $Experts
  *
  * @method \App\Model\Entity\Conversation get($primaryKey, $options = [])
  * @method \App\Model\Entity\Conversation newEntity($data = null, array $options = [])
@@ -25,6 +28,7 @@ use Cake\Log\Log;
  */
 class ConversationsTable extends Table
 {
+    use ModelAwareTrait;
 
     /**
      * Initialize method
@@ -44,9 +48,15 @@ class ConversationsTable extends Table
 
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
-        $this->Bandwidth = new Bandwidth();
+        $this->belongsTo('Appointments', [
+            'foreignKey' => 'appointment_id',
+        ]);
+        $this->belongsTo('Experts', [
+            'foreignKey' => 'expert_id'
+        ]);
+         $this->Bandwidth = new Bandwidth();
     }
 
     /**
@@ -84,36 +94,35 @@ class ConversationsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
+        $rules->add($rules->existsIn(['appointment_id'], 'Appointments'));
+        $rules->add($rules->existsIn(['expert_id'], 'Experts'));
 
         return $rules;
     }
-    
-    public function afterSave($event,$entity,$options)
+
+     public function afterSave($event,$entity,$options)
     {       
         Log::write('debug',$entity);
         if($entity){
-            $userId = $entity->user_id;
-            
-            $user = $this->Users->findById($userId)->first();
+            $experts = $this->loadModel('Experts');
+            $expertUserId = $experts->findById($entity->expert_id)->first()->user_id;
+            $user = $this->Users->findById($expertUserId)->first();
         }
         Log::write('debug',$user);
         if(isset($user) && !$entity->status){
-                
-            if($this->sendMessage($entity->block_identifier,$user,$options)){
-                $entity->status = true;
-                $this->save($entity);
+            if($entity->status){
+               $this->sendMessage($entity->block_identifier,$user,$options) ;
             }
         }
     }
 
     public function sendMessage($block_id,$user, $msgData, $options = null){
-        
         $msgData = $msgData->offsetGet('msgData');
         $appHelper = new AppHelper();
         $text = $appHelper->getConversationText($block_id,$user,$msgData);
         Log::write('debug',$text);
-        $phoneNumber = $user->phone;
         Log::write('debug',$user);
+        $phoneNumber = $user->phone;
         // $this->Bandwidth->sendMessage($phoneNumber,$text);
         return true;
     }

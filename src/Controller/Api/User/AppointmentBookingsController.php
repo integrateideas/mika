@@ -59,7 +59,7 @@ class AppointmentBookingsController extends ApiController
         //                                                             ->where(['id IN' => $data['expSpecServiceIds']])
         //                                                             ->all();
 
-        $expertSpecializationIds = $this->ExpertSpecializationServices->findByExpertId($data['expertId'])
+        $expertSpecializationIds = $this->ExpertSpecializationServices->find()
                                                                       ->where(['id IN' => $data['expSpecServiceIds']])
                                                                       ->all()
                                                                       ->combine('id','expert_specialization_id')
@@ -107,8 +107,7 @@ class AppointmentBookingsController extends ApiController
             $this->_sendErrorResponse($bookingAppointment->errors());
           }
           throw new Exception("Error Processing Request");
-        }
-        
+        }        
         $success = true;
         $appHelper = new AppHelper();
         $getNotificationContent = $appHelper->getNotificationText('appointment_booking');

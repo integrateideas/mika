@@ -113,15 +113,39 @@ class AppointmentsController extends ApiController
     //     $this->set('_serialize', ['status','data']);
     // }
 
+
     public function confirmBooking($id){
 
-        if(!$this->request->is(['get'])){
+        if(!$this->request->is(['put'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        if(!isset($id) || !$id){
+        $this->loadModel('Appointments');
+        $appointment = $this->Appointments->findById($id)
+                                          ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices'])
+                                          ->first();
+        
+        $updateBookingStatus = [
+                                    'is_confirmed' => 1
+                                ];
+        $appointment = $this->Appointments->patchEntity($appointment,$updateBookingStatus);
+        if (!$this->Appointments->save($appointment)) {
+          
+          if($appointment->errors()){
+            $this->_sendErrorResponse($appointment->errors());
+          }
+          throw new Exception("Error Processing Request");
+        }
+        $this->set('data',$appointment);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
+    }
+    public function yoconfirmBooking($id){
+
+        if(!$this->request->is(['put'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
+
         $this->loadModel('Appointments');
         $appointment = $this->Appointments->findById($id)
                                           ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices','Experts.Users'])

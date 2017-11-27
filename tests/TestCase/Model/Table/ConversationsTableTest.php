@@ -38,8 +38,11 @@ class ConversationsTableTest extends TestCase
         'app.specializations',
         'app.specialization_services',
         'app.user_favourite_experts',
-        'app.appointment_transactions',
-        'app.social_connections'
+        'app.transactions',
+        'app.user_cards',
+        'app.appointment_services',
+        'app.social_connections',
+        'app.user_device_tokens'
     ];
 
     /**
@@ -92,6 +95,26 @@ class ConversationsTableTest extends TestCase
      * @return void
      */
     public function testBuildRules()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test afterSave method
+     *
+     * @return void
+     */
+    public function testAfterSave()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test sendMessage method
+     *
+     * @return void
+     */
+    public function testSendMessage()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }

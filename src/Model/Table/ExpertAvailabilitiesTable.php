@@ -5,7 +5,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use App\Controller\AppHelper;
 /**
  * ExpertAvailabilities Model
  *
@@ -44,10 +44,10 @@ class ExpertAvailabilitiesTable extends Table
         $this->belongsTo('Experts', [
             'foreignKey' => 'expert_id',
             'joinType' => 'INNER'
-        ]);
+            ]);
         $this->hasMany('Appointments', [
             'foreignKey' => 'expert_availability_id'
-        ]);
+            ]);
     }
 
     /**
@@ -59,28 +59,28 @@ class ExpertAvailabilitiesTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->integer('id')
-            ->allowEmpty('id', 'create');
+        ->integer('id')
+        ->allowEmpty('id', 'create');
 
         $validator
-            ->dateTime('available_from')
-            ->requirePresence('available_from', 'create')
-            ->notEmpty('available_from');
+        ->dateTime('available_from')
+        ->requirePresence('available_from', 'create')
+        ->notEmpty('available_from');
 
         $validator
-            ->dateTime('available_to')
-            ->requirePresence('available_to', 'create')
-            ->notEmpty('available_to');
+        ->dateTime('available_to')
+        ->requirePresence('available_to', 'create')
+        ->notEmpty('available_to');
 
         $validator
-            ->boolean('overlapping_allowed')
-            ->requirePresence('overlapping_allowed', 'create')
-            ->notEmpty('overlapping_allowed');
+        ->boolean('overlapping_allowed')
+        ->requirePresence('overlapping_allowed', 'create')
+        ->notEmpty('overlapping_allowed');
 
         $validator
-            ->boolean('status')
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
+        ->boolean('status')
+        ->requirePresence('status', 'create')
+        ->notEmpty('status');
 
         return $validator;
     }
@@ -98,4 +98,19 @@ class ExpertAvailabilitiesTable extends Table
 
         return $rules;
     }
+
+    public function afterSave($event,$entity, $options)
+    {   
+
+        $data = [
+        'block_identifier' => "availability_updated",
+        'expertId' => $entity->expert_id,
+        'status' => 0
+        ];
+
+        $appHelper = new AppHelper();
+        $updateConversation = $appHelper->createSingleConversation($data); 
+
+    }
+
 }
