@@ -19,18 +19,30 @@ class FCMNotificationComponent extends Component
      */
     protected $_defaultConfig = [];
 
-    public function sendToExpertApp($title, $body, $to, $data = []){
+    public function sendToExpertApp($title, $body, $to = [], $data = []){
 
     	$authorization = 'key='.(Configure::read('FCMserverKey.expert'));
-    	
-    	return $this->_sendNotification($authorization, $title, $body, $to, $data);
+    
+        $responses = [];
+        foreach ($to as $key => $value) {
+                    
+                 $responses[] = $this->_sendNotification($authorization, $title, $body, $value, $data);
+                }
+
+        return $responses;
     }
 
-    public function sendToUserApp($title, $body, $to, $data = []){
+    public function sendToUserApp($title, $body, $to = [], $data = []){
 
     	$authorization = 'key='.(Configure::read('FCMserverKey.user'));
 
-    	return $this->_sendNotification($authorization, $title, $body, $to, $data);
+    	$responses = [];
+        foreach ($to as $key => $value) {
+                    
+                 $responses[] = $this->_sendNotification($authorization, $title, $body, $value, $data);
+                }
+
+        return $responses;
     }
 
     //$to could either be a device token or topic.
