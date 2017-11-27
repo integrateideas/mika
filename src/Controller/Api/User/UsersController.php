@@ -283,9 +283,15 @@ class UsersController extends ApiController
       $this->loadModel('SocialConnections');
       $socialConnection = $this->SocialConnections->find()->where(['fb_identifier' => $this->request->data['uid']])->first();
 
+      $existingUser = $this->Users->findByEmail($this->request->data['email'])->first();
 
       if(!$socialConnection){
-        $userId = $this->socialSignup($this->request->data);
+        
+        if(!$existingUser){
+          $userId = $this->socialSignup($this->request->data);
+        }else{
+          $userId = $existingUser->id;
+        }
 
       }else{
         $userId = $socialConnection->user_id;
