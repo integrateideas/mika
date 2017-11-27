@@ -12,6 +12,8 @@ use Cake\ORM\Entity;
  * @property bool $status
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
+ * @property int $appointment_id
+ * @property int $expert_id
  *
  * @property \App\Model\Entity\User $user
  */
@@ -33,6 +35,8 @@ class Conversation extends Entity
         'status' => true,
         'created' => true,
         'modified' => true,
+        'appointment_id' => true,
+        'expert_id' => true,
         'user' => true
     ];
 }
