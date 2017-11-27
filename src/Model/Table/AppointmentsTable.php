@@ -184,7 +184,7 @@ use ModelAwareTrait;
         $appHelper = new AppHelper();
         $getNotificationContent = $appHelper->getNotificationText('confirm_booking');
         if(!empty($getNotificationContent)){
-            $this->sendNotification($getNotificationContent,$entity->user_id);
+            $this->sendNotification($getNotificationContent,$entity->user_id, $entity);
         }
         }
     }
@@ -193,11 +193,11 @@ use ModelAwareTrait;
         $this->updateAll(['is_confirmed'=>0],['id IS NOT' => $appointmentId, 'expert_id' => $expertId, 'expert_availability_id' => $availabilityId]);
     }
 
-     public function sendNotification($getNotificationContent,$userId){
+     public function sendNotification($getNotificationContent,$userId,$entity = false){
 
          $controller = new Controller();
             $this->FCMNotification = $controller->loadComponent('FCMNotification');
-        $this->loadModel('Users');
+        /*$this->loadModel('Users');
         $deviceToken = $this->Users->UserDeviceTokens->findByUserId($userId)->first();
             if($deviceToken){
                 $deviceToken = $deviceToken->device_token;
@@ -207,7 +207,28 @@ use ModelAwareTrait;
         $title = $getNotificationContent['title'];
         $body = $getNotificationContent['body'];
         $data = ['hi' => 'hello'];
-        $notification = $this->FCMNotification->sendToUserApp($title, $body, $deviceToken, $data);
+        $notification = $this->FCMNotification->sendToUserApp($title, $body, $deviceToken, $data);*/
+//hridya
+ $appointment = $this->findById($entity->id)
+                                          ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices','Experts.Users'])->first();
+    
+    $this->loadModel('Users');
+
+        $deviceTokens = $this->Users->UserDeviceTokens->findByUserId($userId)
+                                                    ->all()
+                                                    ->extract('device_token')
+                                                    ->toArray();
+
+        if($deviceTokens){
+
+            $title = $getNotificationContent['title'];
+            $body = $getNotificationContent['body'];
+            $data = ['notificationType' => 'booking response', 'appointment' => $appointment];
+
+            $notification[] = $this->FCMNotification->sendToUserApp($title, $body, $deviceTokens, $data);
+        }else{
+            throw new NotFoundException(__('Device token has not been found for this User.'));
+        }
     }
 
     /**
