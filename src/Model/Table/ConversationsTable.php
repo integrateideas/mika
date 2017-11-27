@@ -102,7 +102,6 @@ class ConversationsTable extends Table
 
      public function afterSave($event,$entity,$options)
     {       
-        // pr($entity);die;
         Log::write('debug',$entity);
         if($entity){
             $experts = $this->loadModel('Experts');
@@ -111,15 +110,13 @@ class ConversationsTable extends Table
         }
         Log::write('debug',$user);
         if(isset($user) && !$entity->status){
-            // pr($entity);die;
-            // if($entity->status){
+            if($entity->status){
                $this->sendMessage($entity->block_identifier,$user,$options) ;
-            // }
+            }
         }
     }
 
     public function sendMessage($block_id,$user, $msgData, $options = null){
-        // pr($msgData);die;
         $msgData = $msgData->offsetGet('msgData');
         $appHelper = new AppHelper();
         $text = $appHelper->getConversationText($block_id,$user,$msgData);

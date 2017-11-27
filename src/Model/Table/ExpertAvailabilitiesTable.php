@@ -102,7 +102,6 @@ class ExpertAvailabilitiesTable extends Table
     public function afterSave($event,$entity, $options)
     {   
 
-        // pr($entity);die;
         $data = [
         'block_identifier' => "availability_updated",
         'expertId' => $entity->expert_id,
