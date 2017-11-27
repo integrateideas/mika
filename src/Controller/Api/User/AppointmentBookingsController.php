@@ -115,18 +115,27 @@ class AppointmentBookingsController extends ApiController
         if(!empty($getNotificationContent)){
 
             $this->loadComponent('FCMNotification');
-            $this->loadModel('Users');
-            $deviceToken = $this->Users->UserDeviceTokens->findByUserId($this->Auth->user('id'))->first();
+            $this->loadModel('Experts');
+            $deviceTokens = $this->Experts->findById($bookingAppointment['expert_id'])
+                                            ->contain(['Users.UserDeviceTokens'])
+                                            ->extract('user.user_device_tokens.{*}.device_token')
+                                            ->toArray();
+            
+            if($deviceTokens){
+                $title = $getNotificationContent['title'];
+                $body = $getNotificationContent['body'];
 
-            if($deviceToken){
-                $deviceToken = $deviceToken->device_token;
+                $appointment = $this->Appointments->findById($bookingAppointment['id'])
+                                                    ->contain(['AppointmentServices.ExpertSpecializations.Specializations','AppointmentServices.ExpertSpecializationServices.SpecializationServices'])
+                                                    ->first();
+                $data = ['notificationType' => 'booking request','appointment' => $appointment];
+                
+                $notification = $this->FCMNotification->sendToExpertApp($title, $body, $deviceTokens, $data);
             }else{
                 throw new NotFoundException(__('Device token has not been found for this User.'));
             }
-            $title = $getNotificationContent['title'];
-            $body = $getNotificationContent['body'];
-            $data = ['hi' => 'hello'];
-            $notification = $this->FCMNotification->sendToUserApp($title, $body, $deviceToken, $data);
+
+        
         }else{
             throw new Exception("Error Processing Request. Notification Content is not available.");
         } 

@@ -147,8 +147,6 @@ class UsersController extends ApiController
           }
           throw new Exception("Error Processing Request");
         }
-        
-        pr($user);die;
 
         $this->set('data',$user);
         $this->set('status',true);
