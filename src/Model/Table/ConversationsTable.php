@@ -110,9 +110,11 @@ class ConversationsTable extends Table
         }
         Log::write('debug',$user);
         if(isset($user) && !$entity->status){
-            if($entity->status){
-               $this->sendMessage($entity->block_identifier,$user,$options) ;
-            }
+        // pr($entity);die;
+             if($this->sendMessage($entity->block_identifier,$user,$options)){
+                $entity->status = true;
+                $this->save($entity);
+             }
         }
     }
 
@@ -123,7 +125,8 @@ class ConversationsTable extends Table
         Log::write('debug',$text);
         Log::write('debug',$user);
         $phoneNumber = $user->phone;
-        // $this->Bandwidth->sendMessage($phoneNumber,$text);
+    
+        $this->Bandwidth->sendMessage($phoneNumber,$text);
         return true;
     }
 }

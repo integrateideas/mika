@@ -6,10 +6,11 @@ use Cake\Log\Log;
 use App\Controller\AppHelper;
 use Cake\Collection\Collection;
 use Cake\Controller\Controller;
+use Cake\Network\Exception\NotFoundException;
 /**
  * SendAvailabiltyReminder shell command.
  */
-class SendAvailabiltyReminderShell extends Shell
+class SendAvailabilityReminderShell extends Shell
 {
 
     /**
@@ -51,9 +52,10 @@ class SendAvailabiltyReminderShell extends Shell
         if(!empty($data)){
             $appHelper = new AppHelper();
             $reqData = $appHelper->createManyConversation($data);
-            $usersIds = (new Collection($reqData))->extract('expert_id')->toArray();
-            if(!empty($usersIds)){
-                $this->_sendNotifications($usersIds);
+            $expertIds = (new Collection($reqData))->extract('expert_id')->toArray();
+            $userIds = $this->Users->Experts->find()->where(['id IN' => $expertIds])->extract('user_id')->toArray();
+            if(!empty($userIds)){
+                $this->_sendNotifications($userIds);
             }else{
                 $this->out('experts not found');
                 return false;   
@@ -63,27 +65,23 @@ class SendAvailabiltyReminderShell extends Shell
     }
 
     private function _sendNotifications($data){
-        // $controller = new Controller();
-        // $notificationComponent = $controller->loadComponent('FCMNotification');
+        $controller = new Controller();
+        $notificationComponent = $controller->loadComponent('FCMNotification');
+        $this->loadModel('Users');
+        $appHelper = new AppHelper();
+        $getNotificationContent = $appHelper->getNotificationText('scheduling_availabilities');
+        $this->loadModel('Experts');
+        $deviceTokens = $this->Users->UserDeviceTokens->find()->where(['user_id IN' => $data])->all()->extract('device_token')->toArray();
         
-        // $this->loadModel('Users');
-        // $appHelper = new AppHelper();
-        // $getNotificationContent = $appHelper->getNotificationText('cancel_booking');
-        // $this->loadModel('Experts');
-        // $deviceTokens = $this->Users->UserDeviceTokens->find()->where(['user_id IN' => $data])->all()->toArray();
-        // if(!empty($deviceTokens)){
-
-        //     foreach ($deviceTokens as $key => $deviceToken) {
-        //         $deviceToken = $deviceToken->device_token;
-        //         $title = $getNotificationContent['title'];
-        //         $body = $getNotificationContent['body'];
-        //         $data = ['hi' => 'hello'];
-        //         $notification = $notificationComponent->sendToExpertApp($title, $body, $deviceToken, $data);
-        //     }
-        // }else{
-        //     throw new NotFoundException(__('Device token has not been found.'));
-        // }   
-    }
-
-    
+        if(!empty($deviceTokens)){
+                $title = $getNotificationContent['title'];
+                $body = $getNotificationContent['body'];
+                $data = ['notificationType' => $getNotificationContent['title']];
+                $notification = $notificationComponent->sendToExpertApp($title, $body, $deviceTokens, $data);
+                            $title = $getNotificationContent['title'];
+                
+        }else{
+            throw new NotFoundException(__('Device token has not been found.'));
+        }   
+    }    
 }

@@ -131,13 +131,10 @@ class AppHelper
 
     public function createManyConversation($data){
         $conversations = TableRegistry::get('Conversations');
-        // pr($data);die;
         $msgData = (new Collection($data))->extract('msg_data')->toArray();
-        // pr($msgData);die;
         if(count($msgData) !== count($data)){
-          print_r('doabara bhej data');die;
+          print_r('Resend the data.');die;
         }
-        // pr($msgData);die;
         $newEntities = $conversations->newEntities($data);
 
         $patchEntities = $conversations->patchEntities($newEntities,$data);
@@ -164,7 +161,7 @@ class AppHelper
                         'serviceName' => (isset($data['serviceName'])?$data['serviceName']:null),
                         'reqTime'=> (isset($data['reqTime'])?$data['reqTime']:null)
                     ];
-
+        
         $conversations = TableRegistry::get('Conversations');
         $newEntity = $conversations->newEntity($reqData);
         $patchEntity = $conversations->patchEntity($newEntity,$reqData);
@@ -216,8 +213,8 @@ class AppHelper
     }
 
     public function getNextBlock($conversation,$intent){
-      // pr($conversation);
       $blockIdentifier = $conversation->block_identifier;
+      // pr($blockIdentifier);die;
       $conversationResponses = (isset(self::$conversationArray[$blockIdentifier]['response'])?self::$conversationArray[$blockIdentifier]['response']:null);
       if(!$conversationResponses){
         return false;

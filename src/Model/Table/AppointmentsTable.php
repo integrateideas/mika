@@ -110,8 +110,6 @@ use ModelAwareTrait;
 
      public function beforeSave($event,$entity, $options)
     {   
-
-    
         if($entity->is_confirmed){
              $expertId = $entity->expert_id;
              $availabilityId = $entity->expert_availability_id;                                
@@ -137,6 +135,7 @@ use ModelAwareTrait;
                         'remark' => $cardChargeDetails['data']['description']? $cardChargeDetails['data']['description'] : null,
                         'user_card_id' => $userCardDetails->id
                     ];
+        // pr($reqData);die;
 
         $this->loadModel('Transactions');
         $transaction = $this->Transactions->newEntity();
@@ -157,7 +156,6 @@ use ModelAwareTrait;
     public function afterSave($event,$entity, $options)
     {   
        
-        // pr($entity->id);die;
         $appointmentData = $this->findById($entity->id)->contain(['ExpertAvailabilities','AppointmentServices.ExpertSpecializations.Specializations','Users','Experts.Users'])->first();
         $services = (new Collection($appointmentData->appointment_services))->extract('expert_specialization.specialization.label')->toArray();
         $services = implode(', ', $services);
@@ -173,7 +171,6 @@ use ModelAwareTrait;
                         'expertId' => $appointmentData->expert_id,
                         'serviceName' => $services
                     ];
-
             $appHelper = new AppHelper();
             $updateConversation = $appHelper->createSingleConversation($data); 
             
