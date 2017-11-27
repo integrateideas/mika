@@ -148,7 +148,7 @@ class AppointmentsController extends ApiController
 
         $this->loadModel('Appointments');
         $appointment = $this->Appointments->findById($id)
-                                          ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices'])
+                                          ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices','Experts.Users'])
                                           ->first();
 
         $expertId = $appointment->expert_id;
@@ -220,28 +220,33 @@ class AppointmentsController extends ApiController
         $appHelper = new AppHelper();
         $getNotificationContent = $appHelper->getNotificationText('confirm_booking');
         if(!empty($getNotificationContent)){
-            $this->sendNotification($getNotificationContent);
+            $this->sendNotification($getNotificationContent, $appointment);
         }
         $this->set('data',$updateAppointmentStatus);
         $this->set('status',$success);
         $this->set('_serialize', ['status','data']);
     }
 
-    public function sendNotification($getNotificationContent){
+    public function sendNotification($getNotificationContent, $appointment){
 
         $this->loadComponent('FCMNotification');
         $this->loadModel('Users');
-        $deviceToken = $this->Users->UserDeviceTokens->findByUserId($this->Auth->user('id'))->first();
 
-            if($deviceToken){
-                $deviceToken = $deviceToken->device_token;
-            }else{
-                throw new NotFoundException(__('Device token has not been found for this User.'));
-            }
-        $title = $getNotificationContent['title'];
-        $body = $getNotificationContent['body'];
-        $data = ['hi' => 'hello'];
-        $notification = $this->FCMNotification->sendToExpertApp($title, $body, $deviceToken, $data);
+        $deviceTokens = $this->Users->UserDeviceTokens->findByUserId($appointment['user_id'])
+                                                    ->all()
+                                                    ->extract('device_token')
+                                                    ->toArray();
+
+        if($deviceTokens){
+            
+            $title = $getNotificationContent['title'];
+            $body = $getNotificationContent['body'];
+            $data = ['notificationType' => 'booking response', 'appointment' => $appointment];
+
+            $notification[] = $this->FCMNotification->sendToUserApp($title, $body, $deviceTokens, $data);
+        }else{
+            throw new NotFoundException(__('Device token has not been found for this User.'));
+        }
     }
 
     //Reject all for the slot given in the $appointmentId passed in the params.
@@ -267,6 +272,7 @@ class AppointmentsController extends ApiController
 
         $this->loadModel('Appointments');
         $appointment = $this->Appointments->findById($id)
+                                          ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices','Experts.Users'])
                                           ->first();
 
         $expertId = $appointment->expert_id;
@@ -290,7 +296,7 @@ class AppointmentsController extends ApiController
         $getNotificationContent = $appHelper->getNotificationText('reject_booking');
         
         if(!empty($getNotificationContent)){
-            $this->sendNotification($getNotificationContent);
+            $this->sendNotification($getNotificationContent, $appointment);
         }
 
         $this->set('data',$appointments);
