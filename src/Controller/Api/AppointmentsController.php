@@ -116,7 +116,7 @@ class AppointmentsController extends ApiController
 
     public function confirmBooking($id){
 
-        if(!$this->request->is(['put'])){
+        if(!$this->request->is(['get'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
