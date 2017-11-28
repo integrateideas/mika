@@ -182,7 +182,9 @@ class AppHelper
        //write substitute logic
        $i=0;
        $afterStr = false;
-       // pr($hash);die;
+       if(!is_array($hash)){
+        return $content;
+       }
        foreach ($hash as $key => $value) {
            if(!is_array($value)){
                $placeholder = sprintf('{{%s}}', $key);
@@ -199,7 +201,7 @@ class AppHelper
        return $afterStr;
    }
 
-    public function getConversationText($blockIdentifier,$user,$msgData = null){
+    public function getConversationText($blockIdentifier,$msgData = null){
       if(isset(self::$conversationArray[$blockIdentifier])){
         if(isset(self::$conversationArray[$blockIdentifier]['text'])){
             $content = $this->__substitute(self::$conversationArray[$blockIdentifier]['text'],$msgData);
