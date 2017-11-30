@@ -121,12 +121,12 @@ class ConversationsTable extends Table
     public function sendMessage($block_id,$user, $msgData, $options = null){
         $msgData = $msgData->offsetGet('msgData');
         $appHelper = new AppHelper();
-        $text = $appHelper->getConversationText($block_id,$user,$msgData);
+        $text = $appHelper->getConversationText($block_id,$msgData);
         Log::write('debug',$text);
         Log::write('debug',$user);
         $phoneNumber = $user->phone;
-    
-        $this->Bandwidth->sendMessage($phoneNumber,$text);
+        $phoneNumber  = str_replace('+1', '', $phoneNumber) ;
+        // $this->Bandwidth->sendMessage($phoneNumber,$text);
         return true;
     }
 }

@@ -6,6 +6,8 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use App\Controller\AppHelper;
+use App\Bandwidth\Bandwidth;
+use Cake\Datasource\ModelAwareTrait;
 /**
  * ExpertAvailabilities Model
  *
@@ -24,6 +26,7 @@ use App\Controller\AppHelper;
  */
 class ExpertAvailabilitiesTable extends Table
 {
+ use ModelAwareTrait;
 
     /**
      * Initialize method
@@ -48,6 +51,7 @@ class ExpertAvailabilitiesTable extends Table
         $this->hasMany('Appointments', [
             'foreignKey' => 'expert_availability_id'
             ]);
+
     }
 
     /**
@@ -102,14 +106,13 @@ class ExpertAvailabilitiesTable extends Table
     public function afterSave($event,$entity, $options)
     {   
 
-        $data = [
-        'block_identifier' => "availability_updated",
-        'expertId' => $entity->expert_id,
-        'status' => 0
-        ];
-
+        $this->Bandwidth = new Bandwidth();
+        $this->loadModel('Experts');
+        $expertData = $this->Experts->find()->contain(['Users'])->where(['Experts.id'=>$entity->expert_id])->first();
+        $phoneNumber = $expertData->user->phone;
         $appHelper = new AppHelper();
-        $updateConversation = $appHelper->createSingleConversation($data); 
+        $text = $appHelper->getConversationText("availability_updated");
+        $this->Bandwidth->sendMessage($phoneNumber,$text);       
 
     }
 

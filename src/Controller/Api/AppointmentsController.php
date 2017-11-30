@@ -38,7 +38,6 @@ class AppointmentsController extends ApiController
         $appointment = $this->Appointments->findById($id)
                                           ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices'])
                                           ->first();
-        
         $updateBookingStatus = [
                                     'is_confirmed' => 1
                                 ];
