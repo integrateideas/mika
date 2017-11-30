@@ -51,14 +51,7 @@ class AppointmentBookingsController extends ApiController
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Availability id"));
 
         }
-        // if(!isset($data['expSpecServiceIds']) || !$data['expSpecServiceIds']){
-        //     throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Specialization Service id"));
-        // }
         $this->loadModel('ExpertSpecializationServices');
-        // $checkExistingServices = $this->ExpertSpecializationServices->findByExpertId($data['expertId'])
-        //                                                             ->where(['id IN' => $data['expSpecServiceIds']])
-        //                                                             ->all();
-
         $expertSpecializationIds = $this->ExpertSpecializationServices->find()
                                                                       ->where(['id IN' => $data['expSpecServiceIds']])
                                                                       ->all()
@@ -69,6 +62,7 @@ class AppointmentBookingsController extends ApiController
         if(!$expertSpecializationIds){
             throw new NotFoundException(__('Expert Specialization ids not found.'));
         }
+        
         $this->loadModel('UserCards');
         $getCardDetails = $this->UserCards->findByUserId($userId)
                                           ->where(['stripe_card_id' => $data['stripeCardId']])

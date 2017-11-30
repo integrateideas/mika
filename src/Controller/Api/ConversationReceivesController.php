@@ -59,15 +59,12 @@ class ConversationReceivesController extends ApiController
      $findExpertConversation = $this->Conversations->findByExpertId($getUser->experts[0]->id)
      ->contain(['Users','Experts.Users','Appointments.ExpertAvailabilities'])
      ->last();
-      // pr($findExpertConversation);die;
      Log::write('debug',$findExpertConversation);
      if(!$findExpertConversation){
       throw new NotFoundException(__('No conversation exist with this expert.'));
     }else{
-            // pr($findExpertConversation);die;
       $appHelper = new AppHelper();
       $reqData = $appHelper->getNextBlock($findExpertConversation,$this->request->data['text']);
-            // pr($findExpertConversation);die;
       if($reqData && isset($reqData['block_id']) &&!empty($reqData['block_id'])){
         $data = [
         'block_identifier' => $reqData['block_id'],
