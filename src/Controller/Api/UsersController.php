@@ -278,7 +278,7 @@ class UsersController extends ApiController
           $user = $this->Users->newEntity();
           $user = $this->Users->patchEntity($user, $data, ['associated' => ['Experts','SocialConnections']]);
 
-            if (!$this->Users->save($user)) {
+          if (!$this->Users->save($user)) {
             
             if($user->errors()){
               $this->_sendErrorResponse($user->errors());
@@ -380,6 +380,33 @@ class UsersController extends ApiController
       $data['user'] = $return['user'];
 
       $this->set('data', $data);
+      $this->set('status',true);
+      $this->set('_serialize', ['data','status']);
+    }
+
+    public function addPhone(){
+
+      if (!$this->request->is(['post'])) {
+        throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+
+      if(!isset($this->request->data['phone']) || !$this->request->data['phone']){
+        throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"phone"));  
+      }
+
+      $user = $this->Users->findById($this->Auth->user('id'))
+                          ->first();
+
+      $user->phone = $this->request->data['phone'];
+      if (!$this->Users->save($user)) {
+            
+        if($user->errors()){
+          $this->_sendErrorResponse($user->errors());
+        }
+        throw new Exception("Error Processing Request");
+      }
+
+      $this->set('data', $user);
       $this->set('status',true);
       $this->set('_serialize', ['data','status']);
     }
