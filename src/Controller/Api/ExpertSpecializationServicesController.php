@@ -175,7 +175,6 @@ class ExpertSpecializationServicesController extends ApiController
         if (!$id) {
             throw new MethodNotAllowedException(__('BAD_REQUEST','Argument id missing.'));
         }
-
         $this->loadModel('Experts');
         $expertId = $this->Experts->findByUserId($this->Auth->user('id'))
                                   ->first()
@@ -192,10 +191,9 @@ class ExpertSpecializationServicesController extends ApiController
         if (!$this->ExpertSpecializationServices->delete($expertSpecializationService)) {
             throw new Exception("Expert specialization service could not be deleted.");
         }
-
-        $success = true;
+        $response = ['status' => true,'message' => 'Expert specialization service has been deleted.'];
         
-        $this->set('status',$success);
-        $this->set('_serialize', ['success']);
-    }
+        $this->set('data',$response);
+        $this->set('_serialize', ['data']);
+      }
 }

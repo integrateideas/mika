@@ -83,7 +83,6 @@ class UsersController extends ApiController
       }
 
       $userId = $this->Auth->user('id');
-      
       if(!$userId){
         throw new NotFoundException(__('We cant identify the user.'));
       }
@@ -113,8 +112,10 @@ class UsersController extends ApiController
         }
         $status = true;
       }
-      $this->set('status',$status);
-      $this->set('_serialize', ['status','deleteCard']);
+      $response = ['status' => true,'message' => 'Card has been deleted.'];
+        
+      $this->set('data',$response);
+      $this->set('_serialize', ['data']);
     }
 
      public function listCards($userId = null){
