@@ -10,7 +10,7 @@ use Cake\Utility\Inflector;
 class CustomAuthorize extends BaseAuthorize{
 	
 	public function authorize($user, Request $request){
-        return true;
+        // return true;
 		//setting request parameters
 		$this->reqController = $request->params['controller'];
 		$this->reqAction = $request->params['action'];
@@ -28,7 +28,7 @@ class CustomAuthorize extends BaseAuthorize{
                 return false;
     		} 
         }
-        return true;
+        //return true;
 
         //Check if user allowed to acces the resource based on his role
         //if acessing a record then check ownership
@@ -45,20 +45,21 @@ class CustomAuthorize extends BaseAuthorize{
 		return true;
 	}
 
-      //Use known routes instead of find routes recursively
-    private function _getFromKnownRoutes($source, $target){
-
+    //Use known routes instead of find routes recursively
+    private function _getFromKnownRoutes($source, $userRole){
+        // pr($userRole);die;
         $knownRoutes = [
 
             'Expert' => [
 
-                'Appointments' => ['confirmBooking','rejectBooking']
+                'Appointments' => ['Users','Experts'],
+                'Conversations' => ['Users','Experts']
             ],
-            'Users' => []
+            'User' => []
         ];
 
-        if(isset($knownRoutes[$target][$source])){
-            return $knownRoutes[$target][$source];
+        if(isset($knownRoutes[$userRole][$source])){
+            return $knownRoutes[$userRole][$source];
         }
 
         return false;
@@ -127,19 +128,16 @@ class CustomAuthorize extends BaseAuthorize{
 
     //method to get unauthorized locations for current user based on the resource ownership of the vendor
     private function _checkOwnerShip($targetId, $userRole, $entityId){
-        
+
         $target = 'Users';
-        $associationRoute = $this->_getFromKnownRoutes($this->reqController, $target);
-       
+        $associationRoute = $this->_getFromKnownRoutes($this->reqController, $userRole);       
         if(!$associationRoute){
             $associationRoute = $this->_getAssociationRoute($this->reqController, $target, [], []);
         }
         if(!$associationRoute){
             return true;
         }
-        // pr($associationRoute);die;
         if ($associationRoute == $target) {
-           
             if($targetId == $entityId){
                 return true;
             }

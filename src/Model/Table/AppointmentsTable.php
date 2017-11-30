@@ -110,8 +110,6 @@ use ModelAwareTrait;
 
      public function beforeSave($event,$entity, $options)
     {   
-
-    
         if($entity->is_confirmed){
              $expertId = $entity->expert_id;
              $availabilityId = $entity->expert_availability_id;                                
@@ -131,12 +129,13 @@ use ModelAwareTrait;
             $cardChargeDetails = $stripe->chargeCards($servicePrice,$userCardDetails['stripe_card_id'],$userCardDetails['stripe_customer_id'],$serviceName,$userName);
                 
           $reqData = [
-                        'transaction_amount' => $cardChargeDetails['data']['amount'],
+                        'transaction_amount' => ($cardChargeDetails['data']['amount'])/100,
                         'stripe_charge_id' => $cardChargeDetails['data']['id'],
                         'status' => $cardChargeDetails['status'],
                         'remark' => $cardChargeDetails['data']['description']? $cardChargeDetails['data']['description'] : null,
                         'user_card_id' => $userCardDetails->id
                     ];
+        // pr($reqData);die;
 
         $this->loadModel('Transactions');
         $transaction = $this->Transactions->newEntity();
@@ -157,7 +156,6 @@ use ModelAwareTrait;
     public function afterSave($event,$entity, $options)
     {   
        
-        // pr($entity->id);die;
         $appointmentData = $this->findById($entity->id)->contain(['ExpertAvailabilities','AppointmentServices.ExpertSpecializations.Specializations','Users','Experts.Users'])->first();
         $services = (new Collection($appointmentData->appointment_services))->extract('expert_specialization.specialization.label')->toArray();
         $services = implode(', ', $services);
@@ -173,7 +171,6 @@ use ModelAwareTrait;
                         'expertId' => $appointmentData->expert_id,
                         'serviceName' => $services
                     ];
-
             $appHelper = new AppHelper();
             $updateConversation = $appHelper->createSingleConversation($data); 
             
@@ -211,17 +208,15 @@ use ModelAwareTrait;
         $body = $getNotificationContent['body'];
         $data = ['hi' => 'hello'];
         $notification = $this->FCMNotification->sendToUserApp($title, $body, $deviceToken, $data);*/
-//hridya
+//hriday
  $appointment = $this->findById($entity->id)
                                           ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices','Experts.Users'])->first();
     
     $this->loadModel('Users');
-
         $deviceTokens = $this->Users->UserDeviceTokens->findByUserId($userId)
                                                     ->all()
                                                     ->extract('device_token')
                                                     ->toArray();
-
         if($deviceTokens){
 
             $title = $getNotificationContent['title'];

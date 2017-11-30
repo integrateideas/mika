@@ -110,19 +110,22 @@ class ConversationsTable extends Table
         }
         Log::write('debug',$user);
         if(isset($user) && !$entity->status){
-            if($entity->status){
-               $this->sendMessage($entity->block_identifier,$user,$options) ;
-            }
+        // pr($entity);die;
+             if($this->sendMessage($entity->block_identifier,$user,$options)){
+                $entity->status = true;
+                $this->save($entity);
+             }
         }
     }
 
     public function sendMessage($block_id,$user, $msgData, $options = null){
         $msgData = $msgData->offsetGet('msgData');
         $appHelper = new AppHelper();
-        $text = $appHelper->getConversationText($block_id,$user,$msgData);
+        $text = $appHelper->getConversationText($block_id,$msgData);
         Log::write('debug',$text);
         Log::write('debug',$user);
         $phoneNumber = $user->phone;
+        $phoneNumber  = str_replace('+1', '', $phoneNumber) ;
         // $this->Bandwidth->sendMessage($phoneNumber,$text);
         return true;
     }
