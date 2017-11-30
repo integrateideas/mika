@@ -126,7 +126,7 @@ class ConversationsTable extends Table
         Log::write('debug',$user);
         $phoneNumber = $user->phone;
         $phoneNumber  = str_replace('+1', '', $phoneNumber) ;
-        $this->Bandwidth->sendMessage($phoneNumber,$text);
+        // $this->Bandwidth->sendMessage($phoneNumber,$text);
         return true;
     }
 }

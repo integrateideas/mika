@@ -129,7 +129,7 @@ use ModelAwareTrait;
             $cardChargeDetails = $stripe->chargeCards($servicePrice,$userCardDetails['stripe_card_id'],$userCardDetails['stripe_customer_id'],$serviceName,$userName);
                 
           $reqData = [
-                        'transaction_amount' => $cardChargeDetails['data']['amount'],
+                        'transaction_amount' => ($cardChargeDetails['data']['amount'])/100,
                         'stripe_charge_id' => $cardChargeDetails['data']['id'],
                         'status' => $cardChargeDetails['status'],
                         'remark' => $cardChargeDetails['data']['description']? $cardChargeDetails['data']['description'] : null,
@@ -208,17 +208,15 @@ use ModelAwareTrait;
         $body = $getNotificationContent['body'];
         $data = ['hi' => 'hello'];
         $notification = $this->FCMNotification->sendToUserApp($title, $body, $deviceToken, $data);*/
-//hridya
+//hriday
  $appointment = $this->findById($entity->id)
                                           ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices','Experts.Users'])->first();
     
     $this->loadModel('Users');
-
         $deviceTokens = $this->Users->UserDeviceTokens->findByUserId($userId)
                                                     ->all()
                                                     ->extract('device_token')
                                                     ->toArray();
-
         if($deviceTokens){
 
             $title = $getNotificationContent['title'];

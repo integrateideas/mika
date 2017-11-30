@@ -62,6 +62,7 @@ class AppointmentBookingsController extends ApiController
         if(!$expertSpecializationIds){
             throw new NotFoundException(__('Expert Specialization ids not found.'));
         }
+        
         $this->loadModel('UserCards');
         $getCardDetails = $this->UserCards->findByUserId($userId)
                                           ->where(['stripe_card_id' => $data['stripeCardId']])
