@@ -86,11 +86,18 @@ class AppHelper
                                                                     "text"=>"It looks like you haven't updated your time, are you no longer available for a booking today?", 
                                                                 "response"=>[
                                                                         [
+                                                                            "intent" => ['Yes','Y','Ya','yes','y','ya'],
+                                                                            "block_identifier" => "confirm_availability"
+                                                                        ],
+                                                                        [
                                                                             "intent" => ['No','Na','N','no','n','na'],
                                                                             "block_identifier" => "confirm_not_available"
                                                                         ]
                                                                     ]
                                                                 ],                                                                
+                                    "confirm_availability" => [
+                                                                    "text"=>"Okay, hope you have a nice day."
+                                                                ],
                                     "confirm_not_available" => [
                                                                     "text"=>"Okay, hope you have a nice day."
                                                                 ],                                                                
