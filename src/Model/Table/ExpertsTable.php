@@ -89,6 +89,11 @@ class ExpertsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
+        $validator
+            ->scalar('timezone')
+            ->requirePresence('timezone', 'create')
+            ->notEmpty('timezone');
+
         return $validator;
     }
 

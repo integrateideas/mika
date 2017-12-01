@@ -231,24 +231,29 @@ class UsersController extends ApiController
           $data['username'] = $data['email'];
         }
         if(isset($this->request->data['uid']) && $this->request->data['uid']){
-          $data['social_connections'] = [
-                                          'fb_identifier' => $this->request->data['uid'],
-                                          'status' => 1
-                                        ];
+          $data['social_connections'][] = [
+                                            'fb_identifier' => $this->request->data['uid'],
+                                            'status' => 1
+                                          ];
         }
         
         $data['role_id'] = 2;
-
+        Log::write('debug',$data);        
+     
         $user = $this->Users->patchEntity($user, $data, ['associated' => ['SocialConnections']]);
-
-        if (!$this->Users->save($user)) {
+        
+        Log::write('debug',$user);
+          
+        if (!$this->Users->save($user, ['associated' => ['SocialConnections']])) {
           
           if($user->errors()){
             $this->_sendErrorResponse($user->errors());
           }
           throw new Exception("Error Processing Request");
         }
-        
+
+        Log::write('debug',$user);
+
         $success = true;
 
         $this->set('data',$user);
