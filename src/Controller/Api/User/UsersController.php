@@ -230,20 +230,16 @@ class UsersController extends ApiController
         if(isset($data['email']) && $data['email']){
           $data['username'] = $data['email'];
         }
-        if(isset($this->request->data['uid']) && $this->request->data['uid'])
-        $data['social_connections'][] = [
+        if(isset($this->request->data['uid']) && $this->request->data['uid']){
+          $data['social_connections'] = [
                                           'fb_identifier' => $this->request->data['uid'],
                                           'status' => 1
                                         ];
+        }
+        
         $data['role_id'] = 2;
 
         $user = $this->Users->patchEntity($user, $data, ['associated' => ['SocialConnections']]);
-        if(isset($this->request->data['uid']) && $this->request->data['uid']){
-          $data['social_connections'] = [
-                                            'fb_identifier' => $this->request->data['uid'],
-                                            'status' => 1
-                                          ];
-        }
 
         if (!$this->Users->save($user)) {
           
