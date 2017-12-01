@@ -4,6 +4,7 @@ namespace App\Controller\Api\User;
 use App\Controller\Api\User\ApiController;
 use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\MethodNotAllowedException;
+use Cake\Network\Exception\NotAllowedException;
 use Cake\Core\Exception\Exception;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
@@ -51,6 +52,12 @@ class AppointmentBookingsController extends ApiController
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert Availability id"));
 
         }
+
+        $this->loadModel('Experts');
+        $checkUnAuthorizedUser = $this->Experts->findById($data['expertId'])->first();
+        if($this->Auth->user('id') == $checkUnAuthorizedUser['user_id']){
+            throw new UnauthorizedException(__('You are not allowed to book yourself.'));
+        }
         $this->loadModel('ExpertSpecializationServices');
         $expertSpecializationIds = $this->ExpertSpecializationServices->find()
                                                                       ->where(['id IN' => $data['expSpecServiceIds']])
@@ -79,7 +86,6 @@ class AppointmentBookingsController extends ApiController
                         'expert_availability_id' => $data['availabilityId'],
                         'user_card_id' => $userCardId
                     ];
-
         $services = [];
         foreach ($data['expSpecServiceIds'] as $key => $value) {
             $reqData['appointment_services'][] = [

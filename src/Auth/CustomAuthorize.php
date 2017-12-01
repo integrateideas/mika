@@ -6,30 +6,31 @@ use Cake\Network\Request;
 use Cake\ORM\TableRegistry;
 use Cake\Collection\Collection;
 use Cake\Utility\Inflector;
+use Firebase\JWT\JWT;
+use Cake\Utility\Security;
 
 class CustomAuthorize extends BaseAuthorize{
 	
 	public function authorize($user, Request $request){
-        // return true;
-		//setting request parameters
+        //setting request parameters
 		$this->reqController = $request->params['controller'];
 		$this->reqAction = $request->params['action'];
 		$this->reqPass = $request->params['pass'];
 		$this->reqPrefix = isset($request->params['prefix']) ? $request->params['prefix'] : false;
-		$roles = TableRegistry::get('Roles');
-        $user['role'] = $roles->find('RolesById', ['role' => $user['role_id']])
-                              ->select(['name', 'label'])
-                              ->first();
-
-		$userRole = $user['role']['label'];
+        $token  = $request->header('Authorization');
+        if(!in_array($token, [false, null, ''])){
+            $payload = JWT::decode(explode(' ', $token)[1], Security::salt(), array('HS256'));
+        }
+        $userRole = 'User';
+        if(isset($payload->expert_id) && !in_array($payload->expert_id, [false, null, ''])){
+          $userRole = 'Expert';
+        }
         if(!$this->_ignoreRoleAccess($this->reqPrefix)){
 
             if(!$this->_checkRoleAccess($userRole)){	
                 return false;
     		} 
         }
-        //return true;
-
         //Check if user allowed to acces the resource based on his role
         //if acessing a record then check ownership
         if(isset($this->reqPass[0]) && is_numeric($this->reqPass[0]) && in_array($userRole, ['User', 'Expert'])){
@@ -69,6 +70,7 @@ class CustomAuthorize extends BaseAuthorize{
     private function _ignoreRoleAccess($prefix){
         $commonApis = [
             'api' => [
+                'Users' => ['addPhone'],
                 'UserDeviceTokens' => ['add','edit'],
                 'SpecializationServices' => ['index'],
                 'ExpertSpecializationServices' => ['view']
