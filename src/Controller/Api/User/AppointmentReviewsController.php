@@ -8,14 +8,13 @@ use Cake\Network\Exception\NotAllowedException;
 use Cake\Core\Exception\Exception;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
-use Cake\Log\Log;
 
 /**
- * AppointmentReviews Controller
+ * UserFavouriteExperts Controller
  *
- * @property \App\Model\Table\AppointmentReviewsTable $AppointmentReviews
+ * @property \App\Model\Table\UserFavouriteExpertsTable $UserFavouriteExperts
  *
- * @method \App\Model\Entity\AppointmentReview[] paginate($object = null, array $settings = [])
+ * @method \App\Model\Entity\UserFavouriteExpert[] paginate($object = null, array $settings = [])
  */
 class AppointmentReviewsController extends ApiController
 {
@@ -57,8 +56,10 @@ class AppointmentReviewsController extends ApiController
                     'appointment_id' => $this->request->data['appointment_id'],
                     'rating' => $this->request->data['rating'],
                     'review' => $this->request->data['review'],
+                    'is_approved' => 0,
+                    'is_deleted' => 0,
+                    'status' => 0
                 ];
-        pr($data);die;
         $appointmentReview = $this->AppointmentReviews->newEntity();
         $appointmentReview = $this->AppointmentReviews->patchEntity($appointmentReview, $data);
         
