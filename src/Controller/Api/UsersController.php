@@ -130,16 +130,41 @@ class UsersController extends ApiController
         if(!$this->request->is(['post'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-        $user = $this->Users->newEntity();
         $data = $this->request->getData();
-        
+        if(!isset($data['first_name']) || !$data['first_name']){
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"First Name"));
+        }
+        if(!isset($data['last_name']) || !$data['last_name']){
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Last Name"));
+        }
+        if(!isset($data['phone']) || !$data['phone']){
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Phone Number"));
+        }
+        if(!isset($data['password']) || !$data['password']){
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Password"));
+        }
+        if(!isset($data['uid']) || !$data['uid']){
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Facebook Identifier"));
+        }
         if(isset($data['email']) && $data['email']){
           $data['username'] = $data['email'];
         }
+        if(!isset($data['username']) || !$data['username']){
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Username"));
+
+        }
+
+        if(isset($this->request->data['uid']) && $this->request->data['uid']){
+          $data['social_connections'][] = [
+                                            'fb_identifier' => $this->request->data['uid'],
+                                            'status' => 1
+                                          ];
+        }
         $data['role_id'] = 3;
-        $data['experts'] = [[]];
-        $user = $this->Users->patchEntity($user, $data, ['associated' => 'Experts']);
+        $data['experts'][] = ['timezone' => isset($data['timezone'])? $data['timezone']:'UTC'];
         
+        $user = $this->Users->newEntity();
+        $user = $this->Users->patchEntity($user, $data, ['associated' => ['Experts','SocialConnections']]);
         if (!$this->Users->save($user)) {
           
           if($user->errors()){
@@ -147,7 +172,6 @@ class UsersController extends ApiController
           }
           throw new Exception("Error Processing Request");
         }
-
         $this->set('data',$user);
         $this->set('status',true);
         $this->set('_serialize', ['status','data']);
@@ -257,37 +281,37 @@ class UsersController extends ApiController
     //     return $this->redirect(['action' => 'index']);
     // }
 
-    public function socialSignup($reqData){
+    // public function socialSignup($reqData){
 
-          $displayName = preg_split('/\s+/', $reqData['displayName']);
+    //       $displayName = preg_split('/\s+/', $reqData['displayName']);
           
-          $data = [
-                      'first_name' => $displayName[0],
-                      'last_name' => $displayName[1],
-                      'email' => ($reqData['email'])?$reqData['email']:'',
-                      'phone' => ($reqData['phoneNumber'])?$reqData['phoneNumber']:'',
-                      'password' => '123456789',
-                      'role_id' => 3,
-                      'username' => $reqData['email']
-                  ];
-          $data['social_connections'][] = [
-                                          'fb_identifier' => $this->request->data['uid'],
-                                          'status' => 1
-                                        ];
-          $data['experts'] = [[]];
-          $user = $this->Users->newEntity();
-          $user = $this->Users->patchEntity($user, $data, ['associated' => ['Experts','SocialConnections']]);
+    //       $data = [
+    //                   'first_name' => $displayName[0],
+    //                   'last_name' => $displayName[1],
+    //                   'email' => ($reqData['email'])?$reqData['email']:'',
+    //                   'phone' => ($reqData['phoneNumber'])?$reqData['phoneNumber']:'',
+    //                   'password' => '123456789',
+    //                   'role_id' => 3,
+    //                   'username' => $reqData['email']
+    //               ];
+    //       $data['social_connections'][] = [
+    //                                       'fb_identifier' => $this->request->data['uid'],
+    //                                       'status' => 1
+    //                                     ];
+    //       $data['experts'] = [[]];
+    //       $user = $this->Users->newEntity();
+    //       $user = $this->Users->patchEntity($user, $data, ['associated' => ['Experts','SocialConnections']]);
 
-          if (!$this->Users->save($user)) {
+    //       if (!$this->Users->save($user)) {
             
-            if($user->errors()){
-              $this->_sendErrorResponse($user->errors());
-            }
-            throw new Exception("Error Processing Request");
-          }
+    //         if($user->errors()){
+    //           $this->_sendErrorResponse($user->errors());
+    //         }
+    //         throw new Exception("Error Processing Request");
+    //       }
 
-        return $user->id;
-    }
+    //     return $user->id;
+    // }
 
     public function socialLogin(){
 
