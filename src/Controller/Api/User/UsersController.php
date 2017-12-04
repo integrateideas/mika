@@ -366,11 +366,15 @@ class UsersController extends ApiController
                                 return $q->order(['created' => 'DESC'])->limit(1);
                               }])
                             ->first();
-      $lastAppointmentExpert = $user->appointments[0]->expert_id;
-      $this->loadModel('Experts');
-      $getUser = $this->Experts->findById($lastAppointmentExpert)->contain(['Users.UserSalons'])->first();
+                            
+      $getUserLastLocation = null;
+      if($user->appointments && isset($user->appointments) && $user->appointments[0]){
+        $lastAppointmentExpert = $user->appointments[0]->expert_id;
+        $this->loadModel('Experts');
+        $getUser = $this->Experts->findById($lastAppointmentExpert)->contain(['Users.UserSalons'])->first();
 
-      $getUserLastLocation = $getUser->user->user_salons[0];
+        $getUserLastLocation = $getUser->user->user_salons[0];
+      }
 
       $favouriteExperts = $this->Users->UserFavouriteExperts->findByUserId($user['id'])
                                                     ->all()
