@@ -76,10 +76,10 @@ class ExpertAvailabilitiesTable extends Table
         ->requirePresence('available_to', 'create')
         ->notEmpty('available_to');
 
-        $validator
-        ->boolean('overlapping_allowed')
-        ->requirePresence('overlapping_allowed', 'create')
-        ->notEmpty('overlapping_allowed');
+        // $validator
+        // ->boolean('overlapping_allowed')
+        // ->requirePresence('overlapping_allowed', 'create')
+        // ->notEmpty('overlapping_allowed');
 
         $validator
         ->boolean('status')
