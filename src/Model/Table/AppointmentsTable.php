@@ -172,7 +172,7 @@ use ModelAwareTrait;
                         'serviceName' => $services
                     ];
             $appHelper = new AppHelper();
-            $updateConversation = $appHelper->createSingleConversation($data); 
+            $updateConversation = $appHelper->createSingleConversation($data);  
             
         }elseif($entity->is_confirmed){
             $this->loadModel('ExpertAvailabilities');
@@ -197,22 +197,11 @@ use ModelAwareTrait;
 
          $controller = new Controller();
             $this->FCMNotification = $controller->loadComponent('FCMNotification');
-        /*$this->loadModel('Users');
-        $deviceToken = $this->Users->UserDeviceTokens->findByUserId($userId)->first();
-            if($deviceToken){
-                $deviceToken = $deviceToken->device_token;
-            }else{
-                throw new NotFoundException(__('Device token has not been found for this User.'));
-            }
-        $title = $getNotificationContent['title'];
-        $body = $getNotificationContent['body'];
-        $data = ['hi' => 'hello'];
-        $notification = $this->FCMNotification->sendToUserApp($title, $body, $deviceToken, $data);*/
 //hriday
- $appointment = $this->findById($entity->id)
+        $appointment = $this->findById($entity->id)
                                           ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices','Experts.Users'])->first();
     
-    $this->loadModel('Users');
+        $this->loadModel('Users');
         $deviceTokens = $this->Users->UserDeviceTokens->findByUserId($userId)
                                                     ->all()
                                                     ->extract('device_token')
