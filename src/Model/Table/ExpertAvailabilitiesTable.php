@@ -76,10 +76,10 @@ class ExpertAvailabilitiesTable extends Table
         ->requirePresence('available_to', 'create')
         ->notEmpty('available_to');
 
-        $validator
-        ->boolean('overlapping_allowed')
-        ->requirePresence('overlapping_allowed', 'create')
-        ->notEmpty('overlapping_allowed');
+        // $validator
+        // ->boolean('overlapping_allowed')
+        // ->requirePresence('overlapping_allowed', 'create')
+        // ->notEmpty('overlapping_allowed');
 
         $validator
         ->boolean('status')
@@ -112,8 +112,8 @@ class ExpertAvailabilitiesTable extends Table
         $phoneNumber = $expertData->user->phone;
         $appHelper = new AppHelper();
         $text = $appHelper->getConversationText("availability_updated");
-        $this->Bandwidth->sendMessage($phoneNumber,$text);       
-
+        // $this->Bandwidth->sendMessage($phoneNumber,$text);       
+        
     }
 
 }

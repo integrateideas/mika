@@ -27,17 +27,22 @@ class ExpertsTableTest extends TestCase
         'app.experts',
         'app.users',
         'app.roles',
-        'app.social_connections',
-        'app.user_salons',
-        'app.expert_availabilities',
         'app.appointments',
-        'app.expert_specialization_services',
+        'app.expert_availabilities',
+        'app.transactions',
+        'app.user_cards',
+        'app.appointment_services',
         'app.expert_specializations',
         'app.specializations',
         'app.specialization_services',
-        'app.appointment_transactions',
+        'app.expert_specialization_services',
+        'app.social_connections',
+        'app.user_favourite_experts',
+        'app.user_salons',
+        'app.user_device_tokens',
         'app.expert_cards',
-        'app.expert_locations'
+        'app.expert_locations',
+        'app.conversations'
     ];
 
     /**

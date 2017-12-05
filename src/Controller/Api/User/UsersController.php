@@ -231,24 +231,29 @@ class UsersController extends ApiController
           $data['username'] = $data['email'];
         }
         if(isset($this->request->data['uid']) && $this->request->data['uid']){
-          $data['social_connections'] = [
-                                          'fb_identifier' => $this->request->data['uid'],
-                                          'status' => 1
-                                        ];
+          $data['social_connections'][] = [
+                                            'fb_identifier' => $this->request->data['uid'],
+                                            'status' => 1
+                                          ];
         }
         
         $data['role_id'] = 2;
-
+        Log::write('debug',$data);        
+     
         $user = $this->Users->patchEntity($user, $data, ['associated' => ['SocialConnections']]);
-
-        if (!$this->Users->save($user)) {
+        
+        Log::write('debug',$user);
+          
+        if (!$this->Users->save($user, ['associated' => ['SocialConnections']])) {
           
           if($user->errors()){
             $this->_sendErrorResponse($user->errors());
           }
           throw new Exception("Error Processing Request");
         }
-        
+
+        Log::write('debug',$user);
+
         $success = true;
 
         $this->set('data',$user);
@@ -307,13 +312,27 @@ class UsersController extends ApiController
 
       $data =array();            
       $user = $this->Users->find()
-                          ->where(['id' => $userId])
-                          ->contain(['SocialConnections','UserCards'])
-                          ->first();
+                            ->where(['id' => $userId])
+                            ->contain(['SocialConnections','UserCards','Appointments' => function ($q) use ($userId){
+                                return $q->order(['created' => 'DESC'])->limit(1);
+                              }])
+                            ->first();
+                            
+      $getUserLastLocation = null;
+      if($user->appointments && isset($user->appointments) && $user->appointments[0]){
+        $lastAppointmentExpert = $user->appointments[0]->expert_id;
+        $this->loadModel('Experts');
+        $getUser = $this->Experts->findById($lastAppointmentExpert)->contain(['Users.UserSalons'])->first();
+
+        $getUserLastLocation = $getUser->user->user_salons[0];
+      }
+      
 
       $favouriteExperts = $this->Users->UserFavouriteExperts->findByUserId($userId)
                                                           ->all()
                                                           ->indexBy('expert_id');
+
+
       
       if (!$user) {
         throw new NotFoundException(__('LOGIN_FAILED'));
@@ -326,7 +345,7 @@ class UsersController extends ApiController
       $data['status']=true;
       $data['data']['user']=$user;
       $data['data']['user']['favouriteExperts']=$favouriteExperts;
-
+      $data['data']['user']['expertLastLocation']=$getUserLastLocation;
       $data['data']['token']=JWT::encode([
         'sub' => $user['id'],
         'exp' =>  $time,
@@ -350,10 +369,22 @@ class UsersController extends ApiController
       if (!$user) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
+      $userId = $user['id'];
       $user = $this->Users->find()
-                            ->where(['id' => $user['id']])
-                            ->contain(['SocialConnections','UserCards'])
+                            ->where(['id' => $userId])
+                            ->contain(['SocialConnections','UserCards','Appointments' => function ($q) use ($userId){
+                                return $q->order(['created' => 'DESC'])->limit(1);
+                              }])
                             ->first();
+
+      $getUserLastLocation = null;
+      if($user->appointments && isset($user->appointments) && $user->appointments[0]){
+        $lastAppointmentExpert = $user->appointments[0]->expert_id;
+        $this->loadModel('Experts');
+        $getUser = $this->Experts->findById($lastAppointmentExpert)->contain(['Users.UserSalons'])->first();
+
+        $getUserLastLocation = $getUser->user->user_salons[0];
+      }
 
       $favouriteExperts = $this->Users->UserFavouriteExperts->findByUserId($user['id'])
                                                     ->all()
@@ -365,7 +396,7 @@ class UsersController extends ApiController
       $data['status']=true;
       $data['data']['user']=$user;
       $data['data']['user']['favouriteExperts']=$favouriteExperts;
-      
+      $data['data']['user']['expertLastLocation']=$getUserLastLocation;
       $data['data']['token']=JWT::encode([
         'sub' => $user['id'],
         'exp' =>  $time,
