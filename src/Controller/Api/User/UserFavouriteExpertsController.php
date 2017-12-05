@@ -83,28 +83,44 @@ class UserFavouriteExpertsController extends ApiController
         if(!$this->request->is(['post'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-
         $data = [
                     'user_id' => $this->Auth->user('id'),
                     'expert_id' => $this->request->data['expert_id']
                 ];
 
-        $userFavouriteExpert = $this->UserFavouriteExperts->newEntity();
-        $userFavouriteExpert = $this->UserFavouriteExperts->patchEntity($userFavouriteExpert, $data);
+        if(!isset($data['user_id']) || !$data['user_id']){
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"User id"));
 
-        if (!$this->UserFavouriteExperts->save($userFavouriteExpert)) {
-          
-          if($userFavouriteExpert->errors()){
-            $this->_sendErrorResponse($userFavouriteExpert->errors());
-          }
-          throw new Exception("Error Processing Request");
         }
+        if(!isset($data['expert_id']) || !$data['expert_id']){
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert id"));
+
+        }
+
+        $isAlreadyFav =  $this->UserFavouriteExperts->find()->where(['user_id'=>$this->Auth->user('id') , 'expert_id'=>$this->request->data['expert_id']])->first();
+        if($isAlreadyFav){
+            $success = true;
+            $this->set('data',$isAlreadyFav);
+            $this->set('status',$success);
+            $this->set('_serialize', ['status','data']);
+        }else{
+            $userFavouriteExpert = $this->UserFavouriteExperts->newEntity();
+            $userFavouriteExpert = $this->UserFavouriteExperts->patchEntity($userFavouriteExpert, $data);
+
+            if (!$this->UserFavouriteExperts->save($userFavouriteExpert)) {
+
+            if($userFavouriteExpert->errors()){
+                    $this->_sendErrorResponse($userFavouriteExpert->errors());
+                }
+                throw new Exception("Error Processing Request");
+            }
+
+            $success = true;
+            $this->set('data',$userFavouriteExpert);
+            $this->set('status',$success);
+            $this->set('_serialize', ['status','data']);
+        }       
         
-        $success = true;
-        
-        $this->set('data',$userFavouriteExpert);
-        $this->set('status',$success);
-        $this->set('_serialize', ['status','data']);
     }
 
     /**

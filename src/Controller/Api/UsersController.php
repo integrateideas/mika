@@ -143,9 +143,9 @@ class UsersController extends ApiController
         if(!isset($data['password']) || !$data['password']){
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Password"));
         }
-        if(!isset($data['uid']) || !$data['uid']){
-            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Facebook Identifier"));
-        }
+        // if(!isset($data['uid']) || !$data['uid']){
+        //     throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Facebook Identifier"));
+        // }
         if(isset($data['email']) && $data['email']){
           $data['username'] = $data['email'];
         }
@@ -166,12 +166,13 @@ class UsersController extends ApiController
         $user = $this->Users->newEntity();
         $user = $this->Users->patchEntity($user, $data, ['associated' => ['Experts','SocialConnections']]);
         if (!$this->Users->save($user)) {
-          
+          Log::write('debug',$user); 
           if($user->errors()){
             $this->_sendErrorResponse($user->errors());
           }
           throw new Exception("Error Processing Request");
         }
+        Log::write('debug',$user); 
         $this->set('data',$user);
         $this->set('status',true);
         $this->set('_serialize', ['status','data']);
