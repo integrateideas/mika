@@ -12,6 +12,7 @@ use Cake\Datasource\ConnectionManager;
 use Stripe\Stripe;
 use Cake\I18n\FrozenTime;
 use App\Controller\AppHelper;
+use Cake\Log\Log;
 
 /**
  * Availabilities Controller
@@ -154,6 +155,7 @@ class ExpertAvailabilitiesController extends ApiController
             $this->loadComponent('FCMNotification');
             $this->loadModel('Users');
             $deviceToken = $this->Users->UserDeviceTokens->findByUserId($this->Auth->user('id'))->all()->extract('device_token')->toArray();
+            Log::write('debug', $deviceToken);
             if(!empty($deviceToken)){
                 $title = $getNotificationContent['title'];
                 $body = $getNotificationContent['body'];
