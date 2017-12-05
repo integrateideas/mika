@@ -112,7 +112,7 @@ class ExpertAvailabilitiesTable extends Table
         $phoneNumber = $expertData->user->phone;
         $appHelper = new AppHelper();
         $text = $appHelper->getConversationText("availability_updated");
-        // $this->Bandwidth->sendMessage($phoneNumber,$text);       
+        $this->Bandwidth->sendMessage($phoneNumber,$text);       
         
     }
 

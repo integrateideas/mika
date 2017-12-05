@@ -295,57 +295,20 @@ class UsersController extends ApiController
       
       $this->loadModel('SocialConnections');
       $socialConnection = $this->SocialConnections->find()->where(['fb_identifier' => $this->request->data['uid']])->first();
-
-      $existingUser = $this->Users->findByEmail($this->request->data['email'])->first();
-
-      if(!$socialConnection){
-        
-        if(!$existingUser){
-          $userId = $this->socialSignup($this->request->data);
-        }else{
-          $userId = $existingUser->id;
-        }
-
-      }else{
-        $userId = $socialConnection->user_id;
-      }
-
-      $data =array();            
-      $user = $this->Users->find()
-                            ->where(['id' => $userId])
-                            ->contain(['SocialConnections','UserCards','Appointments' => function ($q) use ($userId){
-                                return $q->order(['created' => 'DESC'])->limit(1);
-                              }])
-                            ->first();
-                            
-      $getUserLastLocation = null;
-      if($user->appointments && isset($user->appointments) && $user->appointments[0]){
-        $lastAppointmentExpert = $user->appointments[0]->expert_id;
-        $this->loadModel('Experts');
-        $getUser = $this->Experts->findById($lastAppointmentExpert)->contain(['Users.UserSalons'])->first();
-
-        $getUserLastLocation = $getUser->user->user_salons[0];
-      }
-      
-
-      $favouriteExperts = $this->Users->UserFavouriteExperts->findByUserId($userId)
-                                                          ->all()
-                                                          ->indexBy('expert_id');
-
-
-      
-      if (!$user) {
+      if (!$socialConnection) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
 
+      $user = $this->Users->findById($socialConnection->user_id)->first();
+      $data =array();
+      $user = $this->_userLoginData($user);            
+      
       $time = time() + 10000000;
       $expTime = Time::createFromTimestamp($time);
       $expTime = $expTime->format('Y-m-d H:i:s');
       
       $data['status']=true;
       $data['data']['user']=$user;
-      $data['data']['user']['favouriteExperts']=$favouriteExperts;
-      $data['data']['user']['expertLastLocation']=$getUserLastLocation;
       $data['data']['token']=JWT::encode([
         'sub' => $user['id'],
         'exp' =>  $time,
@@ -369,6 +332,24 @@ class UsersController extends ApiController
       if (!$user) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
+      $user = $this->_userLoginData($user);
+      $time = time() + 10000000;
+      $expTime = Time::createFromTimestamp($time);
+      $expTime = $expTime->format('Y-m-d H:i:s');
+      $data['status']=true;
+      $data['data']['user']=$user;
+      $data['data']['token']=JWT::encode([
+        'sub' => $user['id'],
+        'exp' =>  $time,
+        'expert_id'=>$user['experts'][0]['id'],
+        ],Security::salt());
+      $data['data']['expires']=$expTime;
+      $this->set('data',$data['data']);
+      $this->set('status',$data['status']);
+      $this->set('_serialize', ['status','data']);
+    }
+
+    private function _userLoginData($user){
       $userId = $user['id'];
       $user = $this->Users->find()
                             ->where(['id' => $userId])
@@ -385,27 +366,14 @@ class UsersController extends ApiController
 
         $getUserLastLocation = $getUser->user->user_salons[0];
       }
-
       $favouriteExperts = $this->Users->UserFavouriteExperts->findByUserId($user['id'])
-                                                    ->all()
-                                                    ->indexBy('expert_id');
-
-      $time = time() + 10000000;
-      $expTime = Time::createFromTimestamp($time);
-      $expTime = $expTime->format('Y-m-d H:i:s');
-      $data['status']=true;
-      $data['data']['user']=$user;
-      $data['data']['user']['favouriteExperts']=$favouriteExperts;
-      $data['data']['user']['expertLastLocation']=$getUserLastLocation;
-      $data['data']['token']=JWT::encode([
-        'sub' => $user['id'],
-        'exp' =>  $time,
-        'expert_id'=>$user['experts'][0]['id'],
-        ],Security::salt());
-      $data['data']['expires']=$expTime;
-      $this->set('data',$data['data']);
-      $this->set('status',$data['status']);
-      $this->set('_serialize', ['status','data']);
+                                                            ->all()
+                                                            ->indexBy('expert_id')
+                                                            ->toArray();
+  
+      $user['favouriteExperts']=$favouriteExperts;
+      $user['expertLastLocation']=$getUserLastLocation;
+      return $user;
     }
 
     public function refreshUser(){
@@ -418,16 +386,8 @@ class UsersController extends ApiController
       if (!$user) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
-      $response = $this->Users->find()
-                            ->where(['id' => $user['id']])
-                            ->contain(['SocialConnections','UserCards'])
-                            ->first();
-      
-      $response['favouriteExperts'] = $this->Users->UserFavouriteExperts->findByUserId($user['id'])
-                                                    ->all()
-                                                    ->indexBy('expert_id')
-                                                    ->toArray();
-                                                          
+      $response = $this->_userLoginData($user);
+                                                         
       $this->set('data',$response);
       $this->set('status',true);
       $this->set('_serialize', ['status','data']);
