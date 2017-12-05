@@ -73,17 +73,29 @@ class UserSalonsController extends ApiController
      */
     public function add()
     {   
-      Log::write('debug', $this->Auth->user());
+        Log::write('debug', $this->Auth->user());
 
         if(!$this->request->is(['post'])){
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
+        $data = $this->request->data;
+        if(!isset($data['salon_name']) || !$data['salon_name']){
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Salon Name"));
 
+        }
+        if(!isset($data['location']) || !$data['location']){
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Location"));
+
+        }
+        if(!isset($data['zipcode']) || !$data['zipcode']){
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Zipcode"));
+
+        }
         $userSalon = $this->UserSalons->newEntity();
-        $this->request->data['user_id'] = $this->Auth->user('id');
-        $this->request->data['status'] = 1;
-        
-        $userSalon = $this->UserSalons->patchEntity($userSalon, $this->request->data);
+        $data['user_id'] = $this->Auth->user('id');
+        $data['status'] = 1;
+        Log::write('debug', $data);
+        $userSalon = $this->UserSalons->patchEntity($userSalon, $data);
         if (!$this->UserSalons->save($userSalon)) {
           
           if($userSalon->errors()){
@@ -91,20 +103,12 @@ class UserSalonsController extends ApiController
           }
           throw new Exception("Error Processing Request");
         }
-        
-        $this->request->data['experts'] = [
-                                            "user_salon_id" => $userSalon['id']
-                                          ];
+        Log::write('debug', $userSalon);
         $this->loadModel('Experts');
-        $experts = $this->Experts->findByUserId($this->Auth->user('id'))->first();
-        $experts = $this->Experts->patchEntity($experts, $this->request->data['experts']);
-        if (!$this->Experts->save($experts)) {
-          
-          if($experts->errors()){
-            $this->_sendErrorResponse($experts->errors());
-          }
-          throw new Exception("Error while updating user_salon_id in Experts");
-        }
+        $expertData = $this->Experts->updateAll(    ['user_salon_id' => $userSalon->id], // fields
+                                                    ['user_id' => $data['user_id']] // conditions
+                                                );
+        Log::write('debug', $expertData);
         
         $success = true;
         $this->set('data',$userSalon);
