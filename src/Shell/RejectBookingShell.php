@@ -66,7 +66,6 @@ class RejectBookingShell extends Shell
     }
 
     private function _sendNotifications($data){
-        die('asdads');
         $controller = new Controller();
         $notificationComponent = $controller->loadComponent('FCMNotification');
         
@@ -80,7 +79,7 @@ class RejectBookingShell extends Shell
                 $deviceToken = $deviceToken->device_token;
                 $title = $getNotificationContent['title'];
                 $body = $getNotificationContent['body'];
-                $data = ['hi' => 'hello'];
+                $data = ['notificationType' => $getNotificationContent['title']];
                 $notification = $notificationComponent->sendToExpertApp($title, $body, $deviceToken, $data);
            
             }
