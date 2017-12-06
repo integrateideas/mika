@@ -103,17 +103,17 @@ class ExpertAvailabilitiesTable extends Table
         return $rules;
     }
 
-    public function afterSave($event,$entity, $options)
-    {   
+    // public function afterSave($event,$entity, $options)
+    // {   
 
-        $this->Bandwidth = new Bandwidth();
-        $this->loadModel('Experts');
-        $expertData = $this->Experts->find()->contain(['Users'])->where(['Experts.id'=>$entity->expert_id])->first();
-        $phoneNumber = $expertData->user->phone;
-        $appHelper = new AppHelper();
-        $text = $appHelper->getConversationText("availability_updated");
-        $this->Bandwidth->sendMessage($phoneNumber,$text);       
+    //     $this->Bandwidth = new Bandwidth();
+    //     $this->loadModel('Experts');
+    //     $expertData = $this->Experts->find()->contain(['Users'])->where(['Experts.id'=>$entity->expert_id])->first();
+    //     $phoneNumber = $expertData->user->phone;
+    //     $appHelper = new AppHelper();
+    //     $text = $appHelper->getConversationText("availability_updated");
+    //     $this->Bandwidth->sendMessage($phoneNumber,$text);       
         
-    }
+    // }
 
 }

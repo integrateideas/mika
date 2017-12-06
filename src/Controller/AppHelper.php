@@ -79,9 +79,9 @@ class AppHelper
                                     "add_schedule" => [
                                                               "text"=>"Great. Here is a quick link where you can update your availability. {{ deepLink}}"
                                                       ],
-                                    "availability_updated" => [
-                                                                    "text"=>"Thanks for updating your availability for today. I will reach out to you if there are any bookings."
-                                                              ],
+                                    // "availability_updated" => [
+                                    //                                 "text"=>"Thanks for updating your availability for today. I will reach out to you if there are any bookings."
+                                    //                           ],
                                     "availability_not_updated" => [
                                                                     "text"=>"It looks like you haven't updated your time, are you no longer available for a booking today?", 
                                                                 "response"=>[
@@ -96,7 +96,7 @@ class AppHelper
                                                                     ]
                                                                 ],                                                                
                                     "confirm_availability" => [
-                                                                    "text"=>"Okay, hope you have a nice day."
+                                                                    "text"=>"Please Login and update your Availability."
                                                                 ],
                                     "confirm_not_available" => [
                                                                     "text"=>"Okay, hope you have a nice day."
@@ -105,12 +105,12 @@ class AppHelper
                                                                 "text"=>"Hey, {{custName}} is looking to book {{serviceName}} at {{reqTime}} today. Click this {{bookingConfirmationLink}} to confirm. Ignore this text to cancel",
                                                                 "response"=>[
                                                                         [
-                                                                            "intent" => ['Yes','Yo','Ya','Yup'],
+                                                                            "intent" => ['Yes','Y','Ya','yes','y','ya'],
                                                                             "block_identifier" => "confirm_booking",
                                                                             'api'=>'confirmBooking'
                                                                         ],
                                                                         [
-                                                                            "intent" => ['No','Na','Nops','N'],
+                                                                            "intent" => ['No','Na','N','no','n','na'],
                                                                             "block_identifier" => "booking_deny",
                                                                             'api'=>'denyBooking'
                                                                         ]
@@ -223,24 +223,25 @@ class AppHelper
 
     public function getNextBlock($conversation,$intent){
       $blockIdentifier = $conversation->block_identifier;
-      // pr($blockIdentifier);die;
+
       $conversationResponses = (isset(self::$conversationArray[$blockIdentifier]['response'])?self::$conversationArray[$blockIdentifier]['response']:null);
       if(!$conversationResponses){
         return false;
       }
+      // pr($conversationResponses);die;
       // pr($conversationResponses);
       foreach ($conversationResponses as $key => $value) {
-// pr($value);die;
           if(isset($value['intent'])){
             if(in_array($intent,$value['intent'])){
               $newBlockId =  (isset($value['block_identifier']))?$value['block_identifier']:null;
             }else{
-              $newBlockId = null;
+              continue;
             }  
             
           }
           //if we need to hit any api
           if(isset($value['api'])){
+
             $this->_callApis($conversation,$value['api']);
           }
           if($newBlockId && (isset(self::$conversationArray[$newBlockId]))){
@@ -254,7 +255,6 @@ class AppHelper
     }
 
     private function _callApis($conversation,$value){
-
       switch ($value) {
         case 'confirmBooking':
         $this->loadModel('Appointments');
@@ -273,6 +273,25 @@ class AppHelper
           }
           throw new Exception("Error Processing Request");
         }
+        break;
+        case 'denyBooking':
+        $this->loadModel('Appointments');
+        $appointment = $this->Appointments->findById($conversation->appointment_id)
+                                          ->contain(['Users','AppointmentServices.ExpertSpecializationServices.SpecializationServices'])
+                                          // ->where([])
+                                          ->first();
+        
+        $updateBookingStatus = [
+                                    'is_confirmed' => 0
+                                ];
+        $appointment = $this->Appointments->patchEntity($appointment,$updateBookingStatus);
+        if (!$this->Appointments->save($appointment)) {
+          if($appointment->errors()){
+            $this->_sendErrorResponse($appointment->errors());
+          }
+          throw new Exception("Error Processing Request");
+        }
+        break;
       }
     }
 
