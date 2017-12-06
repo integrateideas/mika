@@ -72,17 +72,15 @@ class RejectBookingShell extends Shell
         $this->loadModel('Users');
         $appHelper = new AppHelper();
         $getNotificationContent = $appHelper->getNotificationText('cancel_booking');
-        $deviceTokens = $this->Users->UserDeviceTokens->find()->where(['user_id IN' => $data])->all()->toArray();
+        $deviceTokens = $this->Users->UserDeviceTokens->find()->where(['user_id IN' => $data])->all()->extract('device_token')->toArray();
         if(!empty($deviceTokens)){
 
-            foreach ($deviceTokens as $key => $deviceToken) {
-                $deviceToken = $deviceToken->device_token;
                 $title = $getNotificationContent['title'];
                 $body = $getNotificationContent['body'];
                 $data = ['notificationType' => $getNotificationContent['title']];
-                $notification = $notificationComponent->sendToExpertApp($title, $body, $deviceToken, $data);
+                $notification = $notificationComponent->sendToExpertApp($title, $body, $deviceTokens, $data);
+                pr($notification);die;
            
-            }
         }else{
             throw new NotFoundException(__('Device token has not been found.'));
         }   
