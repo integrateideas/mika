@@ -177,13 +177,13 @@ use ModelAwareTrait;
 
             $this->ExpertAvailabilities->updateAll(['status'=>0],['id'=>$entity->expert_availability_id]);
 
-        $this->rejectAll($appointmentData->expert_id, $entity->expert_availability_id,$appointmentData->id);
+            $this->rejectAll($appointmentData->expert_id, $entity->expert_availability_id,$appointmentData->id);
 
         $appHelper = new AppHelper();
         $getNotificationContent = $appHelper->getNotificationText('confirm_booking');
-        if(!empty($getNotificationContent)){
-            $this->sendNotification($getNotificationContent,$entity->user_id, $entity);
-        }
+            if(!empty($getNotificationContent)){
+                $this->sendNotification($getNotificationContent,$entity->user_id, $entity);
+            }
         }
     }
 
