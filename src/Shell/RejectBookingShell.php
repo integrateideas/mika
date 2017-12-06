@@ -79,7 +79,6 @@ class RejectBookingShell extends Shell
                 $body = $getNotificationContent['body'];
                 $data = ['notificationType' => $getNotificationContent['title']];
                 $notification = $notificationComponent->sendToExpertApp($title, $body, $deviceTokens, $data);
-                pr($notification);die;
            
         }else{
             throw new NotFoundException(__('Device token has not been found.'));
