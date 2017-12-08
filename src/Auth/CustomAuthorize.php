@@ -77,7 +77,7 @@ class CustomAuthorize extends BaseAuthorize{
             ],
             'api/user' => [
                 'AppointmentBookings' => ['index'],
-                'Users' => ['addCard','deleteCard','listCards']
+                'Users' => ['addCard','deleteCard','listCards','viewCard']
             ]
         ];
 
@@ -256,7 +256,8 @@ class CustomAuthorize extends BaseAuthorize{
             'User' => [
                 'ExpertProfile' => ['view','todaysAvailabilities'],
                 'UserFavouriteExperts' => ['delete'],
-                'ExpertSpecializationServices' => ['view']
+                'ExpertSpecializationServices' => ['view'],
+                'Users' => ['viewCard']
             ],
             'Expert' => [
                 'ExpertSpecializations' => ['edit','delete']
