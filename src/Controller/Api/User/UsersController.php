@@ -138,6 +138,34 @@ class UsersController extends ApiController
       $this->set('_serialize', ['status','data']);
     }
 
+    public function viewCard($userCardId = null){
+
+      if (!$this->request->is(['get'])) {
+          throw new MethodNotAllowedException(__('BAD_REQUEST'));
+      }
+      if(!$userCardId){
+        throw new NotFoundException(__('User Card Id not found.'));
+      }
+      
+      $userId = $this->Auth->user('id');
+      if(!$userId){
+        throw new NotFoundException(__('We cant identify the user.'));
+      }
+      $this->loadModel('UserCards');
+      $getCardDetails = $this->UserCards->findById($userCardId)->where(['user_id' => $userId])->first();
+      $userCustomerId = $getCardDetails->stripe_customer_id;
+      $userCardId = $getCardDetails->stripe_card_id;
+      
+      $this->loadComponent('Stripe');
+      $data = $this->Stripe->viewCard($userCustomerId,$userCardId);
+      
+      $status = true;
+
+      $this->set('status',$status);
+      $this->set('data',$data['viewCard']);
+      $this->set('_serialize', ['status','data']);
+    }
+
     public function linkUserWithFb(){
 
       if(!$this->request->is(['post'])){
