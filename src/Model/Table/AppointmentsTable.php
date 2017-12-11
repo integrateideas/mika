@@ -110,7 +110,7 @@ use ModelAwareTrait;
 
      public function beforeSave($event,$entity, $options)
     {   
-        if($entity->is_confirmed){
+        if($entity->is_confirmed == 1){
              $expertId = $entity->expert_id;
              $availabilityId = $entity->expert_availability_id;                                
              $userName = $entity->user->first_name;
@@ -135,7 +135,6 @@ use ModelAwareTrait;
                         'remark' => $cardChargeDetails['data']['description']? $cardChargeDetails['data']['description'] : null,
                         'user_card_id' => $userCardDetails->id
                     ];
-        // pr($reqData);die;
 
         $this->loadModel('Transactions');
         $transaction = $this->Transactions->newEntity();
@@ -155,7 +154,6 @@ use ModelAwareTrait;
 
     public function afterSave($event,$entity, $options)
     {   
-       
         $appointmentData = $this->findById($entity->id)->contain(['ExpertAvailabilities','AppointmentServices.ExpertSpecializations.Specializations','Users','Experts.Users'])->first();
         $services = (new Collection($appointmentData->appointment_services))->extract('expert_specialization.specialization.label')->toArray();
         $services = implode(', ', $services);
@@ -179,13 +177,13 @@ use ModelAwareTrait;
 
             $this->ExpertAvailabilities->updateAll(['status'=>0],['id'=>$entity->expert_availability_id]);
 
-        $this->rejectAll($appointmentData->expert_id, $entity->expert_availability_id,$appointmentData->id);
+            $this->rejectAll($appointmentData->expert_id, $entity->expert_availability_id,$appointmentData->id);
 
         $appHelper = new AppHelper();
         $getNotificationContent = $appHelper->getNotificationText('confirm_booking');
-        if(!empty($getNotificationContent)){
-            $this->sendNotification($getNotificationContent,$entity->user_id, $entity);
-        }
+            if(!empty($getNotificationContent)){
+                $this->sendNotification($getNotificationContent,$entity->user_id, $entity);
+            }
         }
     }
 

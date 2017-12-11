@@ -74,6 +74,25 @@ class StripeComponent extends Component
       return ['stripe_data' => $response];       
     }
 
+    public function viewCard($stripeCustomerId,$stripeCardId){
+      
+      \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
+
+    
+        try {
+  
+              $customer = \Stripe\Customer::retrieve($stripeCustomerId);
+              $response = $customer->sources->retrieve($stripeCardId);
+              $response = json_decode($customer->__toJSON());
+              $response = $response->sources->data[0];   
+              
+          } catch (Exception $e) {
+              throw new Exception("User card could not be saved. Error via Stripe."); 
+          }
+
+      return ['viewCard' => $response];       
+    }
+
     public function deleteCard($stripeCardId,$stripeCustomerId){
       
   		if(!isset($stripeCardId) || !$stripeCardId){

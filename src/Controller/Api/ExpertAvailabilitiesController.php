@@ -147,28 +147,28 @@ class ExpertAvailabilitiesController extends ApiController
         Log::write('debug', $expertAvailabilities);
         $success = true;
 
-        $appHelper = new AppHelper();
-        $getNotificationContent = $appHelper->getNotificationText('confirm_schedule');
+        // $appHelper = new AppHelper();
+        // $getNotificationContent = $appHelper->getNotificationText('confirm_schedule');
 
-        if(!empty($getNotificationContent)){
+        // if(!empty($getNotificationContent)){
 
-            $this->loadComponent('FCMNotification');
-            $this->loadModel('Users');
-            $deviceToken = $this->Users->UserDeviceTokens->findByUserId($this->Auth->user('id'))->all()->extract('device_token')->toArray();
-            Log::write('debug', $deviceToken);
-            if(!empty($deviceToken)){
-                $title = $getNotificationContent['title'];
-                $body = $getNotificationContent['body'];
-                $data = ['notificationType' => $getNotificationContent['title']];
-                $notification = $this->FCMNotification->sendToExpertApp($title, $body, $deviceToken, $data);
-                Log::write('debug', $notification);
-            }else{
-                throw new NotFoundException(__('Device token has not been found for this User.'));
-            }
+        //     $this->loadComponent('FCMNotification');
+        //     $this->loadModel('Users');
+        //     $deviceToken = $this->Users->UserDeviceTokens->findByUserId($this->Auth->user('id'))->all()->extract('device_token')->toArray();
+        //     Log::write('debug', $deviceToken);
+        //     if(!empty($deviceToken)){
+        //         $title = $getNotificationContent['title'];
+        //         $body = $getNotificationContent['body'];
+        //         $data = ['notificationType' => $getNotificationContent['title']];
+        //         $notification = $this->FCMNotification->sendToExpertApp($title, $body, $deviceToken, $data);
+        //         Log::write('debug', $notification);
+        //     }else{
+        //         throw new NotFoundException(__('Device token has not been found for this User.'));
+        //     }
             
-        }else{
-            throw new Exception("Error Processing Request. Notification Content is not available.");
-        } 
+        // }else{
+        //     throw new Exception("Error Processing Request. Notification Content is not available.");
+        // } 
 
         $this->set('data',$expertAvailabilities);
         $this->set('status',$success);
