@@ -144,6 +144,7 @@ class ExpertAvailabilitiesController extends ApiController
         
             throw new Exception("Availability could not be saved.");
         }
+        Log::write('debug', '$expertAvailabilities');
         Log::write('debug', $expertAvailabilities);
         $success = true;
 
