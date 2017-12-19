@@ -341,9 +341,9 @@ class UsersController extends ApiController
       $data =array();            
       $return = $this->Users->loginExpertInfo($userId,$data);
       
-      if (!$return) {
-        throw new NotFoundException(__('LOGIN_FAILED'));
-      }
+      // if (!$return) {
+      //   throw new NotFoundException(__('LOGIN_FAILED'));
+      // }
 
       $data = $return['data'];
       $user = $return['user'];
