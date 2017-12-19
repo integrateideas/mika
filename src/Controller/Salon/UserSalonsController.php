@@ -61,7 +61,7 @@ class UserSalonsController extends AppController
             if ($this->UserSalons->save($userSalon)) {
                 $this->Flash->success(__('The user salon has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['controller' => 'UserCards','action' => 'add']);
             }
             $this->Flash->error(__('The user salon could not be saved. Please, try again.'));
         }
