@@ -47,6 +47,11 @@ class Bandwidth
       $bandwidth_user_id = Configure::read('Bandwidth.userId');
       $bandwidth_api_token = Configure::read('Bandwidth.apiToken');
       $bandwidth_api_secret = Configure::read('Bandwidth.apiSecret');
+
+      // Log::write('debug','$bandwidth_user_id');
+      // Log::write('debug',$bandwidth_user_id);
+      // Log::write('debug',$bandwidth_api_token);
+      // Log::write('debug',$bandwidth_api_secret);
       
       // Send a JSON request body.
       $cred = new Catapult\Credentials($bandwidth_user_id, $bandwidth_api_token, $bandwidth_api_secret);

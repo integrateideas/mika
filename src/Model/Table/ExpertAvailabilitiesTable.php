@@ -8,6 +8,7 @@ use Cake\Validation\Validator;
 use App\Controller\AppHelper;
 use App\Bandwidth\Bandwidth;
 use Cake\Datasource\ModelAwareTrait;
+use Cake\Log\Log;
 /**
  * ExpertAvailabilities Model
  *
