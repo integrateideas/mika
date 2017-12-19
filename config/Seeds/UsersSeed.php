@@ -25,11 +25,10 @@ class UsersSeed extends AbstractSeed
                     [
                       'first_name'    => 'admin',
                       'last_name'    => 'admin',
-                      'username' => 'admin@admin.com',
                       'email'   =>'admin@admin.com',
                       'password'   =>$hasher->hash('12345678'),
-                      'phone'=> '9999999999',
                       'role_id'=>'1',
+                      'dob' => '20/04/1993',
                       'created' => '2016-06-15 10:01:27',
                       'modified'=> '2016-06-15 10:01:27'
                       ]

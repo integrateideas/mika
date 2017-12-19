@@ -75,6 +75,66 @@ return [ 'Menu' =>
                                   ] 
                             ],
                         ],
+
+                  'SalonUsers' =>  [
+                            'Users' => [
+                              'link' => '#',
+                              'children' => [
+                                    'View Users' => [
+                                        'link' => [
+                                              'controller' => 'Users',
+                                              'action' => 'index'
+                                            ],
+                                          ],
+                                      'Add User' => [
+                                        'link' => [
+                                                   'controller' => 'Users',
+                                                   'action' => 'add'
+                                                  ],
+                                          ] 
+                                  ] 
+                            ],
+                            'AccountDetails' => [
+                              'link' => '#',
+                              'children' => [
+                                    'View Account Details' => [
+                                        'link' => [
+                                              'prefix' => 'salon',
+                                              'controller' => 'AccountDetails',
+                                              'action' => 'index'
+                                            ],
+                                          ],
+                                      'Add Account Details' => [
+                                        'link' => [
+                                                   'prefix' => 'salon',
+                                                   'controller' => 'AccountDetails',
+                                                   'action' => 'add'
+                                                  ],
+                                          ] 
+                                  ] 
+                            ],
+                        ],
+
+                  'Users' =>  [
+                            'Users' => [
+                              'link' => '#',
+                              'children' => [
+                                    'View Users' => [
+                                        'link' => [
+                                              'controller' => 'Users',
+                                              'action' => 'index'
+                                            ],
+                                          ],
+                                      'Add User' => [
+                                        'link' => [
+                                                   'controller' => 'Users',
+                                                   'action' => 'add'
+                                                  ],
+                                          ] 
+                                  ] 
+                            ],
+                        ],
                 ]
+                
         ];
 ?>
