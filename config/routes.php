@@ -80,6 +80,29 @@ Router::prefix('api', function ($routes) {
 
 });
 
+Router::prefix('salon', function ($routes) {
+  
+  $routes->connect('/login',array('controller'=>'Users', 'action'=>'login'));
+  $routes->connect('/logout',array('controller'=>'Users', 'action'=>'logout'));
+  $routes->connect('/signUp',array('controller'=>'Users', 'action'=>'signUp'));
+  
+  $routes->connect('/:controller',array('controller'=>':controller', 'action'=>'add',"_method" => "POST"));
+  $routes->connect('/:controller',array('controller'=>':controller', 'action'=>'index',"_method" => "GET"));
+ 
+  $routes->connect('/:controller/:id',array('controller'=>':controller', 'action'=>'edit',"_method" => "PUT"),
+  array('pass' => array('id'), 'id'=>'[\d]+'));
+
+  $routes->connect('/:controller/:id',array('controller'=>':controller', 'action'=>'view',"_method" => "GET"),
+  array('pass' => array('id'), 'id'=>'[\d]+'));
+
+  $routes->connect('/:controller/:id',array('controller'=>':controller', 'action'=>'delete',"_method" => "DELETE"),
+  array('pass' => array('id'), 'id'=>'[\d]+'));
+
+  $routes->fallbacks('DashedRoute');
+
+
+});
+
 
 Router::scope('/', function (RouteBuilder $routes) {
     /**
