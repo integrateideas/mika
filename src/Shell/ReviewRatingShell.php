@@ -2,7 +2,9 @@
 namespace App\Shell;
 
 use Cake\Console\Shell;
-
+use Cake\I18n\FrozenTime;
+use Cake\Log\Log;
+use App\Bandwidth\Bandwidth;
 /**
  * ReviewRating shell command.
  */
@@ -33,26 +35,53 @@ class ReviewRatingShell extends Shell
         $this->out($this->OptionParser->help());
     }
 
-    // public function 
+    public function appointmentRating(){
 
-    private function _sendNotifications($data){
-        $controller = new Controller();
-        $notificationComponent = $controller->loadComponent('FCMNotification');
-        $this->loadModel('Users');
-        $appHelper = new AppHelper();
-        $getNotificationContent = $appHelper->getNotificationText('scheduling_availabilities');
-        $this->loadModel('Experts');
-        $deviceTokens = $this->Users->UserDeviceTokens->find()->where(['user_id IN' => $data])->all()->extract('device_token')->toArray();
+        $currentTime = FrozenTime::now();
+        $compareTime = $currentTime->modify('-1 hour');
         
-        if(!empty($deviceTokens)){
-                $title = $getNotificationContent['title'];
-                $body = $getNotificationContent['body'];
-                $data = ['notificationType' => $getNotificationContent['title']];
-                $notification = $notificationComponent->sendToExpertApp($title, $body, $deviceTokens, $data);
-                            $title = $getNotificationContent['title'];
-                
-        }else{
-            throw new NotFoundException(__('Device token has not been found.'));
-        }   
+        $this->loadModel('Appointments');
+        $confirmedAppointments = $this->Appointments->find()
+                                                    ->where(['is_confirmed' => 1,'is_completed IS NULL'])
+                                                    ->contain(['ExpertAvailabilities' => function($q) use($compareTime, $currentTime){
+                                                        return $q->where(function ($exp) use ($compareTime, $currentTime){
+                                                           return $exp->between('available_to',$compareTime, $currentTime); 
+                                                        });
+                                                    }])
+                                                    ->all()
+                                                    ->toArray();
+
+        Log::write('debug', $confirmedAppointments);
+        $appointmentCompleted = null;
+        foreach ($confirmedAppointments as $key => $value) {
+            if(isset($value->expert_availability) && $value->expert_availability){
+                $data = ['is_completed' => 1];
+                $appointmentCompleted = $this->Appointments->patchEntity($value,$data);
+                Log::write('debug', 'patch Entity');
+                if($this->Appointments->save($appointmentCompleted)){
+                    Log::write('debug', 'saving data');
+                    Log::write('debug', $appointmentCompleted);
+                }
+                $this->loadModel('Users');
+                $reviewLink = '/user/reviewRating';
+                $user = $this->Users->findById($appointmentCompleted->user_id)->first();
+                $this->_sendMessage($reviewLink,$user);
+                $this->out('Confirmed Appointments have been Completed');
+            }    
+        }
+        if(!$appointmentCompleted){
+            $this->out('No Appointment is there');
+        }
+    }
+
+    private function _sendMessage($reviewLink,$user){
+        $this->Bandwidth = new Bandwidth();
+        Log::write('debug',$reviewLink);
+        Log::write('debug',$user);
+        $phoneNumber = $user->phone;
+        $phoneNumber  = str_replace('+1', '', $phoneNumber);
+        Log::write('debug',$phoneNumber);
+        $this->Bandwidth->sendMessage($phoneNumber,$reviewLink);
+        return true;
     }
 }

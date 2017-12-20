@@ -110,7 +110,7 @@ use ModelAwareTrait;
 
      public function beforeSave($event,$entity, $options)
     {   
-        if($entity->is_confirmed == 1){
+        if($entity->is_confirmed == 1 && $entity->is_confirmed == null){
              $expertId = $entity->expert_id;
              $availabilityId = $entity->expert_availability_id;                                
              $userName = $entity->user->first_name;
