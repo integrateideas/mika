@@ -49,13 +49,33 @@ class UserSalonsController extends ApiController
         if (!$this->request->is(['get'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-
         $location = $this->request->query(['location']);
-        if(!isset($location) || !$location){
-            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Location"));
+        $zipcode = $this->request->query(['zipcode']);
+        if((isset($location) && $location) || (isset($zipcode) && $zipcode)){
+            if((isset($location) && $location) && (isset($zipcode) && $zipcode)){
+              
+              $data = $this->UserSalons->find()
+                                     ->where([
+                                                  'location' => $location,
+                                                  'zipcode' => $zipcode
+                                                ])
+                                     ->all()
+                                     ->toArray();
+              }else{
+              $data = $this->UserSalons->find()
+                                       ->where([
+                                                  'OR' => [
+                                                            ['location' => $location],
+                                                            ['zipcode' => $zipcode]
+                                                          ]
+                                              ])
+                                       ->all()
+                                       ->toArray();
+            }
+            
+        }else{
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Location and zipcode"));
         }
-
-        $data = $this->UserSalons->find()->where(['location' => $location])->all();
     
         $this->set(compact('data'));
         $this->set('status',true);
