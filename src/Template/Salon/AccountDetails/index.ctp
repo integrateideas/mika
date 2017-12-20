@@ -19,8 +19,6 @@
                                         <th scope="col"><?= $this->Paginator->sort('account_number') ?></th>
                                         <th scope="col"><?= $this->Paginator->sort('bank_code') ?></th>
                                         <th scope="col"><?= $this->Paginator->sort('branch_name') ?></th>
-                                        <th scope="col"><?= $this->Paginator->sort('created') ?></th>
-                                        <th scope="col"><?= $this->Paginator->sort('modified') ?></th>
                                         <th scope="col" class="actions"><?= __('Actions') ?></th>
                         </tr>
                     </thead>
@@ -29,16 +27,18 @@
                         <tr>
                                         <td><?= $this->Number->format($accountDetail->id) ?></td>
                                         <td><?= h($accountDetail->account_holder_name) ?></td>
-                                        <td><?= $this->Number->format($accountDetail->account_number) ?></td>
+                                        <td><?= h($accountDetail->account_number) ?></td>
                                         <td><?= h($accountDetail->bank_code) ?></td>
                                         <td><?= h($accountDetail->branch_name) ?></td>
-                                        <td><?= h($accountDetail->created) ?></td>
-                                        <td><?= h($accountDetail->modified) ?></td>
                                         <td class="actions">
-                                <?= $this->Html->link(__('View'), ['action' => 'view', $accountDetail->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['action' => 'edit', $accountDetail->id]) ?>
-                                <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $accountDetail->id], ['confirm' => __('Are you sure you want to delete # {0}?', $accountDetail->id)]) ?>
-                            </td>
+                                            <?= '<a href='.$this->Url->build(['action' => 'view', $accountDetail->id]).' class="btn btn-xs btn-success">' ?>
+                                                <i class="fa fa-eye fa-fw"></i>
+                                            </a>
+                                            <?= '<a href='.$this->Url->build(['action' => 'edit', $accountDetail->id]).' class="btn btn-xs btn-warning"">' ?>
+                                                <i class="fa fa-pencil fa-fw"></i>
+                                            </a>
+                                            <?= $this->Form->postLink(__(''), ['action' => 'delete', $accountDetail->id], ['confirm' => __('Are you sure you want to delete # {0}?', $accountDetail->id), 'class' => ['btn', 'btn-sm', 'btn-danger', 'fa', 'fa-trash-o', 'fa-fh']]) ?>
+                                        </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>

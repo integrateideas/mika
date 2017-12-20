@@ -116,6 +116,7 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             $data['username'] = $data['email'];
+            $data['role_id'] = 2;
             $data['is_salon_owner'] = 1;
             $data['status'] = 1;
             $user = $this->Users->patchEntity($user, $data);
@@ -129,7 +130,12 @@ class UsersController extends AppController
             }
             $this->Flash->error(__('Salon Owner could not be saved. Please, try again.'));
         }
-        $roles = $this->Users->Roles->find()->where(['label' => 'User'])->all()->combine('id','label')->toArray();
+        
+        $roles = $this->Users->Roles->find()
+                                    ->where(['label' => 'User'])
+                                    ->all()
+                                    ->combine('id','label')
+                                    ->toArray();
         
         $this->set(compact('user', 'roles'));
         $this->set('_serialize', ['user']);

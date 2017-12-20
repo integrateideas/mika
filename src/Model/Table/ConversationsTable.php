@@ -56,7 +56,7 @@ class ConversationsTable extends Table
         $this->belongsTo('Experts', [
             'foreignKey' => 'expert_id'
         ]);
-         $this->Bandwidth = new Bandwidth();
+        $this->Bandwidth = new Bandwidth();
     }
 
     /**

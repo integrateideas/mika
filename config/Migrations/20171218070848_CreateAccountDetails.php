@@ -18,9 +18,9 @@ class CreateAccountDetails extends AbstractMigration
             'limit' => 255,
             'null' => false,
         ]);
-        $table->addColumn('account_number', 'integer', [
+        $table->addColumn('account_number', 'string', [
             'default' => null,
-            'limit' => 11,
+            'limit' => 255,
             'null' => false,
         ]);
         $table->addColumn('bank_code', 'string', [

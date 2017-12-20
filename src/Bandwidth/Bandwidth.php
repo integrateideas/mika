@@ -19,7 +19,6 @@ class Bandwidth
 
     public function sendMessage($phone, $message){
       $length = strlen($message);
-      // pr($phone);pr($message);die;
       if($length <= 160){
 
         return $this->_send($phone, $message);

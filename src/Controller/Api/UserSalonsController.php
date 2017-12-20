@@ -97,8 +97,8 @@ class UserSalonsController extends ApiController
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
         $data = $this->request->data;
-        if(!$data['user_salon_id']){
-
+        $data['user_id'] = $this->Auth->user('id');
+        if(!isset($data['user_salon_id'])){
             if(!isset($data['salon_name']) || !$data['salon_name']){
                 throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Salon Name"));
 
@@ -112,10 +112,9 @@ class UserSalonsController extends ApiController
 
             }
 
-            $userSalon = $this->UserSalons->newEntity();
             $data['status'] = 1;
             Log::write('debug', $data);
-
+            $userSalon = $this->UserSalons->newEntity();
             $userSalon = $this->UserSalons->patchEntity($userSalon, $data);
             
             if (!$this->UserSalons->save($userSalon)) {
@@ -129,7 +128,6 @@ class UserSalonsController extends ApiController
             $userSalon = $this->UserSalons->findById($data['user_salon_id'])->first();
         }
         Log::write('debug', $userSalon);
-        $data['user_id'] = $this->Auth->user('id');
         $this->loadModel('Experts');
         $expertData = $this->Experts->updateAll(    ['user_salon_id' => $userSalon->id], // fields
                                                     ['user_id' => $data['user_id']] // conditions

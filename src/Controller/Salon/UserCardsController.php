@@ -52,7 +52,7 @@ class UserCardsController extends AppController
 
                 $this->Flash->success(__('The user card has been saved.'));
 
-                return $this->redirect(['/salon/users/']);
+                return $this->redirect(['controller' => 'Users','action' => 'index']);
             }
             $this->Flash->error(__('The user card could not be saved. Please, try again.'));
         }
