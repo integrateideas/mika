@@ -324,11 +324,8 @@ class UsersController extends ApiController
       $socialConnection = $this->SocialConnections->find()->where(['fb_identifier' => $this->request->data['uid']])->first();
 
 
-      if(!$socialConnection){
-        $userId = $this->socialSignup($this->request->data);
-
-      }else{
-        $userId = $socialConnection->user_id;
+       if (!$socialConnection) {
+        throw new NotFoundException(__('LOGIN_FAILED'));
       }
 
       $data =array();            
