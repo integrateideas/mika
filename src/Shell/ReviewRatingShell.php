@@ -45,7 +45,7 @@ class ReviewRatingShell extends Shell
                                                     ->where(['is_confirmed' => 1,'is_completed IS NULL'])
                                                     ->contain(['ExpertAvailabilities' => function($q) use($compareTime, $currentTime){
                                                         return $q->where(function ($exp) use ($compareTime, $currentTime){
-                                                           return $exp->between('available_to',$compareTime, $currentTime); 
+                                                           return $exp->lte('available_to',$compareTime); 
                                                         });
                                                     }])
                                                     ->all()
