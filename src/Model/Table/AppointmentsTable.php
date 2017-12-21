@@ -83,6 +83,9 @@ use ModelAwareTrait;
         $this->hasMany('AppointmentServices', [
             'foreignKey' => 'appointment_id'
         ]);
+        $this->hasOne('AppointmentReviews', [
+            'foreignKey' => 'appointment_id'
+        ]);
     }
 
     /**

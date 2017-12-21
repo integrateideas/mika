@@ -327,7 +327,6 @@ class UsersController extends ApiController
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
 
-
       // if(!$socialConnection){
       //   $userId = $this->socialSignup($this->request->data);
 
