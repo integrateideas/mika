@@ -51,30 +51,36 @@ class UserSalonsController extends ApiController
         }
         $location = $this->request->query(['location']);
         $zipcode = $this->request->query(['zipcode']);
+        
         if((isset($location) && $location) || (isset($zipcode) && $zipcode)){
-            if((isset($location) && $location) && (isset($zipcode) && $zipcode)){
-              
-              $data = $this->UserSalons->find()
-                                     ->where([
-                                                  'location' => $location,
-                                                  'zipcode' => $zipcode
+        
+            if((isset($location) && $location) && $zipcode == 'null'){
+                $data = $this->UserSalons->find()
+                                         ->where([
+                                                    'location' => $location
                                                 ])
-                                     ->all()
-                                     ->toArray();
-              }else{
+                                         ->all()
+                                         ->toArray();
+            }elseif((isset($zipcode) && $zipcode) && $location == 'null'){
+            
               $data = $this->UserSalons->find()
                                        ->where([
-                                                  'OR' => [
-                                                            ['location' => $location],
-                                                            ['zipcode' => $zipcode]
-                                                          ]
+                                                  'zipcode' => $zipcode
                                               ])
                                        ->all()
                                        ->toArray();
+            }elseif((isset($zipcode) && $zipcode) && (isset($location) && $location)){
+              $data = $this->UserSalons->find()
+                                       ->where([
+                                                    'location' => $location,
+                                                    'zipcode' => $zipcode
+                                                  ])
+                                       ->all()
+                                       ->toArray();
+            }else{
+              throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"either Location or zipcode"));
             }
             
-        }else{
-            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Location and zipcode"));
         }
     
         $this->set(compact('data'));
