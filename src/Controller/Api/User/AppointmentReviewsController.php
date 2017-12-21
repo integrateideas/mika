@@ -35,9 +35,6 @@ class AppointmentReviewsController extends ApiController
             throw new NotFoundException(__('We cant identify the user.'));
         }
 
-        if(!isset($this->request->data['expert_id']) || !$this->request->data['expert_id']){
-            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Expert id"));
-        }
         if(!isset($this->request->data['appointment_id']) || !$this->request->data['appointment_id']){
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Appointment id"));
         }
@@ -50,9 +47,12 @@ class AppointmentReviewsController extends ApiController
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Review"));
 
         }
+
+        $expertId = $this->AppointmentReviews->Appointments->findById($this->request->data['appointment_id'])->where(['user_id' => $userId])->first()->expert_id;
+
         $data = [
                     'user_id' => $userId,
-                    'expert_id' => $this->request->data['expert_id'],
+                    'expert_id' => $expertId,
                     'appointment_id' => $this->request->data['appointment_id'],
                     'rating' => $this->request->data['rating'],
                     'review' => $this->request->data['review'],
