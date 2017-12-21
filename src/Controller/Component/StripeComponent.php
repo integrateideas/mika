@@ -27,7 +27,6 @@ class StripeComponent extends Component
     protected $_defaultConfig = [];
 
     public function addCard($userId,$stripeToken){
-      
       \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
 
       $model = TableRegistry::get('Users');
@@ -39,10 +38,9 @@ class StripeComponent extends Component
       $userCards = TableRegistry::get('UserCards'); 
 
       if(!isset($users->user_cards[0])){
-      	
         //when the user is NOT registered on stripe.  
         try {
-              
+              // pr($stripeToken);die;
               $customer = \Stripe\Customer::create([
                 "description" => "Customer for sofia.moore@example.com",
                 "source" => $stripeToken // obtained with Stripe.js

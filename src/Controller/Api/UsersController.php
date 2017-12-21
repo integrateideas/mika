@@ -319,21 +319,30 @@ class UsersController extends ApiController
       if (!$this->request->is(['post'])) {
         throw new MethodNotAllowedException(__('BAD_REQUEST'));
       }
-      
+      Log::write('debug', $this->request->data); 
       $this->loadModel('SocialConnections');
       $socialConnection = $this->SocialConnections->find()->where(['fb_identifier' => $this->request->data['uid']])->first();
 
-
-       if (!$socialConnection) {
+      if (!$socialConnection) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
+
+      // if(!$socialConnection){
+      //   $userId = $this->socialSignup($this->request->data);
+
+      // }else{
+      //   $userId = $socialConnection->user_id;
+      // }
+      $user = $this->Users->findById($socialConnection->user_id)->first();
+      Log::write('debug',$user);
+      $userId = $user->id;
 
       $data =array();            
       $return = $this->Users->loginExpertInfo($userId,$data);
       
-      if (!$return) {
-        throw new NotFoundException(__('LOGIN_FAILED'));
-      }
+      // if (!$return) {
+      //   throw new NotFoundException(__('LOGIN_FAILED'));
+      // }
 
       $data = $return['data'];
       $user = $return['user'];

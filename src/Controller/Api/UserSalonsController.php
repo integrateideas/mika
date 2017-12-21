@@ -45,6 +45,24 @@ class UserSalonsController extends ApiController
         $this->set('_serialize', ['status','data']);
     }
 
+    public function getUserSalon(){
+        if (!$this->request->is(['get'])) {
+          throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+
+        $location = $this->request->query(['location']);
+        if(!isset($location) || !$location){
+            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Location"));
+        }
+
+        $data = $this->UserSalons->find()->where(['location' => $location])->all();
+    
+        $this->set(compact('data'));
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
+
+    }
+
     /**
      * View method
      *
@@ -79,29 +97,35 @@ class UserSalonsController extends ApiController
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
         $data = $this->request->data;
-        if(!isset($data['salon_name']) || !$data['salon_name']){
-            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Salon Name"));
-
-        }
-        if(!isset($data['location']) || !$data['location']){
-            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Location"));
-
-        }
-        if(!isset($data['zipcode']) || !$data['zipcode']){
-            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Zipcode"));
-
-        }
-        $userSalon = $this->UserSalons->newEntity();
         $data['user_id'] = $this->Auth->user('id');
-        $data['status'] = 1;
-        Log::write('debug', $data);
-        $userSalon = $this->UserSalons->patchEntity($userSalon, $data);
-        if (!$this->UserSalons->save($userSalon)) {
-          
-          if($userSalon->errors()){
-            $this->_sendErrorResponse($userSalon->errors());
-          }
-          throw new Exception("Error Processing Request");
+        if(!isset($data['user_salon_id'])){
+            if(!isset($data['salon_name']) || !$data['salon_name']){
+                throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Salon Name"));
+
+            }
+            if(!isset($data['location']) || !$data['location']){
+                throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Location"));
+
+            }
+            if(!isset($data['zipcode']) || !$data['zipcode']){
+                throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Zipcode"));
+
+            }
+
+            $data['status'] = 1;
+            Log::write('debug', $data);
+            $userSalon = $this->UserSalons->newEntity();
+            $userSalon = $this->UserSalons->patchEntity($userSalon, $data);
+            
+            if (!$this->UserSalons->save($userSalon)) {
+              
+              if($userSalon->errors()){
+                $this->_sendErrorResponse($userSalon->errors());
+              }
+              throw new Exception("Error Processing Request");
+            }
+        }else{
+            $userSalon = $this->UserSalons->findById($data['user_salon_id'])->first();
         }
         Log::write('debug', $userSalon);
         $this->loadModel('Experts');
