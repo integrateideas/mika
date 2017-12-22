@@ -32,12 +32,20 @@ class UsersController extends AppController
     public function index()
     {
         $users = $this->Users->findById($this->Auth->user('id'))
-                             ->contain(['Roles'])
+                             ->contain(['Roles','UserSalons'])
                              ->where(['is_salon_owner' => 1])
-                             ->all();
+                             ->all()
+                             ->toArray();
+
+        $this->loadModel('Experts');
+        $userSalonId = $users[0]->user_salons[0]->id;
+        $getExperts = $this->Experts->findByUserSalonId($userSalonId)
+                                    ->contain(['Users.Roles'])
+                                    ->all()
+                                    ->toArray();
         
-        $this->set(compact('users'));
-        $this->set('_serialize', ['users']);
+        $this->set(compact('users','getExperts'));
+        $this->set('_serialize', ['users','getExperts']);
     }
 
     /**

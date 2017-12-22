@@ -23,7 +23,11 @@ class UserSalonsController extends AppController
      */
     public function index()
     {
-        $userSalon = $this->paginate($this->UserSalons);
+        
+        $userSalon = $this->UserSalons->findByUserId($this->Auth->user('id'))
+                                      ->contain(['Users'])
+                                      ->all()
+                                      ->toArray();
 
         $this->set(compact('userSalon'));
         $this->set('_serialize', ['userSalon']);
@@ -39,7 +43,7 @@ class UserSalonsController extends AppController
     public function view($id = null)
     {
         $userSalon = $this->UserSalons->get($id, [
-            'contain' => []
+            'contain' => ['Users']
         ]);
 
         $this->set('userSalon', $userSalon);
@@ -78,20 +82,20 @@ class UserSalonsController extends AppController
      */
     public function edit($id = null)
     {
-        $specialization = $this->Specializations->get($id, [
+        $userSalon = $this->UserSalons->get($id, [
             'contain' => []
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $specialization = $this->Specializations->patchEntity($specialization, $this->request->getData());
-            if ($this->Specializations->save($specialization)) {
-                $this->Flash->success(__('The specialization has been saved.'));
+            $userSalon = $this->UserSalons->patchEntity($userSalon, $this->request->getData());
+            if ($this->UserSalons->save($userSalon)) {
+                $this->Flash->success(__('The User Salon has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The specialization could not be saved. Please, try again.'));
+            $this->Flash->error(__('The User Salon could not be saved. Please, try again.'));
         }
-        $this->set(compact('specialization'));
-        $this->set('_serialize', ['specialization']);
+        $this->set(compact('userSalon'));
+        $this->set('_serialize', ['userSalon']);
     }
 
     /**
@@ -104,11 +108,11 @@ class UserSalonsController extends AppController
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
-        $specialization = $this->Specializations->get($id);
-        if ($this->Specializations->delete($specialization)) {
-            $this->Flash->success(__('The specialization has been deleted.'));
+        $userSalon = $this->UserSalons->get($id);
+        if ($this->UserSalons->delete($userSalon)) {
+            $this->Flash->success(__('The user Salon has been deleted.'));
         } else {
-            $this->Flash->error(__('The specialization could not be deleted. Please, try again.'));
+            $this->Flash->error(__('The user Salon could not be deleted. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);
