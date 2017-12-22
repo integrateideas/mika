@@ -52,13 +52,60 @@ class UserCardsController extends AppController
 
                 $this->Flash->success(__('The user card has been saved.'));
 
-                return $this->redirect(['controller' => 'Users','action' => 'index']);
+                return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The user card could not be saved. Please, try again.'));
         }
         
         $this->set(compact('userCards', 'currentYear'));
         $this->set('_serialize', ['userCards']);
+    }
+
+    public function index(){
+
+        $this->loadComponent('Stripe'); 
+        $userId = $this->Auth->user('id');
+        $data = $this->Stripe->listCards($userId);
+        
+        foreach ($data['data'] as $key => $value) {
+            $getUserCards = $this->UserCards->find()
+                                            ->where(['stripe_customer_id' => $value['customer']])
+                                            ->all()
+                                            ->indexBy('stripe_card_id')
+                                            ->toArray();
+        }
+        $this->set('status',$data['status']);
+        $this->set('data',$data['data']);
+        $this->set('getUserCards',$getUserCards);
+        $this->set('_serialize', ['status','data','getUserCards']);
+    }
+
+    public function delete($id){
+        
+        $this->loadModel('UserCards');
+        $getCardDetails = $this->UserCards->findById($id)
+                                          ->first();
+        
+        if(!$getCardDetails){
+           throw new NotFoundException(__('We cant identify the card for this user.'));
+        }
+        if(!isset($getCardDetails->stripe_card_id) || !$getCardDetails->stripe_card_id){
+            throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+        $userId = $this->Auth->user('id');
+
+
+        $stripeCustomerId = $getCardDetails->stripe_customer_id;
+        $status = false;
+        $this->loadComponent('Stripe');
+        $data = $this->Stripe->deleteCard($getCardDetails->stripe_card_id,$stripeCustomerId);
+        if(!empty($getCardDetails)){
+            if (!$this->UserCards->delete($getCardDetails)){
+              throw new Exception("Error Processing Request");
+            }
+        }
+        $this->Flash->success(__('The card has been deleted successfully.'));
+        return $this->redirect(['action' => 'index']);
     }
 
 }

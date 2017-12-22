@@ -118,17 +118,15 @@ class StripeComponent extends Component
     }
 
     public function listCards($userId){
-
 	    $userCards = TableRegistry::get('UserCards'); 
   		$getCardDetails = $userCards->findByUserId($userId)
-  									->first();
-  		
+  									              ->first();
+
   		$stripeCustomerId = null;		
   		
   		if($getCardDetails){
   			$stripeCustomerId = $getCardDetails->stripe_customer_id;
-  		}
-		
+  		}		
   		if(!$stripeCustomerId || !isset($stripeCustomerId)){
   			throw new NotFoundException(__("Stripe Customer Id doesn't found"));
   		}
