@@ -49,13 +49,39 @@ class UserSalonsController extends ApiController
         if (!$this->request->is(['get'])) {
           throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
-
         $location = $this->request->query(['location']);
-        if(!isset($location) || !$location){
-            throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Location"));
+        $zipcode = $this->request->query(['zipcode']);
+        
+        if((isset($location) && $location) || (isset($zipcode) && $zipcode)){
+        
+            if((isset($location) && $location) && $zipcode == 'null'){
+                $data = $this->UserSalons->find()
+                                         ->where([
+                                                    'location' => $location
+                                                ])
+                                         ->all()
+                                         ->toArray();
+            }elseif((isset($zipcode) && $zipcode) && $location == 'null'){
+            
+              $data = $this->UserSalons->find()
+                                       ->where([
+                                                  'zipcode' => $zipcode
+                                              ])
+                                       ->all()
+                                       ->toArray();
+            }elseif((isset($zipcode) && $zipcode) && (isset($location) && $location)){
+              $data = $this->UserSalons->find()
+                                       ->where([
+                                                    'location' => $location,
+                                                    'zipcode' => $zipcode
+                                                  ])
+                                       ->all()
+                                       ->toArray();
+            }else{
+              throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"either Location or zipcode"));
+            }
+            
         }
-
-        $data = $this->UserSalons->find()->where(['location' => $location])->all();
     
         $this->set(compact('data'));
         $this->set('status',true);
