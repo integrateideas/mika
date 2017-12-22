@@ -210,5 +210,44 @@ class AppointmentBookingsController extends ApiController
         $this->set('_serialize', ['status','data']);
     }
 
+    public function view($id){
+        
+        if(!$this->request->is(['get'])){
+            throw new MethodNotAllowedException(__('BAD_REQUEST'));
+        }
+
+        $userId = $this->Auth->user('id');
+        //check weather this user is an expert 
+        $this->loadModel('Experts');
+        $expert = $this->Experts->findByUserId($userId)->first();
+        $this->loadModel('Appointments');
+        
+        $reqData = $this->Appointments->findById($id);
+
+        if($expert){
+            $reqData = $reqData->where(['expert_id' => $expert->id]);
+        }else{
+            $reqData = $reqData->where(['Appointments.user_id' => $userId]);
+        }
+
+        $reqData = $reqData ->contain([  'Users',
+                                        'AppointmentServices.ExpertSpecializationServices.SpecializationServices',
+                                        'AppointmentServices.ExpertSpecializations.Specializations',
+                                        'Transactions', 
+                                        'ExpertAvailabilities', 
+                                        'Experts.Users',
+                                        'AppointmentReviews'])
+                            ->first();
+
+        if(empty($reqData)){
+            throw new NotFoundException(__('No Appointment found for this user.'));
+        }
+
+        $success = true;
+
+        $this->set('data',$reqData);
+        $this->set('status',$success);
+        $this->set('_serialize', ['status','data']);
+    }
 
 }
