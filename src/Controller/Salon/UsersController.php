@@ -72,6 +72,7 @@ class UsersController extends AppController
         $this->loadModel('ExpertAvailabilities');
         $transactionAmount = null;
         $getUserExpert = null;
+        $getAppointmentAvailability = null;
         $services = [];
         foreach ($appointments as $key => $value) {
             $getAppointmentAvailability[$value->id] = $this->ExpertAvailabilities->findById($value->expert_availability_id)->first();

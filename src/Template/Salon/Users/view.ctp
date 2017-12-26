@@ -73,8 +73,8 @@ $name = [$user->first_name,$user->last_name];
                                                         <td><?= h(isset($transactionAmount[$value->id]->transaction_amount))?($transactionAmount[$value->id]->transaction_amount):'-' ?></td>
                                                         <td><?= h(isset($value->appointment_review['rating']))?($value->appointment_review['rating']):'-' ?></td>
                                                         <td><?= h(isset($value->appointment_review['review']))?($value->appointment_review['review']):'-' ?></td>
-                                                        <td><?= h(isset($getAppointmentAvailability[$value->id]->available_from))?($getAppointmentAvailability[$value->id]->available_from)->format('Y-m-d H:i:s'):'-' ?></td>
-                                                        <td><?= h(isset($getAppointmentAvailability[$value->id]->available_to))?($getAppointmentAvailability[$value->id]->available_to)->format('Y-m-d H:i:s'):'-' ?></td>
+                                                        <td><?= h($getAppointmentAvailability[$value->id]->available_from)->format('Y-m-d H:i:s') ?></td>
+                                                        <td><?= h($getAppointmentAvailability[$value->id]->available_to)->format('Y-m-d H:i:s') ?></td>
                                         </tr>
                                         <?php } ?>
                                     </tbody>
