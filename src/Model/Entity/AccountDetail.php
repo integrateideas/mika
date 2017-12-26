@@ -8,11 +8,12 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property string $account_holder_name
- * @property int $account_number
+ * @property string $account_number
  * @property string $bank_code
  * @property string $branch_name
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
+ * @property int $user_salon_id
  */
 class AccountDetail extends Entity
 {
@@ -32,6 +33,7 @@ class AccountDetail extends Entity
         'bank_code' => true,
         'branch_name' => true,
         'created' => true,
-        'modified' => true
+        'modified' => true,
+        'user_salon_id' => true
     ];
 }

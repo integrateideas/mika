@@ -25,7 +25,7 @@ class UserSalonsFixture extends TestFixture
         'is_deleted' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'zipcode' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'zipcode' => ['type' => 'string', 'length' => 5, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
         ],
@@ -48,10 +48,10 @@ class UserSalonsFixture extends TestFixture
             'salon_name' => 'Lorem ipsum dolor sit amet',
             'location' => 'Lorem ipsum dolor sit amet',
             'status' => 1,
-            'is_deleted' => '2017-10-03 12:43:17',
-            'created' => '2017-10-03 12:43:17',
-            'modified' => '2017-10-03 12:43:17',
-            'zipcode' => 'Lorem ipsum dolor sit amet'
+            'is_deleted' => '2017-12-26 08:25:59',
+            'created' => '2017-12-26 08:25:59',
+            'modified' => '2017-12-26 08:25:59',
+            'zipcode' => 'Lor'
         ],
     ];
 }

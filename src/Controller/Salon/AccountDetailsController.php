@@ -2,6 +2,7 @@
 namespace App\Controller\Salon;
 
 use App\Controller\Salon\AppController;
+use Cake\Network\Exception\NotFoundException;
 
 /**
  * AccountDetails Controller
@@ -21,7 +22,14 @@ class AccountDetailsController extends AppController
     public function index()
     {
         $accountDetails = $this->paginate($this->AccountDetails);
-
+        $accountDetails = $this->AccountDetails->find()
+                                               ->contain(['UserSalons' => function($q){
+                                                            return $q->where(
+                                                                ['user_id' => $this->Auth->user('id')]);
+                                                }])
+                                               ->all()
+                                               ->toArray();
+        
         $this->set(compact('accountDetails'));
         $this->set('_serialize', ['accountDetails']);
     }
@@ -52,7 +60,13 @@ class AccountDetailsController extends AppController
     {
         $accountDetail = $this->AccountDetails->newEntity();
         if ($this->request->is('post')) {
-            $accountDetail = $this->AccountDetails->patchEntity($accountDetail, $this->request->getData());
+            $this->loadModel('UserSalons');
+            $userSalon = $this->UserSalons->findByUserId($this->Auth->user('id'))->first();
+            if(!$userSalon){
+                throw new NotFoundException(__('No Salon has been setup for this Salon Owner. Please setup your Salon first.'));
+            }
+            $this->request->data['user_salon_id'] = $userSalon->id;
+            $accountDetail = $this->AccountDetails->patchEntity($accountDetail, $this->request->data);
             if ($this->AccountDetails->save($accountDetail)) {
                 $this->Flash->success(__('The account detail has been saved.'));
 
