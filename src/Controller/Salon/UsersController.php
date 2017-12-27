@@ -32,12 +32,20 @@ class UsersController extends AppController
     public function index()
     {
         $users = $this->Users->findById($this->Auth->user('id'))
-                             ->contain(['Roles'])
+                             ->contain(['Roles','UserSalons'])
                              ->where(['is_salon_owner' => 1])
-                             ->all();
+                             ->all()
+                             ->toArray();
+
+        $this->loadModel('Experts');
+        $userSalonId = $users[0]->user_salons[0]->id;
+        $getExperts = $this->Experts->findByUserSalonId($userSalonId)
+                                    ->contain(['Users.Roles'])
+                                    ->all()
+                                    ->toArray();
         
-        $this->set(compact('users'));
-        $this->set('_serialize', ['users']);
+        $this->set(compact('users','getExperts'));
+        $this->set('_serialize', ['users','getExperts']);
     }
 
     /**
@@ -52,7 +60,38 @@ class UsersController extends AppController
         $user = $this->Users->get($id, [
             'contain' => ['Roles', 'Experts']
         ]);
+        if(isset($user->experts[0])){
+            $expertId = $user->experts[0]->id;
+            $this->loadModel('Appointments');
+            $appointments = $this->Appointments->findByExpertId($expertId)
+                                               ->contain(['AppointmentServices.ExpertSpecializations.Specializations','AppointmentReviews'])
+                                               ->order(['created' => 'DESC'])
+                                               ->all()
+                                               ->toArray();
 
+            $this->loadModel('Transactions');
+            $this->loadModel('Experts');
+            $this->loadModel('ExpertAvailabilities');
+            $transactionAmount = null;
+            $getUserExpert = null;
+            $getAppointmentAvailability = null;
+            $services = [];
+            foreach ($appointments as $key => $value) {
+                $getAppointmentAvailability[$value->id] = $this->ExpertAvailabilities->findById($value->expert_availability_id)->first();
+                $transactionAmount[$value->id] = $this->Transactions->findById($value->transaction_id)->first();
+                
+                $getUserExpert[$value->id] = $this->Experts->Users->findById($value->user_id)->first();
+                foreach ($value->appointment_services as $key => $service) {
+                    $services[$value->id] = $service->expert_specialization->specialization->label;
+                }
+            }
+            $this->set('getAppointmentAvailability', $getAppointmentAvailability);
+            $this->set('transactionAmount', $transactionAmount);
+            $this->set('getUserExpert', $getUserExpert);
+            $this->set('services', $services);
+            $this->set('appointments', $appointments);
+        }
+        
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
     }

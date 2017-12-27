@@ -94,6 +94,34 @@ return [ 'Menu' =>
                                           ] 
                                   ] 
                             ],
+                            'Salon Details' => [
+                              'link' => '#',
+                              'children' => [
+                                    'View Salon' => [
+                                        'link' => [
+                                              'controller' => 'UserSalons',
+                                              'action' => 'index'
+                                            ],
+                                          ] 
+                                  ] 
+                            ],
+                            'Card Details' => [
+                              'link' => '#',
+                              'children' => [
+                                    'View Card Details' => [
+                                        'link' => [
+                                              'controller' => 'UserCards',
+                                              'action' => 'index'
+                                            ],
+                                          ],
+                                      'Add New Card' => [
+                                        'link' => [
+                                                   'controller' => 'UserCards',
+                                                   'action' => 'add'
+                                                  ],
+                                          ] 
+                                  ] 
+                            ],
                             'AccountDetails' => [
                               'link' => '#',
                               'children' => [

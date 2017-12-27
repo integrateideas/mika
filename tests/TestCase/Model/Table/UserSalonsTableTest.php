@@ -27,16 +27,23 @@ class UserSalonsTableTest extends TestCase
         'app.user_salons',
         'app.users',
         'app.roles',
+        'app.appointments',
         'app.experts',
-        'app.availabilities',
+        'app.expert_availabilities',
         'app.expert_cards',
-        'app.stripe_customers',
-        'app.stripe_cards',
         'app.expert_locations',
         'app.expert_specialization_services',
         'app.expert_specializations',
         'app.specializations',
-        'app.specialization_services'
+        'app.specialization_services',
+        'app.user_favourite_experts',
+        'app.conversations',
+        'app.transactions',
+        'app.user_cards',
+        'app.appointment_services',
+        'app.appointment_reviews',
+        'app.social_connections',
+        'app.user_device_tokens'
     ];
 
     /**

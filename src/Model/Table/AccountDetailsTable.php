@@ -9,6 +9,8 @@ use Cake\Validation\Validator;
 /**
  * AccountDetails Model
  *
+ * @property |\Cake\ORM\Association\BelongsTo $UserSalons
+ *
  * @method \App\Model\Entity\AccountDetail get($primaryKey, $options = [])
  * @method \App\Model\Entity\AccountDetail newEntity($data = null, array $options = [])
  * @method \App\Model\Entity\AccountDetail[] newEntities(array $data, array $options = [])
@@ -37,6 +39,11 @@ class AccountDetailsTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+
+        $this->belongsTo('UserSalons', [
+            'foreignKey' => 'user_salon_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**
@@ -57,7 +64,7 @@ class AccountDetailsTable extends Table
             ->notEmpty('account_holder_name');
 
         $validator
-            ->integer('account_number')
+            ->scalar('account_number')
             ->requirePresence('account_number', 'create')
             ->notEmpty('account_number');
 
@@ -72,5 +79,19 @@ class AccountDetailsTable extends Table
             ->notEmpty('branch_name');
 
         return $validator;
+    }
+
+    /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules)
+    {
+        $rules->add($rules->existsIn(['user_salon_id'], 'UserSalons'));
+
+        return $rules;
     }
 }

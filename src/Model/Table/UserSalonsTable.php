@@ -10,6 +10,7 @@ use Cake\Validation\Validator;
  * UserSalons Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
+ * @property |\Cake\ORM\Association\HasMany $AccountDetails
  * @property \App\Model\Table\ExpertsTable|\Cake\ORM\Association\HasMany $Experts
  *
  * @method \App\Model\Entity\UserSalon get($primaryKey, $options = [])
@@ -44,6 +45,9 @@ class UserSalonsTable extends Table
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
+        ]);
+        $this->hasMany('AccountDetails', [
+            'foreignKey' => 'user_salon_id'
         ]);
         $this->hasMany('Experts', [
             'foreignKey' => 'user_salon_id'
