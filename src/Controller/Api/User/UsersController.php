@@ -454,7 +454,7 @@ class UsersController extends ApiController
 
         $this->loadModel('Experts');
         $response = $this->Experts->find()
-                                  ->matching('Users.UserSalons', function ($q) use ($zipcode) {
+                                  ->matching('UserSalons', function ($q) use ($zipcode) {
                                         return $q->where(['zipcode' => $zipcode]);
                                     })
                                   ->matching('ExpertSpecializationServices', function ($q) use ($serviceId) {
