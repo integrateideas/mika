@@ -392,9 +392,9 @@ class UsersController extends ApiController
       if($user->appointments && isset($user->appointments) && $user->appointments[0]){
         $lastAppointmentExpert = $user->appointments[0]->expert_id;
         $this->loadModel('Experts');
-        $getUser = $this->Experts->findById($lastAppointmentExpert)->contain(['Users.UserSalons'])->first();
+        $getUser = $this->Experts->findById($lastAppointmentExpert)->contain(['UserSalons'])->first();
 
-        $getUserLastLocation = $getUser->user->user_salons[0];
+        $getUserLastLocation = $getUser->user_salon;
       }
       $favouriteExperts = $this->Users->UserFavouriteExperts->findByUserId($user['id'])
                                                             ->all()
@@ -454,7 +454,7 @@ class UsersController extends ApiController
 
         $this->loadModel('Experts');
         $response = $this->Experts->find()
-                                  ->matching('Users.UserSalons', function ($q) use ($zipcode) {
+                                  ->matching('UserSalons', function ($q) use ($zipcode) {
                                         return $q->where(['zipcode' => $zipcode]);
                                     })
                                   ->matching('ExpertSpecializationServices', function ($q) use ($serviceId) {

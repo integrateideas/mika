@@ -26,8 +26,11 @@ class ExpertProfileController extends ApiController
         
         $this->loadModel('Experts');
         $expertProfile = $this->Experts->findById($expertId)
-                                        ->contain(['Users','ExpertSpecializations'  => function($q){
-                                return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);}])
+                                        ->contain(['Users',
+                                                    'ExpertSpecializations'  => function($q){
+                                                            return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
+                                                            },
+                                                    'AppointmentReviews.Users'])
                                         ->first();
 
         $this->set('data',$expertProfile);
