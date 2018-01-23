@@ -53,6 +53,9 @@ class ExpertsTable extends Table
         $this->hasMany('Appointments', [
             'foreignKey' => 'expert_id'
         ]);
+        $this->hasMany('AppointmentReviews', [
+            'foreignKey' => 'expert_id'
+        ]);
         $this->hasMany('ExpertAvailabilities', [
             'foreignKey' => 'expert_id'
         ]);
