@@ -8,6 +8,7 @@ use Cake\Network\Exception\NotAllowedException;
 use Cake\Core\Exception\Exception;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
+use Cake\Log\Log;
 
 /**
  * UserFavouriteExperts Controller

@@ -225,7 +225,7 @@ class AppointmentBookingsController extends ApiController
         $reqData = $this->Appointments->findById($id);
 
         if($expert){
-            $reqData = $reqData->where(['expert_id' => $expert->id]);
+            $reqData = $reqData->where(['Appointments.expert_id' => $expert->id]);
         }else{
             $reqData = $reqData->where(['Appointments.user_id' => $userId]);
         }
