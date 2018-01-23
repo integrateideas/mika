@@ -63,7 +63,7 @@ class ReviewRatingShell extends Shell
                     Log::write('debug', $appointmentCompleted);
                 }
                 $this->loadModel('Users');
-                $reviewLink = '/user/reviewRating';
+                $reviewLink = "Please rate your experience. Click here ".'mikauser://mika-user.com/reviewRating/'.$value->id;
                 $user = $this->Users->findById($appointmentCompleted->user_id)->first();
                 $this->_sendMessage($reviewLink,$user);
                 $this->out('Confirmed Appointments have been Completed');

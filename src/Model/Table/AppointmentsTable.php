@@ -131,28 +131,28 @@ use ModelAwareTrait;
 
             $cardChargeDetails = $stripe->chargeCards($servicePrice,$userCardDetails['stripe_card_id'],$userCardDetails['stripe_customer_id'],$serviceName,$userName);
                 
-          $reqData = [
-                        'transaction_amount' => ($cardChargeDetails['data']['amount'])/100,
-                        'stripe_charge_id' => $cardChargeDetails['data']['id'],
-                        'status' => $cardChargeDetails['status'],
-                        'remark' => $cardChargeDetails['data']['description']? $cardChargeDetails['data']['description'] : null,
-                        'user_card_id' => $userCardDetails->id
-                    ];
+            $reqData = [
+                            'transaction_amount' => ($cardChargeDetails['data']['amount'])/100,
+                            'stripe_charge_id' => $cardChargeDetails['data']['id'],
+                            'status' => $cardChargeDetails['status'],
+                            'remark' => $cardChargeDetails['data']['description']? $cardChargeDetails['data']['description'] : null,
+                            'user_card_id' => $userCardDetails->id
+                        ];
 
-        $this->loadModel('Transactions');
-        $transaction = $this->Transactions->newEntity();
-        $transaction = $this->Transactions->patchEntity($transaction,$reqData);
-        if (!$this->Transactions->save($transaction)) {
-          
-          if($transaction->errors()){
-            $this->_sendErrorResponse($transaction->errors());
-          }
-          throw new Exception("Error Processing Request");
+            $this->loadModel('Transactions');
+            $transaction = $this->Transactions->newEntity();
+            $transaction = $this->Transactions->patchEntity($transaction,$reqData);
+            if (!$this->Transactions->save($transaction)) {
+              
+              if($transaction->errors()){
+                $this->_sendErrorResponse($transaction->errors());
+              }
+              throw new Exception("Error Processing Request");
+            }
+            
+            $entity->transaction_id = $transaction->id;
         }
-        
-        $entity->transaction_id = $transaction->id;
     }
-}
 
 
     public function afterSave($event,$entity, $options)

@@ -29,12 +29,6 @@ class AppointmentReviewsController extends ApiController
             throw new MethodNotAllowedException(__('BAD_REQUEST'));
         }
 
-        $userId = $this->Auth->user('id');
-      
-        if(!$userId){
-            throw new NotFoundException(__('We cant identify the user.'));
-        }
-
         if(!isset($this->request->data['appointment_id']) || !$this->request->data['appointment_id']){
             throw new MethodNotAllowedException(__('MANDATORY_FIELD_MISSING',"Appointment id"));
         }
@@ -48,17 +42,18 @@ class AppointmentReviewsController extends ApiController
 
         }
 
-        $expertId = $this->AppointmentReviews->Appointments->findById($this->request->data['appointment_id'])->where(['user_id' => $userId])->first()->expert_id;
+        $appointment = $this->AppointmentReviews->Appointments->findById($this->request->data['appointment_id'])->first();
 
         $data = [
-                    'user_id' => $userId,
-                    'expert_id' => $expertId,
+                    'user_id' => $appointment->user_id,
+                    'expert_id' => $appointment->expert_id,
                     'appointment_id' => $this->request->data['appointment_id'],
                     'rating' => $this->request->data['rating'],
                     'review' => $this->request->data['review'],
                     'is_approved' => 0,
                     'is_deleted' => 0,
-                    'status' => 0
+                    'status' => 0,
+                    'reviewed_by' => $this->Auth->user('id')
                 ];
         $appointmentReview = $this->AppointmentReviews->newEntity();
         $appointmentReview = $this->AppointmentReviews->patchEntity($appointmentReview, $data);
