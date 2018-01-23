@@ -77,11 +77,8 @@ class AppHelper
                                                                 ],
 
                                     "add_schedule" => [
-                                                              "text"=>"Great. Here is a quick link where you can update your availability. {{ deepLink}}"
+                                                              "text"=>"Great. Here is a quick link where you can update your availability. Click here mika://mika-expert.com/home"
                                                       ],
-                                    // "availability_updated" => [
-                                    //                                 "text"=>"Thanks for updating your availability for today. I will reach out to you if there are any bookings."
-                                    //                           ],
                                     "availability_not_updated" => [
                                                                     "text"=>"It looks like you haven't updated your time, are you no longer available for a booking today?", 
                                                                 "response"=>[
@@ -102,7 +99,7 @@ class AppHelper
                                                                     "text"=>"Okay, hope you have a nice day."
                                                                 ],                                                                
                                     "appointment_booking_request" => [
-                                                                "text"=>"Hey, {{custName}} is looking to book {{serviceName}} at {{reqTime}} today. Click this {{bookingConfirmationLink}} to confirm. Ignore this text to cancel",
+                                                                "text"=>"Hey, {{custName}} is looking to book {{serviceName}} at {{reqTime}} today. Click here mika://mika-expert.com/home to confirm. Ignore this text to cancel",
                                                                 "response"=>[
                                                                         [
                                                                             "intent" => ['Yes','Y','Ya','yes','y','ya'],

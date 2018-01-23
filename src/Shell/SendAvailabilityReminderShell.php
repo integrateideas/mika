@@ -40,14 +40,22 @@ class SendAvailabilityReminderShell extends Shell
     public function sendSchedulingMessageToExperts(){
 
         $this->loadModel('Users');
-        $users = $this->Users->find()->contain(['Experts'])->where(['role_id' => 3])->all()->indexBy('id')->toArray();
+        $users = $this->Users->find()
+                             ->contain(['Experts'])
+                             ->where(['role_id' => 3])
+                             ->all()
+                             ->indexBy('id')
+                             ->toArray();
+
         $data = [];
         foreach ($users as $key => $value) {
-            $data[] = [
-                        'expert_id' => $value->experts[0]->id,
-                        'block_identifier' => "scheduling_availabilities",
-                        'status' => 0
-                    ];
+            if(isset($value->experts[0]->id) && $value->experts[0]->id){
+                $data[] = [
+                            'expert_id' => $value->experts[0]->id,
+                            'block_identifier' => "scheduling_availabilities",
+                            'status' => 0
+                        ];
+            }
         }
         if(!empty($data)){
             $appHelper = new AppHelper();
