@@ -29,6 +29,8 @@ class AppointmentsTableTest extends TestCase
         'app.roles',
         'app.experts',
         'app.user_salons',
+        'app.account_details',
+        'app.appointment_reviews',
         'app.expert_availabilities',
         'app.expert_cards',
         'app.expert_locations',
@@ -37,6 +39,7 @@ class AppointmentsTableTest extends TestCase
         'app.specializations',
         'app.specialization_services',
         'app.user_favourite_experts',
+        'app.conversations',
         'app.social_connections',
         'app.user_device_tokens',
         'app.user_cards',
@@ -89,6 +92,16 @@ class AppointmentsTableTest extends TestCase
     }
 
     /**
+     * Test beforeSave method
+     *
+     * @return void
+     */
+    public function testBeforeSave()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
      * Test afterSave method
      *
      * @return void
@@ -99,11 +112,81 @@ class AppointmentsTableTest extends TestCase
     }
 
     /**
+     * Test rejectAll method
+     *
+     * @return void
+     */
+    public function testRejectAll()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test sendNotification method
+     *
+     * @return void
+     */
+    public function testSendNotification()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
      * Test buildRules method
      *
      * @return void
      */
     public function testBuildRules()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test loadModel method
+     *
+     * @return void
+     */
+    public function testLoadModel()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test modelFactory method
+     *
+     * @return void
+     */
+    public function testModelFactory()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test getModelType method
+     *
+     * @return void
+     */
+    public function testGetModelType()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test setModelType method
+     *
+     * @return void
+     */
+    public function testSetModelType()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test modelType method
+     *
+     * @return void
+     */
+    public function testModelType()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
