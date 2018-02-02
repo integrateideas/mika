@@ -40,6 +40,7 @@ class AppointmentReviewsTableTest extends TestCase
         'app.social_connections',
         'app.user_favourite_experts',
         'app.user_salons',
+        'app.account_details',
         'app.user_device_tokens',
         'app.expert_cards',
         'app.expert_locations',

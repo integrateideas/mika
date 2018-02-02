@@ -16,6 +16,7 @@ use Cake\ORM\Entity;
  * @property bool $is_deleted
  * @property bool $status
  * @property string $remark
+ * @property int $reviewed_by
  *
  * @property \App\Model\Entity\Expert $expert
  * @property \App\Model\Entity\User $user
@@ -43,6 +44,7 @@ class AppointmentReview extends Entity
         'is_deleted' => true,
         'status' => true,
         'remark' => true,
+        'reviewed_by' => true,
         'expert' => true,
         'user' => true,
         'appointment' => true

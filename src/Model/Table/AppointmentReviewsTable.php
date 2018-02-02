@@ -91,7 +91,13 @@ class AppointmentReviewsTable extends Table
 
         $validator
             ->scalar('remark')
+            ->maxLength('remark', 255)
             ->allowEmpty('remark');
+
+        $validator
+            ->integer('reviewed_by')
+            ->requirePresence('reviewed_by', 'create')
+            ->notEmpty('reviewed_by');
 
         return $validator;
     }

@@ -8,6 +8,7 @@ use Cake\Network\Exception\NotAllowedException;
 use Cake\Core\Exception\Exception;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
+use Cake\Log\Log;
 
 /**
  * UserFavouriteExperts Controller
@@ -55,11 +56,12 @@ class AppointmentReviewsController extends ApiController
                     'status' => 0,
                     'reviewed_by' => $this->Auth->user('id')
                 ];
+
         $appointmentReview = $this->AppointmentReviews->newEntity();
         $appointmentReview = $this->AppointmentReviews->patchEntity($appointmentReview, $data);
         
+        Log::write('debug',$appointmentReview);          
         if (!$this->AppointmentReviews->save($appointmentReview)) {
-          
           if($appointmentReview->errors()){
             $this->_sendErrorResponse($appointmentReview->errors());
           }

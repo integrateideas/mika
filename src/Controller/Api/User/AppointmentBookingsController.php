@@ -84,7 +84,8 @@ class AppointmentBookingsController extends ApiController
                         'user_id' => $this->Auth->user('id'),
                         'expert_id' => $data['expertId'],
                         'expert_availability_id' => $data['availabilityId'],
-                        'user_card_id' => $userCardId
+                        'user_card_id' => $userCardId,
+                        'notes' => $data['notes']
                     ];
         $services = [];
         foreach ($data['expSpecServiceIds'] as $key => $value) {
@@ -102,7 +103,6 @@ class AppointmentBookingsController extends ApiController
         $expertsUserId = $this->Appointments->Experts->findById($reqData['expert_id'])->first()->user_id;
         Log::write('debug',$data); 
         if (!$this->Appointments->save($bookingAppointment,['user_id' =>$expertsUserId])) { 
-
           if($bookingAppointment->errors()){
             $this->_sendErrorResponse($bookingAppointment->errors());
           }
@@ -225,7 +225,7 @@ class AppointmentBookingsController extends ApiController
         $reqData = $this->Appointments->findById($id);
 
         if($expert){
-            $reqData = $reqData->where(['expert_id' => $expert->id]);
+            $reqData = $reqData->where(['Appointments.expert_id' => $expert->id]);
         }else{
             $reqData = $reqData->where(['Appointments.user_id' => $userId]);
         }
