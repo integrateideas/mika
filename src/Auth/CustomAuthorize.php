@@ -76,7 +76,8 @@ class CustomAuthorize extends BaseAuthorize{
                 'ExpertSpecializationServices' => ['view']
             ],
             'api/user' => [
-                'AppointmentBookings' => ['index'],
+                'AppointmentBookings' => ['index','view'],
+                'AppointmentReviews' => ['add'],
                 'Users' => ['addCard','deleteCard','listCards','viewCard']
             ]
         ];
