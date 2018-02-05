@@ -176,7 +176,8 @@ class StripeComponent extends Component
                                                   "currency" => "usd",
                                                   "source" => $stripeCardId,
                                                   "customer" => $stripeCustomerId,
-                                                  "description" => "Charge for ".$serviceName." by ".$userName
+                                                  "description" => "Charge for ".$serviceName." by ".$userName,
+                                                  "capture" => false
                                                 ));
         
         if($customer){
@@ -190,6 +191,127 @@ class StripeComponent extends Component
 
       return [ 'status' => true,'data' => $customerChargeDetails];
         
+    }
+
+    public function createBankAccountToken($accountHolderName, $accountNumber, $routingNumber, $accountHolderType){
+
+      if(!isset($accountHolderName) || !$accountHolderName){
+        throw new BadRequestException("Missing Account Holder Name");
+      }
+      if(!isset($accountNumber) || !$accountNumber){
+        throw new BadRequestException("Missing Account Number");
+      }
+      if(!isset($routingNumber) || !$routingNumber){
+        throw new BadRequestException("Missing Routing Number");
+      }
+      if(!isset($accountHolderType) || !$accountHolderType){
+        throw new BadRequestException("Missing Account Holder Type");
+      }
+
+      try {
+
+        \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
+
+        $customerStripeBankAccountToken = \Stripe\Token::create(array(
+                                            "bank_account" => array(
+                                              "country" => "US",
+                                              "currency" => "usd",
+                                              "account_holder_name" => $accountHolderName,
+                                              "account_holder_type" => $accountHolderType,
+                                              "routing_number" => $routingNumber,
+                                              "account_number" => $accountNumber
+                                            )
+                                        ));
+        
+        if($customerStripeBankAccountToken){
+          $token = $customerStripeBankAccountToken->jsonSerialize();
+          return $token;
+        }
+         
+      } catch (Exception $e) {
+
+        throw new Exception("Bank Account Token has not been created. Error in Stripe."); 
+      }
+
+    }
+
+    public function createBankAccount($stripeCustomerId, $stripeBankAccountToken){
+      
+      if(!isset($stripeCustomerId) || !$stripeCustomerId){
+        throw new BadRequestException("Missing Stripe Customer Id");
+      }
+      if(!isset($stripeBankAccountToken) || !$stripeBankAccountToken){
+        throw new BadRequestException("Missing Stripe Bank Account Token");
+      }
+
+      try {
+
+        \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
+
+        $customer = \Stripe\Customer::retrieve($stripeCustomerId);
+        $bankAccount = $customer->sources->create(array("source" => $stripeBankAccountToken));
+        
+        if($bankAccount){
+          $bankAccount = $bankAccount->jsonSerialize();
+          return $bankAccount;
+        }
+         
+      } catch (Exception $e) {
+
+        throw new Exception("Bank Account has not been created. Error in Stripe."); 
+      }
+    }
+
+    public function payout($stripeBankAccountId, $amount){
+      
+      if(!isset($stripeBankAccountId) || !$stripeBankAccountId){
+        throw new BadRequestException("Missing Stripe Bank Account Id");
+      }
+      if(!isset($amount) || !$amount){
+        throw new BadRequestException("Missing Amount");
+      }
+      try {
+
+        \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
+
+        $payout = \Stripe\Payout::create(array(
+                                                "amount" => $amount,
+                                                "currency" => "usd",
+                                                "destination" => $stripeBankAccountId
+                                              ));
+        
+        if($payout){
+          $payout = $payout->jsonSerialize();
+          return $payout;
+        }
+         
+      } catch (Exception $e) {
+
+        throw new Exception("Bank Account has not been created. Error in Stripe."); 
+      }
+       
+    }
+
+    public function captureCharge($stripeChargeId){
+
+      if(!isset($stripeChargeId) || !$stripeChargeId){
+        throw new BadRequestException("Missing Stripe Charge Id");
+      }
+      try {
+
+        \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
+
+        $charge = \Stripe\Charge::retrieve($stripeChargeId);
+        $charge = $charge->capture();
+        if($charge){
+          $paymentChargeCaptured = $charge->jsonSerialize();
+          return $paymentChargeCaptured;
+        }
+         
+      } catch (Exception $e) {
+
+        throw new Exception("Charge has not been captured. Error in Stripe."); 
+      }
     }
 
 
