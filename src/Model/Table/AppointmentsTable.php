@@ -108,6 +108,10 @@ use ModelAwareTrait;
             ->boolean('is_completed')
             ->allowEmpty('is_completed');
 
+        $validator
+            ->scalar('notes')
+            ->allowEmpty('notes');
+
         return $validator;
     }
 
