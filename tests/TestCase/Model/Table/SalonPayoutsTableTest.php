@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\AccountDetailsTable;
+use App\Model\Table\SalonPayoutsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\AccountDetailsTable Test Case
+ * App\Model\Table\SalonPayoutsTable Test Case
  */
-class AccountDetailsTableTest extends TestCase
+class SalonPayoutsTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\AccountDetailsTable
+     * @var \App\Model\Table\SalonPayoutsTable
      */
-    public $AccountDetails;
+    public $SalonPayouts;
 
     /**
      * Fixtures
@@ -24,6 +24,8 @@ class AccountDetailsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
+        'app.salon_payouts',
+        'app.payouts',
         'app.account_details',
         'app.user_salons',
         'app.users',
@@ -44,7 +46,9 @@ class AccountDetailsTableTest extends TestCase
         'app.user_cards',
         'app.appointment_services',
         'app.social_connections',
-        'app.user_device_tokens'
+        'app.user_device_tokens',
+        'app.stripe_bank_accounts',
+        'app.stripe_customers'
     ];
 
     /**
@@ -55,8 +59,8 @@ class AccountDetailsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('AccountDetails') ? [] : ['className' => AccountDetailsTable::class];
-        $this->AccountDetails = TableRegistry::get('AccountDetails', $config);
+        $config = TableRegistry::exists('SalonPayouts') ? [] : ['className' => SalonPayoutsTable::class];
+        $this->SalonPayouts = TableRegistry::get('SalonPayouts', $config);
     }
 
     /**
@@ -66,7 +70,7 @@ class AccountDetailsTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->AccountDetails);
+        unset($this->SalonPayouts);
 
         parent::tearDown();
     }

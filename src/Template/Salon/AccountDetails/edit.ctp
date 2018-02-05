@@ -14,10 +14,11 @@
             <legend><?= __('Edit Account Detail') ?></legend>
         </div>
         <?php
-            echo $this->Form->control('account_holder_name');
-            echo $this->Form->control('account_number');
-            echo $this->Form->control('bank_code');
-            echo $this->Form->control('branch_name');
+            echo $this->Form->control('account_holder_name',['required' => true]);
+            echo $this->Form->control('account_number',['type' => 'number','required' => true]);
+            echo $this->Form->control('routing_number',['type' => 'number','required' => true]);
+            echo $this->Form->control('account_holder_type',['options' => $accountHolderType,'required' => true]);
+        
         ?>
     </fieldset>
     <?= $this->Form->button(__('Submit')) ?>
