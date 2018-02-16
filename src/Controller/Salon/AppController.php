@@ -78,7 +78,7 @@ class AppController extends Controller
             
             if($user['role']['name'] == 'admin'){
               $menu = Configure::read('Menu.Admin');
-            }elseif($user['role']['name'] == 'user' && $user['is_salon_owner']){
+            }elseif(($user['role']['name'] == 'user' || $user['role']['name'] == 'expert') && $user['is_salon_owner']){
               $menu = Configure::read('Menu.SalonUsers');
             }else{
               $menu = Configure::read('Menu.Users');

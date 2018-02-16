@@ -28,29 +28,24 @@ class ConnectSalonAccountsController extends AppController
         }
         $code = $this->request->query['code'];
         if($code){
-
-            $data = [
-                        'access_token' => 'sk_test_r3g7yChO7wtTPJTgQwLzKsBj',
-                        'refresh_token' => 'rt_CKPwdIjN7uKPf8CBDKd7mtAzZmtHs7FxNQIjtjEHcUd7ZGow',
-                        'token_type' => 'bearer',
-                        'stripe_publishable_key' => 'pk_test_lnYhz7U6J9W6of4BLxkIkeKz',
-                        'stripe_user_id' => 'acct_1Bvl4vJ6kzH87Aay',
-                        'scope' => 'express'
-                    ];
-            // $getAccountDetails = $this->loadComponent('Stripe')->RetrieveAccountDetails($data['stripe_user_id']);
-            // pr($getAccountDetails);die;
+            $data = $this->loadComponent('Stripe')->ConnectAccount($code);
             if(isset($data['stripe_user_id'])){
 
                 $data['user_salon_id'] = $userSalon->id;
                 $data['stripe_user_account_id'] = $data['stripe_user_id'];
                 $connectSalonAccount = $this->ConnectSalonAccounts->newEntity();
                 $connectSalonAccount = $this->ConnectSalonAccounts->patchEntity($connectSalonAccount, $data);
+
                 if ($this->ConnectSalonAccounts->save($connectSalonAccount)) {
                     $this->Flash->success(__('The connect salon account has been saved.'));
 
                     return $this->redirect(['controller' => 'connectSalonAccounts','action' => 'index']);
                 }
                 $this->Flash->error(__('The connect salon account could not be saved. Please, try again.'));
+            }elseif($data['error']){
+                $this->Flash->error(__('Salon Account has not been connected on stripe. Invalid Grant'));
+
+                return $this->redirect(['controller' => 'connectSalonAccounts','action' => 'index']);
             }
 
             $this->set(compact('connectSalonAccount'));

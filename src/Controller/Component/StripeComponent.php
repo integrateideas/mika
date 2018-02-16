@@ -300,7 +300,7 @@ class StripeComponent extends Component
         if(isset($resp['access_token'])){
           return $resp;
         }elseif($resp['error']){
-          return $resp['error'];
+          return $resp;
         }else{
               $authorize_request_body = array(
                                                 'response_type' => $code,
