@@ -34,6 +34,39 @@ class AccountDetailsController extends AppController
         $this->set('_serialize', ['accountDetails']);
     }
 
+    public function stripeAccountConnect(){
+
+        $userSalon = $this->UserSalons->findByUserId($this->Auth->user('id'))->first();
+        if(!$userSalon){
+            throw new NotFoundException(__('No Salon has been setup for this Salon Owner. Please setup your Salon first.'));
+        }
+        $code = $this->request->query['code'];
+        if(!$code){
+          throw new NotFoundException(__('Account Code not found.'));  
+        }
+        $data = $this->loadComponent('Stripe')->ConnectAccount($code);
+        $data = [
+                    'access_token' => 'sk_test_r3g7yChO7wtTPJTgQwLzKsBj',
+                    'refresh_token' => 'rt_CKPwdIjN7uKPf8CBDKd7mtAzZmtHs7FxNQIjtjEHcUd7ZGow',
+                    'token_type' => 'bearer',
+                    'stripe_publishable_key' => 'pk_test_lnYhz7U6J9W6of4BLxkIkeKz',
+                    'stripe_user_id' => 'acct_1Bvl4vJ6kzH87Aay',
+                    'scope' => 'express'
+                ];
+    
+        if(isset($data['stripe_user_id'])){
+
+            $data['user_salon_id'] = $userSalon->id;
+
+        }
+
+        pr($data);die;
+        if(empty($data)){
+        }
+
+
+    }
+
     /**
      * View method
      *

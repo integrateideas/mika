@@ -9,8 +9,8 @@ use Cake\Validation\Validator;
 /**
  * SalonPayouts Model
  *
- * @property \App\Model\Table\PayoutsTable|\Cake\ORM\Association\BelongsTo $Payouts
- * @property \App\Model\Table\AccountDetailsTable|\Cake\ORM\Association\BelongsTo $AccountDetails
+ * @property |\Cake\ORM\Association\BelongsTo $Transfers
+ * @property |\Cake\ORM\Association\BelongsTo $ConnectSalonAccounts
  *
  * @method \App\Model\Entity\SalonPayout get($primaryKey, $options = [])
  * @method \App\Model\Entity\SalonPayout newEntity($data = null, array $options = [])
@@ -41,8 +41,12 @@ class SalonPayoutsTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('AccountDetails', [
-            'foreignKey' => 'account_detail_id',
+        // $this->belongsTo('Transfers', [
+        //     'foreignKey' => 'transfer_id',
+        //     'joinType' => 'INNER'
+        // ]);
+        $this->belongsTo('ConnectSalonAccounts', [
+            'foreignKey' => 'connect_salon_account_id',
             'joinType' => 'INNER'
         ]);
     }
@@ -69,6 +73,16 @@ class SalonPayoutsTable extends Table
             ->requirePresence('status', 'create')
             ->notEmpty('status');
 
+        $validator
+            ->scalar('destination_account')
+            ->requirePresence('destination_account', 'create')
+            ->notEmpty('destination_account');
+
+        $validator
+            ->scalar('destination_payment')
+            ->requirePresence('destination_payment', 'create')
+            ->notEmpty('destination_payment');
+
         return $validator;
     }
 
@@ -81,7 +95,8 @@ class SalonPayoutsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['account_detail_id'], 'AccountDetails'));
+        // $rules->add($rules->existsIn(['transfer_id'], 'Transfers'));
+        $rules->add($rules->existsIn(['connect_salon_account_id'], 'ConnectSalonAccounts'));
 
         return $rules;
     }

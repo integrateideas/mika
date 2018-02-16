@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\SalonPayoutsTable;
+use App\Model\Table\ConnectSalonAccountsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\SalonPayoutsTable Test Case
+ * App\Model\Table\ConnectSalonAccountsTable Test Case
  */
-class SalonPayoutsTableTest extends TestCase
+class ConnectSalonAccountsTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\SalonPayoutsTable
+     * @var \App\Model\Table\ConnectSalonAccountsTable
      */
-    public $SalonPayouts;
+    public $ConnectSalonAccounts;
 
     /**
      * Fixtures
@@ -24,8 +24,8 @@ class SalonPayoutsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.salon_payouts',
-        'app.account_details',
+        'app.connect_salon_accounts',
+        'app.stripe_user_accounts',
         'app.user_salons',
         'app.users',
         'app.roles',
@@ -46,7 +46,7 @@ class SalonPayoutsTableTest extends TestCase
         'app.appointment_services',
         'app.social_connections',
         'app.user_device_tokens',
-        'app.connect_salon_accounts',
+        'app.account_details',
         'app.stripe_bank_accounts',
         'app.stripe_customers'
     ];
@@ -59,8 +59,8 @@ class SalonPayoutsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('SalonPayouts') ? [] : ['className' => SalonPayoutsTable::class];
-        $this->SalonPayouts = TableRegistry::get('SalonPayouts', $config);
+        $config = TableRegistry::exists('ConnectSalonAccounts') ? [] : ['className' => ConnectSalonAccountsTable::class];
+        $this->ConnectSalonAccounts = TableRegistry::get('ConnectSalonAccounts', $config);
     }
 
     /**
@@ -70,7 +70,7 @@ class SalonPayoutsTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->SalonPayouts);
+        unset($this->ConnectSalonAccounts);
 
         parent::tearDown();
     }
