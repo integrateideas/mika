@@ -7,13 +7,14 @@ use Cake\ORM\Entity;
  * SalonPayout Entity
  *
  * @property int $id
- * @property string $payout_id
  * @property string $amount
  * @property bool $status
- * @property int $account_detail_id
  * @property \Cake\I18n\FrozenTime $created
+ * @property string $transfer_id
+ * @property string $destination_account
+ * @property string $destination_payment
+ * @property int $connect_salon_account_id
  *
- * @property \App\Model\Entity\Payout $payout
  * @property \App\Model\Entity\AccountDetail $account_detail
  */
 class SalonPayout extends Entity
@@ -29,12 +30,13 @@ class SalonPayout extends Entity
      * @var array
      */
     protected $_accessible = [
-        'payout_id' => true,
         'amount' => true,
         'status' => true,
-        'account_detail_id' => true,
         'created' => true,
-        // 'payout' => true,
+        'transfer_id' => true,
+        'destination_account' => true,
+        'destination_payment' => true,
+        'connect_salon_account_id' => true,
         'account_detail' => true
     ];
 }

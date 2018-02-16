@@ -113,7 +113,11 @@ class AppController extends Controller
         $value['children'] = $response['children'];
         $value['active'] = $response['active'];
       } else {
-        $value['active'] = empty(array_diff($currentLink, $value['link'])) ? 1 : 0;
+        if(is_array($value['link'])){
+          $value['active'] = empty(array_diff($currentLink, $value['link'])) ? 1 : 0;
+        }else{
+          $value['active'] = false;
+        }
       }
 
       if(isset($value['active']) && $value['active']){

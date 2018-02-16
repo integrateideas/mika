@@ -262,34 +262,90 @@ class StripeComponent extends Component
       }
     }
 
-    public function payout($stripeBankAccountId, $amount){
-      
-      if(!isset($stripeBankAccountId) || !$stripeBankAccountId){
-        throw new BadRequestException("Missing Stripe Bank Account Id");
-      }
-      if(!isset($amount) || !$amount){
-        throw new BadRequestException("Missing Amount");
-      }
+    public function RetrieveAccountDetails($stripeUserAccountId){
       try {
 
         \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
 
-        $payout = \Stripe\Payout::create(array(
-                                                "amount" => $amount,
-                                                "currency" => "usd",
-                                                "destination" => $stripeBankAccountId
-                                              ));
-        
-        if($payout){
-          $payout = $payout->jsonSerialize();
-          return $payout;
+        $retrieveBankDetails = \Stripe\Account::retrieve($stripeUserAccountId);
+        if($retrieveBankDetails){
+          $retrieveBankDetails = $retrieveBankDetails->jsonSerialize();
+          return $retrieveBankDetails;
         }
          
       } catch (Exception $e) {
 
         throw new Exception("Bank Account has not been created. Error in Stripe."); 
       }
-       
+    }
+
+    public function ConnectAccount($code){
+      $clientId = "ca_CFZnHhzQjSxDc2fURkjTGVgeZF3StF5c"; // for testing only
+      try {
+
+        $token_request_body = array(
+                                      'client_secret' => Configure::read('StripeTestKey'),
+                                      'grant_type' => 'authorization_code',
+                                      'client_id' => $clientId,
+                                      'code' => $code
+                                    );
+        
+        $req = curl_init("https://connect.stripe.com/oauth/token");
+        curl_setopt($req, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($req, CURLOPT_POST, true );
+        curl_setopt($req, CURLOPT_POSTFIELDS, http_build_query($token_request_body));
+        $respCode = curl_getinfo($req, CURLINFO_HTTP_CODE);
+        $resp = json_decode(curl_exec($req), true);
+        curl_close($req);
+        if(isset($resp['access_token'])){
+          return $resp;
+        }elseif($resp['error']){
+          return $resp['error'];
+        }else{
+              $authorize_request_body = array(
+                                                'response_type' => $code,
+                                                'client_id' => $clientId
+                                              );
+              $url = AUTHORIZE_URI . '?' . http_build_query($authorize_request_body);
+               echo "<a href='$url'>Connect with Stripe</a>";
+        }
+
+         
+      } catch (Exception $e) {
+
+        throw new Exception("Bank Account has not been connected. Error in Stripe."); 
+      }
+    }
+
+    public function payout($destinationAccountId,$payoutAmount){
+          
+          if(!isset($destinationAccountId) || !$destinationAccountId){
+            throw new BadRequestException("Missing Stripe Bank Account Id");
+          }
+          if(!isset($payoutAmount) || !$payoutAmount){
+            throw new BadRequestException("Missing Payout Amount");
+          }
+          
+          try {
+
+              \Stripe\Stripe::setApiKey(Configure::read('StripeTestKey'));
+
+              $transfer = \Stripe\Transfer::create(array(
+                                                          "amount" => $payoutAmount,
+                                                          "currency" => "usd",
+                                                          "destination" => $destinationAccountId,
+                                                        ));
+              
+              if($transfer){
+                $transfer = $transfer->jsonSerialize();
+                return $transfer;
+              }
+               
+            } catch (Exception $e) {
+
+              throw new Exception("Payout has not been completed. Error in Stripe."); 
+            }
+
     }
 
     public function captureCharge($stripeChargeId){

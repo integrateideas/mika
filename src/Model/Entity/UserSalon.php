@@ -17,6 +17,7 @@ use Cake\ORM\Entity;
  * @property string $zipcode
  *
  * @property \App\Model\Entity\User $user
+ * @property \App\Model\Entity\AccountDetail[] $account_details
  * @property \App\Model\Entity\Expert[] $experts
  */
 class UserSalon extends Entity
@@ -41,6 +42,7 @@ class UserSalon extends Entity
         'modified' => true,
         'zipcode' => true,
         'user' => true,
+        'account_details' => true,
         'experts' => true
     ];
 }
