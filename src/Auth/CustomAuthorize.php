@@ -68,21 +68,22 @@ class CustomAuthorize extends BaseAuthorize{
 
     //function to ignore the role Access for common apis for both Expert and Customers
     private function _ignoreRoleAccess($prefix){
-        $commonApis = [
-            'api' => [
-                'Users' => ['addPhone'],
-                'UserDeviceTokens' => ['add','edit'],
-                'SpecializationServices' => ['index'],
-                'ExpertSpecializationServices' => ['view']
-            ],
-            'api/user' => [
-                'AppointmentBookings' => ['index','view'],
-                'AppointmentReviews' => ['add'],
-                'Users' => ['addCard','deleteCard','listCards','viewCard']
-            ]
-        ];
-
-        return !$this->_checkUnAuthorized($commonApis[$prefix]);
+        if($prefix){
+            $commonApis = [
+                'api' => [
+                    'Users' => ['addPhone'],
+                    'UserDeviceTokens' => ['add','edit'],
+                    'SpecializationServices' => ['index'],
+                    'ExpertSpecializationServices' => ['view']
+                ],
+                'api/user' => [
+                    'AppointmentBookings' => ['index','view'],
+                    'AppointmentReviews' => ['add'],
+                    'Users' => ['addCard','deleteCard','listCards','viewCard']
+                ]
+            ];
+            return !$this->_checkUnAuthorized($commonApis[$prefix]);
+        }
     } 
 
 	//method to check wether current controller & action matches some list of un authorized controllers 
