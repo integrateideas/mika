@@ -40,7 +40,7 @@ class SpecializationsSeed extends AbstractSeed
                       [ 'name'    => 'makeup',
                       'label'   =>'Makeup',
                       'status'=> 1,
-                      'color' => '#faee68'
+                      'color' => '#faee68',
                       'created' => date('Y-m-d H:i:s'),
                       'modified'=> date('Y-m-d H:i:s'),]
                     

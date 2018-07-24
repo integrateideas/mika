@@ -33,9 +33,14 @@
                                         <td><?= h($specialization->created) ?></td>
                                         <td><?= h($specialization->modified) ?></td>
                                         <td class="actions">
-                                <?= $this->Html->link(__('View'), ['action' => 'view', $specialization->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['action' => 'edit', $specialization->id]) ?>
-                                <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $specialization->id], ['confirm' => __('Are you sure you want to delete # {0}?', $specialization->id)]) ?>
+                                            <?= '<a href='.$this->Url->build(['action' => 'view', $specialization->id]).' class="btn btn-xs btn-success">' ?>
+                                                <i class="fa fa-eye fa-fw"></i>
+                                            </a>
+                                            <?= '<a href='.$this->Url->build(['action' => 'edit', $specialization->id]).' class="btn btn-xs btn-warning"">' ?>
+                                                <i class="fa fa-pencil fa-fw"></i>
+                                            </a>
+                                            <?= $this->Form->postLink(__(''), ['action' => 'delete', $specialization->id], ['confirm' => __('Are you sure you want to delete # {0}?', $specialization->id), 'class' => ['btn', 'btn-sm', 'btn-danger', 'fa', 'fa-trash-o', 'fa-fh']]) ?>
+                                        </td>
                             </td>
                         </tr>
                         <?php endforeach; ?>

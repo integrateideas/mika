@@ -25,6 +25,9 @@ class CustomAuthorize extends BaseAuthorize{
         if(isset($payload->expert_id) && !in_array($payload->expert_id, [false, null, ''])){
           $userRole = 'Expert';
         }
+        if(isset($user['role_id']) && $user['role_id'] == 1){
+          $userRole = 'Admin';   
+        }
         if(!$this->_ignoreRoleAccess($this->reqPrefix)){
 
             if(!$this->_checkRoleAccess($userRole)){	
