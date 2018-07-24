@@ -19,8 +19,6 @@
                                         <th scope="col"><?= $this->Paginator->sort('label') ?></th>
                                         <th scope="col"><?= $this->Paginator->sort('specialization_id') ?></th>
                                         <th scope="col"><?= $this->Paginator->sort('status') ?></th>
-                                        <th scope="col"><?= $this->Paginator->sort('created') ?></th>
-                                        <th scope="col"><?= $this->Paginator->sort('modified') ?></th>
                                         <th scope="col" class="actions"><?= __('Actions') ?></th>
                         </tr>
                     </thead>
@@ -32,13 +30,15 @@
                                         <td><?= h($specializationService->label) ?></td>
                                         <td><?= $specializationService->has('specialization') ? $this->Html->link($specializationService->specialization->name, ['controller' => 'Specializations', 'action' => 'view', $specializationService->specialization->id]) : '' ?></td>
                                         <td><?= h($specializationService->status) ?></td>
-                                        <td><?= h($specializationService->created) ?></td>
-                                        <td><?= h($specializationService->modified) ?></td>
                                         <td class="actions">
-                                <?= $this->Html->link(__('View'), ['action' => 'view', $specializationService->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['action' => 'edit', $specializationService->id]) ?>
-                                <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $specializationService->id], ['confirm' => __('Are you sure you want to delete # {0}?', $specializationService->id)]) ?>
-                            </td>
+                                            <?= '<a href='.$this->Url->build(['action' => 'view', $specializationService->id]).' class="btn btn-xs btn-success">' ?>
+                                                <i class="fa fa-eye fa-fw"></i>
+                                            </a>
+                                            <?= '<a href='.$this->Url->build(['action' => 'edit', $specializationService->id]).' class="btn btn-xs btn-warning"">' ?>
+                                                <i class="fa fa-pencil fa-fw"></i>
+                                            </a>
+                                            <?= $this->Form->postLink(__(''), ['action' => 'delete', $specializationService->id], ['confirm' => __('Are you sure you want to delete # {0}?', $specializationService->id), 'class' => ['btn', 'btn-sm', 'btn-danger', 'fa', 'fa-trash-o', 'fa-fh']]) ?>
+                                        </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
