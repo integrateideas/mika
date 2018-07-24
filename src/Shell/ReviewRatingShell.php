@@ -38,7 +38,7 @@ class ReviewRatingShell extends Shell
     public function appointmentRating(){
 
         $currentTime = FrozenTime::now();
-        $compareTime = $currentTime->modify('-1 hour');
+        $compareTime = $currentTime->modify('+5 hours');
         
         $this->loadModel('Appointments');
         $confirmedAppointments = $this->Appointments->find()
