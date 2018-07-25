@@ -16,6 +16,7 @@
         <?php
             echo $this->Form->control('name');
             echo $this->Form->control('label');
+            echo $this->Form->control('color');
             echo $this->Form->control('status');
         ?>
     </fieldset>

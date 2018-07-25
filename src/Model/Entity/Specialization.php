@@ -35,6 +35,7 @@ class Specialization extends Entity
         'created' => true,
         'modified' => true,
         'expert_specializations' => true,
-        'specialization_services' => true
+        'specialization_services' => true,
+        'color' => true
     ];
 }

@@ -76,6 +76,11 @@ class SpecializationsTable extends Table
             ->requirePresence('status', 'create')
             ->notEmpty('status');
 
+        $validator
+            ->scalar('color')
+            ->requirePresence('color', 'create')
+            ->notEmpty('color');
+
         return $validator;
     }
 }
