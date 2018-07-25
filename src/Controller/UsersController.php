@@ -80,14 +80,13 @@ class UsersController extends AppController
             $data = $this->request->getData();
             $data['username'] = $data['email'];
             if($data['role_id'] == 3){
-                $data['experts'] = [[]];
+                $data['experts'] = [['timezone' => "Eastern Standard Time"]];
                 $user = $this->Users->patchEntity($user, $data, ['associated' => 'Experts']);
             }else{
                 $user = $this->Users->patchEntity($user, $data);
             }
 
             if ($this->Users->save($user)) {
-
                 $this->Flash->success(__('The user has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
