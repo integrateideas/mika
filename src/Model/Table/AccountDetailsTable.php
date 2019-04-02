@@ -9,7 +9,9 @@ use Cake\Validation\Validator;
 /**
  * AccountDetails Model
  *
- * @property |\Cake\ORM\Association\BelongsTo $UserSalons
+ * @property \App\Model\Table\UserSalonsTable|\Cake\ORM\Association\BelongsTo $UserSalons
+ * @property |\Cake\ORM\Association\BelongsTo $StripeBankAccounts
+ * @property |\Cake\ORM\Association\BelongsTo $StripeCustomers
  *
  * @method \App\Model\Entity\AccountDetail get($primaryKey, $options = [])
  * @method \App\Model\Entity\AccountDetail newEntity($data = null, array $options = [])
@@ -44,6 +46,14 @@ class AccountDetailsTable extends Table
             'foreignKey' => 'user_salon_id',
             'joinType' => 'INNER'
         ]);
+        $this->belongsTo('StripeBankAccounts', [
+            'foreignKey' => 'stripe_bank_account_id',
+            'joinType' => 'INNER'
+        ]);
+        $this->belongsTo('StripeCustomers', [
+            'foreignKey' => 'stripe_customer_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**
@@ -69,14 +79,14 @@ class AccountDetailsTable extends Table
             ->notEmpty('account_number');
 
         $validator
-            ->scalar('bank_code')
-            ->requirePresence('bank_code', 'create')
-            ->notEmpty('bank_code');
+            ->scalar('routing_number')
+            ->requirePresence('routing_number', 'create')
+            ->notEmpty('routing_number');
 
         $validator
-            ->scalar('branch_name')
-            ->requirePresence('branch_name', 'create')
-            ->notEmpty('branch_name');
+            ->scalar('account_holder_type')
+            ->requirePresence('account_holder_type', 'create')
+            ->notEmpty('account_holder_type');
 
         return $validator;
     }
@@ -91,6 +101,8 @@ class AccountDetailsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_salon_id'], 'UserSalons'));
+        // $rules->add($rules->existsIn(['stripe_bank_account_id'], 'StripeBankAccounts'));
+        // $rules->add($rules->existsIn(['stripe_customer_id'], 'StripeCustomers'));
 
         return $rules;
     }
