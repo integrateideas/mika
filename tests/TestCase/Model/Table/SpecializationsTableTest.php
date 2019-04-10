@@ -26,7 +26,18 @@ class SpecializationsTableTest extends TestCase
     public $fixtures = [
         'app.specializations',
         'app.expert_specializations',
-        'app.specialization_services'
+        'app.experts',
+        'app.users',
+        'app.roles',
+        'app.social_connections',
+        'app.user_salons',
+        'app.appointments',
+        'app.expert_availabilities',
+        'app.expert_specialization_services',
+        'app.specialization_services',
+        'app.appointment_transactions',
+        'app.expert_cards',
+        'app.expert_locations'
     ];
 
     /**

@@ -10,6 +10,9 @@ msgstr "Bad Request. Invalid Token Provided."
 msgid "MANDATORY_FIELD_MISSING"
 msgstr "Mandatory Field {0} is Missing."
 
+msgid "MANDATORY_ARGUMENT_MISSING"
+msgstr "Mandatory Argument {0} is Missing."
+
 msgid "UNAUTHORIZED_REQUEST"
 msgstr "Unauthorized Request."
 

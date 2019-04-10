@@ -5,12 +5,17 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Collection\Collection;
 
 /**
  * Users Model
  *
  * @property \App\Model\Table\RolesTable|\Cake\ORM\Association\BelongsTo $Roles
+ * @property |\Cake\ORM\Association\HasMany $Appointments
  * @property \App\Model\Table\ExpertsTable|\Cake\ORM\Association\HasMany $Experts
+ * @property \App\Model\Table\SocialConnectionsTable|\Cake\ORM\Association\HasMany $SocialConnections
+ * @property |\Cake\ORM\Association\HasMany $UserFavouriteExperts
+ * @property \App\Model\Table\UserSalonsTable|\Cake\ORM\Association\HasMany $UserSalons
  *
  * @method \App\Model\Entity\User get($primaryKey, $options = [])
  * @method \App\Model\Entity\User newEntity($data = null, array $options = [])
@@ -45,7 +50,25 @@ class UsersTable extends Table
             'foreignKey' => 'role_id',
             'joinType' => 'INNER'
         ]);
+        $this->hasMany('Appointments', [
+            'foreignKey' => 'user_id'
+        ]);
         $this->hasMany('Experts', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('SocialConnections', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('UserFavouriteExperts', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('UserSalons', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('UserDeviceTokens', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('UserCards', [
             'foreignKey' => 'user_id'
         ]);
     }
@@ -83,12 +106,17 @@ class UsersTable extends Table
 
         $validator
             ->scalar('phone')
-            ->requirePresence('phone', 'create')
-            ->notEmpty('phone');
+            // ->requirePresence('phone', 'create')
+            ->allowEmpty('phone');
 
         $validator
             ->dateTime('is_deleted')
             ->allowEmpty('is_deleted');
+
+        $validator
+            ->scalar('username')
+            ->requirePresence('username', 'create')
+            ->notEmpty('username');
 
         return $validator;
     }
@@ -103,8 +131,61 @@ class UsersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['email']));
+        $rules->add($rules->isUnique(['username']));
         $rules->add($rules->existsIn(['role_id'], 'Roles'));
 
         return $rules;
+    }
+
+    public function loginExpertInfo($id){
+
+      $user = $this->find()
+                    ->where(['id' => $id])
+                    ->contain(['Experts.ExpertSpecializations'  => function($q){
+                        return $q->contain(['ExpertSpecializationServices.SpecializationServices','Specializations']);
+                      },'SocialConnections','UserCards','Experts.UserSalons','Experts.Appointments' => function($q){
+                        return  $q->where(['is_confirmed IS NULL'])
+                                  ->contain(['AppointmentServices.ExpertSpecializations.Specializations','AppointmentServices.ExpertSpecializationServices.SpecializationServices']);
+                      }])
+                    ->first();
+
+      if(isset($user['experts']) && $user['experts'] != []){  
+
+        if($user['experts'][0]['expert_specializations'] != []){
+
+          $collection = $user['experts'][0]['expert_specializations'];
+          $coll = [];
+          foreach ($collection as $key => $specialization) {
+
+                $coll[$specialization->specialization_id] = (new Collection($specialization->expert_specialization_services))->combine('specialization_service_id','id')->toArray();
+          }
+         
+          $user['selected_specializations'] = $coll; 
+        }
+
+
+        if(isset($user['experts'][0]['appointments']) && $user['experts'][0]['appointments']){
+
+          //Grouping pending appointments according to the available slots.
+          $pendingAppointmentsCollection = new Collection($user['experts'][0]['appointments']);
+          $groupedPendingAppointments = $pendingAppointmentsCollection->groupBy('expert_availability_id')
+                                                                    ->toArray();
+          $data['data']['groupedPendingAppointments'] = $groupedPendingAppointments;
+
+          //Reducing the pending appointments array to the one appointment that came the earliest.
+          $earliestPendingAppointment = $pendingAppointmentsCollection->min('created');
+          $data['data']['earliestPendingAppointment'] = $earliestPendingAppointment;
+        }
+        $data['data']['expertSpecializations'] = $user['experts'][0]['expert_specializations'];
+      }
+
+      $return['user'] = $user;
+
+      if(isset($data)){
+        $return['data'] = $data;
+      }
+
+      return $return;
+
     }
 }

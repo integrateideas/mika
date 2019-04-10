@@ -26,7 +26,18 @@ class UsersTableTest extends TestCase
     public $fixtures = [
         'app.users',
         'app.roles',
-        'app.experts'
+        'app.experts',
+        'app.user_salons',
+        'app.appointments',
+        'app.expert_availabilities',
+        'app.expert_specialization_services',
+        'app.expert_specializations',
+        'app.specializations',
+        'app.specialization_services',
+        'app.appointment_transactions',
+        'app.expert_cards',
+        'app.expert_locations',
+        'app.social_connections'
     ];
 
     /**
@@ -79,6 +90,16 @@ class UsersTableTest extends TestCase
      * @return void
      */
     public function testBuildRules()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test loginInfo method
+     *
+     * @return void
+     */
+    public function testLoginInfo()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }

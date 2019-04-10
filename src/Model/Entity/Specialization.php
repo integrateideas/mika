@@ -29,7 +29,13 @@ class Specialization extends Entity
      * @var array
      */
     protected $_accessible = [
-        '*' => true,
-        'id' => false
+        'name' => true,
+        'label' => true,
+        'status' => true,
+        'created' => true,
+        'modified' => true,
+        'expert_specializations' => true,
+        'specialization_services' => true,
+        'color' => true
     ];
 }

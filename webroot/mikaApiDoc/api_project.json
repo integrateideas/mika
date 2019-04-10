@@ -1,0 +1,16 @@
+{
+  "name": "Mika Apis",
+  "version": "1.0.0",
+  "description": "Welcome to the Mika API Docs",
+  "title": "Apis for Mika Application",
+  "url": "http://ts.twinspark.co/dev/mika",
+  "sampleUrl": false,
+  "defaultVersion": "0.0.0",
+  "apidoc": "0.3.0",
+  "generator": {
+    "name": "apidoc",
+    "time": "2017-10-17T11:39:50.656Z",
+    "url": "http://apidocjs.com",
+    "version": "0.17.5"
+  }
+}

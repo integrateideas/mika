@@ -2,6 +2,9 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Core\Configure;
+use Cake\Routing\Router;
+use Cake\Event\Event;
 
 /**
  * Users Controller
@@ -12,6 +15,25 @@ use App\Controller\AppController;
  */
 class UsersController extends AppController
 {
+
+    public function initialize(){
+        parent::initialize();
+
+        $this->loadComponent('Flash');
+        $this->loadComponent('Auth');
+        
+        $this->Auth->allow(['login', 'logout']);
+    }
+
+    public function isAuthorized($user)
+    {
+        if($user['role_id'] == 1){
+          return true;
+        }else{
+          return false;  
+        }
+        return parent::isAuthorized($user);
+    }
 
     /**
      * Index method
@@ -24,7 +46,7 @@ class UsersController extends AppController
             'contain' => ['Roles']
         ];
         $users = $this->paginate($this->Users);
-
+        
         $this->set(compact('users'));
         $this->set('_serialize', ['users']);
     }
@@ -55,7 +77,15 @@ class UsersController extends AppController
     {
         $user = $this->Users->newEntity();
         if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
+            $data = $this->request->getData();
+            $data['username'] = $data['email'];
+            if($data['role_id'] == 3){
+                $data['experts'] = [['timezone' => "Eastern Standard Time"]];
+                $user = $this->Users->patchEntity($user, $data, ['associated' => 'Experts']);
+            }else{
+                $user = $this->Users->patchEntity($user, $data);
+            }
+
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('The user has been saved.'));
 
@@ -94,6 +124,24 @@ class UsersController extends AppController
         $this->set('_serialize', ['user']);
     }
 
+
+    
+    
+    public function login()
+    {
+        $this->viewBuilder()->layout('login-admin');
+        
+        if ($this->request->is('post')) {
+            $user = $this->Auth->identify();
+            
+            if ($user) {
+                $this->Auth->setUser($user);
+                return $this->redirect($this->Auth->redirectUrl());
+            }
+            $this->Flash->error(__('Invalid username or password, try again'));
+        }
+    }
+
     /**
      * Delete method
      *
@@ -112,5 +160,10 @@ class UsersController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function logout()
+    {
+        return $this->redirect($this->Auth->logout());
     }
 }

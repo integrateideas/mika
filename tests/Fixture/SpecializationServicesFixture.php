@@ -46,8 +46,8 @@ class SpecializationServicesFixture extends TestFixture
             'label' => 'Lorem ipsum dolor sit amet',
             'specialization_id' => 1,
             'status' => 1,
-            'created' => '2017-09-06 07:03:18',
-            'modified' => '2017-09-06 07:03:18'
+            'created' => '2017-10-13 11:41:33',
+            'modified' => '2017-10-13 11:41:33'
         ],
     ];
 }

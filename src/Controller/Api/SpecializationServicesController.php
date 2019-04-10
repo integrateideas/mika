@@ -31,8 +31,9 @@ class SpecializationServicesController extends ApiController
           throw new NotFoundException(__('No entity found in specialization services'));
         }
 
-        $this->set(compact('specializationSevices'));
-        $this->set('_serialize', ['specializationSevices']);
+        $this->set('data',$specializationSevices);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -53,9 +54,10 @@ class SpecializationServicesController extends ApiController
         if(!$specializationSevice){
           throw new NotFoundException(__('No entity found in specializationSevice'));
         }
-        
-        $this->set(compact('specializationSevice'));
-        $this->set('_serialize', ['specializationSevice']);
+
+        $this->set('data',$specializationSevice);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -72,23 +74,14 @@ class SpecializationServicesController extends ApiController
         $specializationSevice = $this->SpecializationServices->newEntity();
         $specializationSevice = $this->SpecializationServices->patchEntity($specializationSevice, $this->request->data);
         
-        if(!$specializationSevice->errors()){
-            if ($this->SpecializationServices->save($specializationSevice)) {
-                $response['id'] = $specializationSevice->id;
-                $response['message'] = 'This specialization service has been saved';
-           
-            } else {
-               throw new Exception('This specialization service could not be saved');
-               $response['message'] = 'This specialization could not be saved';
-            }
-        }else{
-            throw new BadRequestException('This specialization service is already exists');
-            $response = "Not Created";
+        if (!$this->SpecializationServices->save($specializationSevice)) {
+            throw new Exception('This specialization service could not be saved');
         }
         
 
-        $this->set(compact('response'));
-        $this->set('_serialize', ['response']);
+        $this->set('data',$specializationSevice);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
 
     /**
@@ -110,17 +103,14 @@ class SpecializationServicesController extends ApiController
         }
         $specializationSevice = $this->SpecializationServices->patchEntity($specializationSevice, $this->request->data);
 
-        if ($this->SpecializationServices->save($specializationSevice)) {
-          $response['message'] = 'This specialization service has been saved';
-          $response['id']= $specializationSevice->id;
-        
-        } else {
+        if (!$this->SpecializationServices->save($specializationSevice)) {
             throw new Exception('This specialization service could not be saved');
         }
         
         
-        $this->set(compact('response'));
-        $this->set('_serialize', ['response']);
+        $this->set('data',$specializationSevice);
+        $this->set('status',true);
+        $this->set('_serialize', ['status','data']);
     }
     /**
      * Delete method
@@ -136,14 +126,12 @@ class SpecializationServicesController extends ApiController
         if(!$specializationSevice){
           throw new NotFoundException(__('No entity found in specializationSevice'));
         }
-        if ($this->SpecializationServices->delete($specializationSevice)) {
-            $response['message'] = 'This specialization service has been deleted successfully';
-            $response['id']= $specializationSevice->id;
-        } else {
-            $response['message'] = 'This specialization service could not be deleted';
+        if (!$this->SpecializationServices->delete($specializationSevice)) {
+            throw new Exception('This specialization service could not be deleted.');
         }
-        $this->set(compact('response'));
-        $this->set('_serialize', ['response']);
+
+        $this->set('status',true);
+        $this->set('_serialize', ['status']);
     }
 
 }
