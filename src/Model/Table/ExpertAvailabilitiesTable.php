@@ -9,6 +9,7 @@ use App\Controller\AppHelper;
 use App\Bandwidth\Bandwidth;
 use Cake\Datasource\ModelAwareTrait;
 use Cake\Log\Log;
+use Cake\ORM\Rule\IsUnique;
 /**
  * ExpertAvailabilities Model
  *
@@ -100,6 +101,10 @@ class ExpertAvailabilitiesTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['expert_id'], 'Experts'));
+        $rules->add($rules->isUnique(
+            ['expert_id', 'available_from', 'available_to'],
+            'This slot has already been used.'
+        ));
 
         return $rules;
     }
