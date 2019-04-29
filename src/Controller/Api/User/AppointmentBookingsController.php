@@ -11,6 +11,8 @@ use Cake\Network\Exception\UnauthorizedException;
 use Cake\Log\Log;
 use Cake\Collection\Collection;
 use App\Controller\AppHelper;
+use Cake\I18n\FrozenTime;
+use Cake\I18n\Date;
 
 /**
  * UserFavouriteExperts Controller
@@ -53,6 +55,9 @@ class AppointmentBookingsController extends ApiController
 
         }
 
+        Log::write('debug','in bookings add'); 
+        Log::write('debug',$data); 
+
         $this->loadModel('Experts');
         $checkUnAuthorizedUser = $this->Experts->findById($data['expertId'])->first();
         if($this->Auth->user('id') == $checkUnAuthorizedUser['user_id']){
@@ -85,7 +90,7 @@ class AppointmentBookingsController extends ApiController
                         'expert_id' => $data['expertId'],
                         'expert_availability_id' => $data['availabilityId'],
                         'user_card_id' => $userCardId,
-                        'notes' => $data['notes']
+                        'notes' => (isset($data['notes']) && $data['notes']) ? $data['notes'] : ''
                     ];
         $services = [];
         foreach ($data['expSpecServiceIds'] as $key => $value) {
@@ -101,7 +106,6 @@ class AppointmentBookingsController extends ApiController
         $bookingAppointment = $this->Appointments->patchEntity($bookingAppointment, $reqData,['associated' => 'AppointmentServices']);
         
         $expertsUserId = $this->Appointments->Experts->findById($reqData['expert_id'])->first()->user_id;
-        Log::write('debug',$data); 
         if (!$this->Appointments->save($bookingAppointment,['user_id' =>$expertsUserId])) { 
           if($bookingAppointment->errors()){
             $this->_sendErrorResponse($bookingAppointment->errors());
@@ -164,6 +168,11 @@ class AppointmentBookingsController extends ApiController
         }else{
             $reqData = $this->Appointments->findByUserId($userId);
         }
+
+        $date = new FrozenTime('today');
+        $startdate = $date->modify('00:05:00');
+        $enddate = $date->modify('23:55:00');
+
         $reqData = $reqData->contain([  'Users',
                                         'AppointmentServices.ExpertSpecializationServices.SpecializationServices',
                                         'AppointmentServices.ExpertSpecializations.Specializations',
@@ -198,12 +207,23 @@ class AppointmentBookingsController extends ApiController
             }
         }
 
-        $reqData = $reqData->where($where)->all()->toArray();
+        $reqData = $reqData->where($where)
+        ->where(function ($exp) use ($startdate, $enddate) {
+                                                      return $exp
+                                                        ->between('Appointments.created', $startdate, $enddate);
+                                                          })
+        ->all()->toArray();
+
+        // Log::write('debug','in bookings index'); 
+        // Log::write('debug',$reqData); 
         if(empty($reqData)){
             throw new NotFoundException(__('No Appointment found for this user.'));
         }
 
         $success = true;
+
+        Log::write('debug','in bookings index'); 
+        Log::write('debug',$success);
 
         $this->set('data',$reqData);
         $this->set('status',$success);
