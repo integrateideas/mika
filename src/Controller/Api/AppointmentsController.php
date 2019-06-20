@@ -42,6 +42,7 @@ class AppointmentsController extends ApiController
                                     'is_confirmed' => 1
                                 ];
         $appointment = $this->Appointments->patchEntity($appointment,$updateBookingStatus);
+
 	if (!$this->Appointments->save($appointment)) {
 		throw new Exception("Error Processing Request.");
         }
@@ -118,10 +119,6 @@ class AppointmentsController extends ApiController
 
         $patchAvailabilty = $this->ExpertAvailabilities->patchEntity($getAvailabilty,$updateAvailability);
         if (!$this->ExpertAvailabilities->save($patchAvailabilty)) {
-          
-          if($patchAvailabilty->errors()){
-            $this->_sendErrorResponse($patchAvailabilty->errors());
-          }
           throw new Exception("Error Processing Request while Updating the Availability status");
         }
 
