@@ -42,13 +42,10 @@ class AppointmentsController extends ApiController
                                     'is_confirmed' => 1
                                 ];
         $appointment = $this->Appointments->patchEntity($appointment,$updateBookingStatus);
-        if (!$this->Appointments->save($appointment)) {
-          
-          if($appointment->errors()){
-            $this->_sendErrorResponse($appointment->errors());
-          }
-          throw new Exception("Error Processing Request");
+	if (!$this->Appointments->save($appointment)) {
+		throw new Exception("Error Processing Request.");
         }
+
         $this->set('data',$appointment);
         $this->set('status',true);
         $this->set('_serialize', ['status','data']);

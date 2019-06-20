@@ -8,6 +8,7 @@ use Cake\Validation\Validator;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Network\Exception\NotFoundException;
+use Cake\Core\Exception\Exception;
 use App\Controller\AppHelper;
 use Cake\Collection\Collection;
 use Cake\Datasource\ModelAwareTrait;
@@ -146,11 +147,9 @@ use ModelAwareTrait;
             $this->loadModel('Transactions');
             $transaction = $this->Transactions->newEntity();
             $transaction = $this->Transactions->patchEntity($transaction,$reqData);
-            if (!$this->Transactions->save($transaction)) {
-              
-              if($transaction->errors()){
-                $this->_sendErrorResponse($transaction->errors());
-              }
+
+	    if (!$this->Transactions->save($transaction)) {
+
               throw new Exception("Error Processing Request");
             }
             
