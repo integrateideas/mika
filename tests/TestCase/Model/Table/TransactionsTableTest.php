@@ -31,6 +31,8 @@ class TransactionsTableTest extends TestCase
         'app.appointments',
         'app.experts',
         'app.user_salons',
+        'app.connect_salon_accounts',
+        'app.appointment_reviews',
         'app.expert_availabilities',
         'app.expert_cards',
         'app.expert_locations',
@@ -39,7 +41,10 @@ class TransactionsTableTest extends TestCase
         'app.specializations',
         'app.specialization_services',
         'app.user_favourite_experts',
-        'app.social_connections'
+        'app.conversations',
+        'app.appointment_services',
+        'app.social_connections',
+        'app.user_device_tokens'
     ];
 
     /**

@@ -68,7 +68,7 @@ class TransactionsTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
-            ->integer('transaction_amount')
+            ->numeric('transaction_amount')
             ->requirePresence('transaction_amount', 'create')
             ->notEmpty('transaction_amount');
 
@@ -76,6 +76,10 @@ class TransactionsTable extends Table
             ->boolean('status')
             ->requirePresence('status', 'create')
             ->notEmpty('status');
+
+	$validator
+            ->boolean('payment_captured')
+            ->allowEmpty('payment_captured');
 
         $validator
             ->scalar('remark')
