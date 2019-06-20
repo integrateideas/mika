@@ -19,8 +19,9 @@
                                         <th scope="col"><?= $this->Paginator->sort('id') ?></th>
                                         <th scope="col"><?= $this->Paginator->sort('account_holder_name') ?></th>
                                         <th scope="col"><?= $this->Paginator->sort('account_number') ?></th>
-                                        <th scope="col"><?= $this->Paginator->sort('bank_code') ?></th>
-                                        <th scope="col"><?= $this->Paginator->sort('branch_name') ?></th>
+                                        <th scope="col"><?= $this->Paginator->sort('routing_number') ?></th>
+                                        <th scope="col"><?= h('Salon Name') ?></th>
+                                        <th scope="col"><?= $this->Paginator->sort('account_holder_type') ?></th>
                                         <th scope="col" class="actions"><?= __('Actions') ?></th>
                         </tr>
                     </thead>
@@ -30,17 +31,19 @@
                                         <td><?= $this->Number->format($accountDetail->id) ?></td>
                                         <td><?= h($accountDetail->account_holder_name) ?></td>
                                         <td><?= h($accountDetail->account_number) ?></td>
-                                        <td><?= h($accountDetail->bank_code) ?></td>
-                                        <td><?= h($accountDetail->branch_name) ?></td>
-                                        <td class="actions">
-                                            <?= '<a href='.$this->Url->build(['action' => 'view', $accountDetail->id]).' class="btn btn-xs btn-success">' ?>
-                                                <i class="fa fa-eye fa-fw"></i>
-                                            </a>
-                                            <?= '<a href='.$this->Url->build(['action' => 'edit', $accountDetail->id]).' class="btn btn-xs btn-warning"">' ?>
-                                                <i class="fa fa-pencil fa-fw"></i>
-                                            </a>
-                                            <?= $this->Form->postLink(__(''), ['action' => 'delete', $accountDetail->id], ['confirm' => __('Are you sure you want to delete # {0}?', $accountDetail->id), 'class' => ['btn', 'btn-sm', 'btn-danger', 'fa', 'fa-trash-o', 'fa-fh']]) ?>
+                                        <td><?= h($accountDetail->routing_number) ?></td>
+                                        <td><?= h($accountDetail->user_salon->salon_name) ?></td>
+                                        <td><?= h($accountDetail->account_holder_type) ?></td>
+                                <td class="actions">
+                                        <?= '<a href='.$this->Url->build(['action' => 'view', $accountDetail->id]).' class="btn btn-xs btn-success">' ?>
+                                            <i class="fa fa-eye fa-fw"></i>
+                                        </a>
+                                        <?= '<a href='.$this->Url->build(['action' => 'edit', $accountDetail->id]).' class="btn btn-xs btn-warning"">' ?>
+                                            <i class="fa fa-pencil fa-fw"></i>
+                                        </a>
+                                        <?= $this->Form->postLink(__(''), ['action' => 'delete', $accountDetail->id], ['confirm' => __('Are you sure you want to delete # {0}?', $accountDetail->id), 'class' => ['btn', 'btn-sm', 'btn-danger', 'fa', 'fa-trash-o', 'fa-fh']]) ?>
                                         </td>
+                            </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>

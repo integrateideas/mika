@@ -48,9 +48,9 @@ class UserSalonsFixture extends TestFixture
             'salon_name' => 'Lorem ipsum dolor sit amet',
             'location' => 'Lorem ipsum dolor sit amet',
             'status' => 1,
-            'is_deleted' => '2017-12-26 08:25:59',
-            'created' => '2017-12-26 08:25:59',
-            'modified' => '2017-12-26 08:25:59',
+            'is_deleted' => '2018-02-16 07:16:43',
+            'created' => '2018-02-16 07:16:43',
+            'modified' => '2018-02-16 07:16:43',
             'zipcode' => 'Lor'
         ],
     ];

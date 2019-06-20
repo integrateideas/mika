@@ -122,22 +122,30 @@ return [ 'Menu' =>
                                           ] 
                                   ] 
                             ],
-                            'AccountDetails' => [
+                            'Connect Bank Account' => [
                               'link' => '#',
                               'children' => [
                                     'View Account Details' => [
                                         'link' => [
                                               'prefix' => 'salon',
-                                              'controller' => 'AccountDetails',
+                                              'controller' => 'ConnectSalonAccounts',
                                               'action' => 'index'
                                             ],
                                           ],
                                       'Add Account Details' => [
+                                        'link' => "https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://stripe.com/connect/default/oauth/test&client_id=ca_CFZnHhzQjSxDc2fURkjTGVgeZF3StF5c"
+                                          ] 
+                                  ] 
+                            ],
+                            'Payouts' => [
+                              'link' => '#',
+                              'children' => [
+                                    'View Payouts' => [
                                         'link' => [
-                                                   'prefix' => 'salon',
-                                                   'controller' => 'AccountDetails',
-                                                   'action' => 'add'
-                                                  ],
+                                              'prefix' => 'salon',
+                                              'controller' => 'SalonPayouts',
+                                              'action' => 'index'
+                                            ],
                                           ] 
                                   ] 
                             ],

@@ -78,7 +78,7 @@ class AppController extends Controller
             
             if($user['role']['name'] == 'admin'){
               $menu = Configure::read('Menu.Admin');
-            }elseif($user['role']['name'] == 'user' && $user['is_salon_owner']){
+            }elseif(($user['role']['name'] == 'user' || $user['role']['name'] == 'expert') && $user['is_salon_owner']){
               $menu = Configure::read('Menu.SalonUsers');
             }else{
               $menu = Configure::read('Menu.Users');
@@ -113,7 +113,11 @@ class AppController extends Controller
         $value['children'] = $response['children'];
         $value['active'] = $response['active'];
       } else {
-        $value['active'] = empty(array_diff($currentLink, $value['link'])) ? 1 : 0;
+        if(is_array($value['link'])){
+          $value['active'] = empty(array_diff($currentLink, $value['link'])) ? 1 : 0;
+        }else{
+          $value['active'] = false;
+        }
       }
 
       if(isset($value['active']) && $value['active']){

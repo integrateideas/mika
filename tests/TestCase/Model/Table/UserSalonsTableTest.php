@@ -29,6 +29,7 @@ class UserSalonsTableTest extends TestCase
         'app.roles',
         'app.appointments',
         'app.experts',
+        'app.appointment_reviews',
         'app.expert_availabilities',
         'app.expert_cards',
         'app.expert_locations',
@@ -41,9 +42,11 @@ class UserSalonsTableTest extends TestCase
         'app.transactions',
         'app.user_cards',
         'app.appointment_services',
-        'app.appointment_reviews',
         'app.social_connections',
-        'app.user_device_tokens'
+        'app.user_device_tokens',
+        'app.account_details',
+        'app.stripe_bank_accounts',
+        'app.stripe_customers'
     ];
 
     /**

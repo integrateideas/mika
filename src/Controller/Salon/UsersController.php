@@ -181,7 +181,7 @@ class UsersController extends AppController
     }
 
     private function _loginUser($user){
-        if($user['role_id'] == 2){   
+        if($user['role_id'] == 2 || $user['role_id'] == 3){   
             if ($user['is_salon_owner']) {
                     $this->Auth->setUser($user);
                     $isUserSalon = $this->Users->UserSalons->findByUserId($user['id'])->first();
