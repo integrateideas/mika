@@ -322,7 +322,6 @@ class UsersController extends ApiController
       Log::write('debug', $this->request->data); 
       $this->loadModel('SocialConnections');
       $socialConnection = $this->SocialConnections->find()->where(['fb_identifier' => $this->request->data['uid']])->first();
-
       if (!$socialConnection) {
         throw new NotFoundException(__('LOGIN_FAILED'));
       }
@@ -339,6 +338,7 @@ class UsersController extends ApiController
 
       $data =array();            
       $return = $this->Users->loginExpertInfo($userId,$data);
+      // Log::write('debug',$return);
       
       // if (!$return) {
       //   throw new NotFoundException(__('LOGIN_FAILED'));
