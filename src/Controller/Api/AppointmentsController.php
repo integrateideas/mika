@@ -46,11 +46,18 @@ class AppointmentsController extends ApiController
 	if (!$this->Appointments->save($appointment)) {
 		throw new Exception("Error Processing Request.");
         }
+	    
+	$appHelper = new AppHelper();
+        $getNotificationContent = $appHelper->getNotificationText('confirm_booking');
+        if(!empty($getNotificationContent)){
+            $this->sendNotification($getNotificationContent, $appointment);
+        }
 
         $this->set('data',$appointment);
         $this->set('status',true);
         $this->set('_serialize', ['status','data']);
     }
+	
     public function yoconfirmBooking($id){
 
         if(!$this->request->is(['put'])){
